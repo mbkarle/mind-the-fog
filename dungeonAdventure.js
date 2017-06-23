@@ -26,13 +26,16 @@ function myGame(){
     var enemyAttack = setInterval(function() {Damage(Troglodyte, Hero);}, 4000);
 
     //TODO: onload only happens once! check this every click?
-    // while(Troglodyte.vitality > 0){
-    //   console.log("waiting...")
-
-    // };
     // window.clearInterval(enemyAttack);
     // console.log("should be cleared...");
+    window.onclick = function(){
+      if(Troglodyte.vitality < 0){
+        window.clearInterval(enemyAttack);
+        console.log("interval cleared!");
+      }
+    };
   };
+
 }
 
 myGame();
