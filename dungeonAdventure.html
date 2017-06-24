@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>Dungeon Adventure</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript" src="dungeonAdventure.js"></script>
     <link href="dungeonAdventure.css" rel="stylesheet" type="text/css" />
   </head>
@@ -11,7 +12,8 @@
   <body>
     <div id="hero"></div>
     <div id="enemy"></div>
-    <div id="attack">attack</div>
-    <div id="defend">defend</div>
+    <div id="attack">attack<div id="slider" class="attackCooldown"></div></div>
+    <div id="defend"></div>
+    <div id="slider" class="defendCooldown"></div>
   </body>
 </html>
