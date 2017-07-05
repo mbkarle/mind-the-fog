@@ -1,6 +1,6 @@
 #hero, #enemy {
   font-size: 14px;
-  text-decoration: bold;
+  font-weight: bold;
 }
 
 #hero {
@@ -38,24 +38,52 @@
   left: 200px;
 }
 
-#slider {
+.coolDown {
   padding-top: 10px;
   padding-bottom: 17px;
   background-color: #e6e6e6;
   opacity: .5;
+}
+
+#attackSlider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 87px;
   display: none;
 }
 
-.attackCooldown {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 87px;
-}
-
-.defendCooldown {
+#defendSlider {
   position: absolute;
   top: 301px;
   left: 201px;
   width: 112px;
+  display: none;
+}
+
+#text-module {
+  position: absolute;
+  top: 30px;
+  left: 20px;
+  font-size: 12px;
+  padding-bottom: 100px;
+  padding-right: 300px;
+  border-style: solid;
+  border-color: #a6a6a6;
+  font-family: cursive;
+  z-index: 1;
+}
+#combat-module {
+  display: none;
+}
+
+#enter {
+  border-style: solid;
+  border-color: #e6e6e6;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  font-size: 12px;
+  font-family: cursive;
+  z-index: 2;
 }
