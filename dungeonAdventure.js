@@ -2,7 +2,7 @@ var Hero = new Character("The Hero", 5, 3, 20,"hero");
 var Troglodyte = new Character("Troglodyte", 3, 2, 30,"enemy");
 var DireRat = new Character("Dire Rat", 1, 15, 20,"enemy");
 var DireRat2 = new Character("Dire Rat", 1, 15, 20,"enemy");
-var Ogre = new Character("Ogre", 6, 1, 60, "enemy");
+var Ogre = new Character("Ogre", 7, 1, 60, "enemy");
 
 var HeroShield = new Item("the shield", null, 20,"defend");
 var protected = false;
@@ -48,9 +48,10 @@ function Damage(source_character, target_character){
   return hit;
 }
 
-function Shield(){//TODO take in hero
+function Shield(){//TODO fix during recursion
   Hero.vitality += 2;
   protected = true;
+  console.log("Shield on");
 }
 
 function readyUp(){
@@ -81,7 +82,7 @@ function combat(hero, enemyListArg){ //take in enemy list
 function combat_helper(hero, enemyList, idx){ //TODO GLOBAL VARIABLES
   console.log("lap " + idx);
   Hero.vitality = 20;
-  Shield.vitality = 20;
+  HeroShield.vitality = 20;
   if(Hero.vitality <= 0){
     return;
   }
@@ -127,7 +128,7 @@ function combat_helper(hero, enemyList, idx){ //TODO GLOBAL VARIABLES
 
     // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], HeroShield)} else{Damage(enemyList[idx], Hero)}}, 10000 / enemyList[idx].dexterity);
     window.onclick = function(){
-
+      console.log(protected);
       if(protected == true || HeroShield.vitality <= 0){
         window.clearInterval(shielded);
         protected = false;
@@ -157,7 +158,7 @@ function combat_helper(hero, enemyList, idx){ //TODO GLOBAL VARIABLES
     };
     //jquery animation:
     $("#defend").click(function(){
-      $("#defendSlider").toggle(4000);
+      $("#defendSlider").show(4000);
       })
 
 }
