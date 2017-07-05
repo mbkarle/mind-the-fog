@@ -1,9 +1,17 @@
 var Hero = new Character("The Hero", 5, 3, 20,"hero");
 var Troglodyte = new Character("Troglodyte", 3, 2, 30,"enemy");
 var DireRat = new Character("Dire Rat", 1, 15, 20,"enemy");
-var DireRat2 = new Character("Dire Rat", 1, 15, 20,"enemy");
-var Ogre = new Character("Ogre", 7, 1, 60, "enemy");
-
+var DireRat2 = new Character("Dire Rat", 1.5, 15, 20,"enemy");
+var Ogre = new Character("Ogre", 9, 1, 60, "enemy");
+var Shapeshifter = new Character("Shapeshifter", 6, 4, 20, "enemy")
+var avatarX = 233;
+var avatarY = 176;
+var fogTop = 170;
+var fogBottom = 20;
+var fogLeft = 230;
+var fogRight = 20;
+var fightChance = Math.random();
+var canMove = true;
 var HeroShield = new Item("the shield", null, 20,"defend");
 var protected = false;
 var ready = true;
@@ -11,9 +19,10 @@ var shielded;
 //var hit;
 var startOver;
 var enemyAttack;
-var globalEnemies = [Troglodyte, DireRat, DireRat2, Ogre];
-
+var globalEnemies = [Troglodyte, DireRat, DireRat2, Shapeshifter, Ogre];
+window.addEventListener("keydown", move, false);
 combat(Hero, globalEnemies);
+
 
 //----------------------------------------------------------------
 //                      HELPER FUNCTIONS
@@ -36,9 +45,53 @@ function Item(name, damage, vitality, objid){
 // function Dex(Character){
 //   return Math.pow(Math.random(), 1 / (Character.dexterity / 3));
 // }
+function move(e) {
+console.log("key hit!");
+if(canMove == true){
+  fightChance = Math.random();
+  if (e.keyCode == "87") {
+      avatarY -= 11.5;
+      if((avatarY - fogTop) < 40){
+      fogTop -= 20;
+      fogBottom +=20;
+    }
+  }
+  else if(e.keyCode == "83"){
+      avatarY += 11.5;
+      if(fogTop + fogBottom - avatarY < 40){
+      fogBottom += 20;
+    }
+  }
+  else if(e.keyCode == "65"){
+      avatarX -= 19.75
+      if(avatarX - fogLeft < 40){
+      fogLeft -= 20;
+      fogRight +=20;
+    }
+  }
+  else if(e.keyCode == "68"){
+      avatarX += 19.75;
+      if(fogLeft + fogRight - avatarX < 40){
+      fogRight += 20;
+    }
+  }
+  // console.log(avatarX + ", " + avatarY);
+  $(".fog").css({"top": fogTop + "px", "padding-bottom": fogBottom + "px", "left": fogLeft + "px", "padding-right": fogRight + "px"});
+  $("#avatar").css({"top": avatarY + "px", "left": avatarX + "px"});
 
+  }
+  if(fightChance > 0.95){
+    $("#text-module").show();
+    canMove = false;
+  }
+  else {
+    canMove = true;
+  }
+  console.log(canMove);
+  console.log(fightChance);
+}
 function Damage(source_character, target_character){
-  hit = Math.floor(Math.random() * source_character.strength) + source_character.strength;
+  hit = Math.floor(Math.random() * source_character.strength + source_character.strength);
   target_character.vitality -= hit;
   document.getElementById(source_character.objid).innerHTML = source_character.vitality;
   document.getElementById(target_character.objid).innerHTML = target_character.vitality /*+ target_character.name */;
@@ -50,6 +103,7 @@ function Damage(source_character, target_character){
 
 function Shield(){//TODO fix during recursion
   Hero.vitality += 2;
+  document.getElementById("hero").innerHTML = Hero.vitality;
   protected = true;
   console.log("Shield on");
 }
@@ -95,8 +149,9 @@ function combat_helper(hero, enemyList, idx){ //TODO GLOBAL VARIABLES
       }, 500);
       $("#combat-module").show(500);
       $("#enter").hide();
-    enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], HeroShield)} else{Damage(enemyList[idx], Hero)} if(Hero.vitality <= 0){print("lul","You died!");}}, 10000 / enemyList[idx].dexterity);
-    }
+      $("#worldMap").hide();
+    enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], HeroShield)} else{Damage(enemyList[idx], Hero)} if(Hero.vitality <= 0){print("lul","You died!"); $("#combat-module").hide(1000);}}, 10000 / enemyList[idx].dexterity);
+  }
 
     document.getElementById("hero").innerHTML = Hero.vitality;
     document.getElementById("enemy").innerHTML = enemyList[idx].vitality;
@@ -138,17 +193,25 @@ function combat_helper(hero, enemyList, idx){ //TODO GLOBAL VARIABLES
       if(enemyList[idx].vitality <= 0){
         enemyList[idx].vitality = 0;
         window.clearInterval(enemyAttack);
+        $("#combat-module").hide(1000);
+        $("#text-module").animate({
+          top: "100px",
+          left: "20px"
+        }, 1000);
         print("message", "You've defeated the beast!");
         if (idx < enemyList.length){
           idx++;
           document.getElementById("enter").innerHTML = "––>";
           $("#enter").show();
-          document.getElementById("enter").onclick = function() {
-            $("#combat-module").hide(500);
-            $("#text-module").animate({
-              top: "30px",
-              left: "20px"
-            }, 500);
+          document.getElementById("enter").onclick = function(){
+          canMove = true;
+            // $("#combat-module").hide(500);
+            // $("#text-module").animate({
+            //   top: "100px",
+            //   left: "20px"
+            // }, 500).hide();
+            $("#text-module").hide();
+            $("#worldMap").show();
             document.getElementById("enter").innerHTML = "Engage";
             combat_helper(hero, enemyList, idx);
           }

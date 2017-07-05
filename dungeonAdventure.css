@@ -62,8 +62,9 @@
 }
 
 #text-module {
+  display: none;
   position: absolute;
-  top: 30px;
+  top: 100px;
   left: 20px;
   font-size: 12px;
   padding-bottom: 100px;
@@ -72,6 +73,7 @@
   border-color: #a6a6a6;
   font-family: cursive;
   z-index: 1;
+  background-color: white;
 }
 #combat-module {
   display: none;
@@ -86,4 +88,23 @@
   font-size: 12px;
   font-family: cursive;
   z-index: 2;
+}
+#avatar {
+  font-size: 12px;
+  position: absolute;
+  padding: 2px;
+  top: 176px;
+  left: 233px;
+  background-color: white;
+}
+.fog {
+  padding: 20px;
+  border-style: solid;
+  border-width: thin;
+  position: absolute;
+  top: 170px;
+  left: 230px;
+  outline-color: white;
+  outline-style: solid;
+  outline-width: 500px;
 }
