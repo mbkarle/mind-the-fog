@@ -28,20 +28,20 @@ combat(Hero, globalEnemies);
 //                      HELPER FUNCTIONS
 //----------------------------------------------------------------
 
-function Character(name, strength, dexterity, vitality,objid) {
-  this.name = name;
-  this.strength = strength;
-  this.dexterity = dexterity;
-  this.vitality = vitality;
-  this.objid = objid;
-}
+// function Character(name, strength, dexterity, vitality,objid) {
+//   this.name = name;
+//   this.strength = strength;
+//   this.dexterity = dexterity;
+//   this.vitality = vitality;
+//   this.objid = objid;
+// }
 
-function Item(name, damage, vitality, objid){
-  this.name = name;
-  this.damage = damage;
-  this.vitality = vitality;
-  this.objid = objid;
-}
+// function Item(name, damage, vitality, objid){
+//   this.name = name;
+//   this.damage = damage;
+//   this.vitality = vitality;
+//   this.objid = objid;
+// }
 // function Dex(Character){
 //   return Math.pow(Math.random(), 1 / (Character.dexterity / 3));
 // }
