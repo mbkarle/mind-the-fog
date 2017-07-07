@@ -12,8 +12,9 @@
   <body>
     <div id="worldMap">
       <div id="avatar">x</div>
-      <img src="http://files.site-fusion.co.uk/webfusion159311/image/9d-binche_sample.png">
+      <img id="map" src="http://files.site-fusion.co.uk/webfusion159311/image/9d-binche_sample.png">
       <div class="fog"></div>
+      <div id="worldContent"></div>
     </div>
   <div id="combat-module">
     <div id="hero"></div>
@@ -24,6 +25,9 @@
   </div>
   <div id="text-module">
     <div id="textBox"></div>
-    <div id="enter">Engage</div></div>
+    <div class="interact" id="enter">Engage</div>
+    <div class="interact" id="open" style="display: none">––&#62;</div>
+    <div class="interact" id="equip" style="display:none;bottom:90px;">Equip</div>
+  </div>
   </body>
 </html>

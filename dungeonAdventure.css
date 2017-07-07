@@ -72,14 +72,14 @@
   border-style: solid;
   border-color: #a6a6a6;
   font-family: cursive;
-  z-index: 1;
+  z-index: 3;
   background-color: white;
 }
 #combat-module {
   display: none;
 }
 
-#enter {
+.interact {
   border-style: solid;
   border-color: #e6e6e6;
   position: absolute;
@@ -87,7 +87,7 @@
   bottom: 0;
   font-size: 12px;
   font-family: cursive;
-  z-index: 2;
+  z-index: 4;
 }
 #avatar {
   font-size: 12px;
@@ -106,4 +106,12 @@
   outline-color: white;
   outline-style: solid;
   outline-width: 500px;
+  z-index: 2;
+  /*display: none; */
+
+}
+#worldContent {
+  font-size: 12px;
+  position: inherit;
+  z-index: 1;
 }
