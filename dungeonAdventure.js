@@ -351,7 +351,7 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
                 left: "20px"
             }, 1000);
             print("message", "You've defeated the beast!");
-            if (idx < enemyList.length) {
+            if (idx < enemyList.length - 1) {
                 idx++;
                 document.getElementById("enter").innerHTML = "––>";
                 $("#enter").show();
@@ -370,7 +370,16 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
 
             } //success
             else {
-                print("message", "You've done it! You've cleared the dungeon!");
+                print("message", "You've done it! You've cleared the floor!");
+                $("#open").show().click(
+                    function(){
+                        canMove = true;
+                        document.getElementById("enter").innerHTML = "Engage";
+                        $("#open").hide();
+                        $("#text-module").hide();
+                        $("#worldMap").show();
+                        $("#open").off("click");
+                    })
             }
         };
     };
