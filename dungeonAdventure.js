@@ -37,6 +37,7 @@ var thornArmor = new Item("armor of thorns", 1, -1, 5, true, null);
 var protected = false;
 var ready = true;
 var shielded;
+var floorCleared = false;
 //var hit;
 var startOver;
 var enemyAttack;
@@ -131,7 +132,7 @@ function move(e) {
         });
 
     }
-    if (fightChance > 0.95) {
+    if (fightChance > 0.95 && !floorCleared) {
         $("#text-module").show();
         canMove = false;
     } else {
@@ -370,7 +371,8 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
 
             } //success
             else {
-                print("message", "You've done it! You've cleared the floor!");
+                print("message", "The fog clears, and looking around there seemed to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
+                floorCleared = true;
                 $("#open").show().click(
                     function(){
                         canMove = true;
