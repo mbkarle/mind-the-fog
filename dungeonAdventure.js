@@ -115,6 +115,9 @@ function move(e) {
             console.log("dev tools activated");
             buildMap(locations);
             equip(Hero, MasterSword);
+            $(".fog").css({
+                "display": "none"
+            });
         }
         $(".fog").css({
             "top": fogTop + "px",
@@ -139,7 +142,7 @@ function move(e) {
             $("#text-module").show();
             $("#enter").hide();
             $("#open").show();
-            print("message", locations[b].message);
+            msg = print("message", locations[b].message);
             openChest(true);
         }
     }
@@ -190,12 +193,19 @@ function openChest(stage) {
                 $("#open").off("click")
                 $("#enter").show();
                 $("#text-module").hide();
-                print("lastMessage", 3);
+                print("lastMessage", 2);
                 return;
             }
         });
 }
 
+/*message is either:
+* a number for damage
+* an index for messageArray
+* an item object
+* a string thats actually a message
+* TODO: clean this up... functions within classes?
+*/
 function print(messageType, message) {
     if (messageType == "damageDealt") {
         document.getElementById("textBox").innerHTML = "You strike for " + message + " damage!"
@@ -211,13 +221,15 @@ function print(messageType, message) {
             }
         }
         document.getElementById("textBox").innerHTML = itemMessage;
-
+        messageCount--; //NEED TO DECREMENT BC ITEM NOT PUSHED
     } else {
         document.getElementById("textBox").innerHTML = message;
         messageArray.push(message);
     }
     messageCount++
     //console.log(messageArray.toString());
+    // console.log(messageCount);
+    return messageArray[messageCount-1];
 }
 
 function buildMap(array) {
