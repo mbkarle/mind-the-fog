@@ -243,7 +243,7 @@ function buildMap(array) {
         if (array[a + 1] !== undefined && array[a].yCoord == array[a + 1].yCoord) {
             array[a].yCoord = 3.5 + 11.5 * Math.floor(Math.random() * 25);
         }
-        worldContents += "<div id='" + array[a].objid + "' style='top:" + array[a].yCoord + "px; left:" + array[a].xCoord + "px; position: absolute;'>" + array[a].symbol + "</div>";
+        worldContents += "<div id='" + array[a].objid + "' style='top:" + array[a].yCoord + "px; left:" + array[a].xCoord + "px; position: fixed;'>" + array[a].symbol + "</div>";
     }
     document.getElementById("worldContent").innerHTML = worldContents;
 }

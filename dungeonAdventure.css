@@ -7,16 +7,18 @@
   position: relative;
   top: 200px;
   left: 100px;
+  margin: auto;
 }
 
 #enemy {
   position: absolute;
   top: 100px;
   left: 200px;
+  margin: auto;
 }
 
 #attack, #defend {
-  position: absolute;
+  position: relative;
   font-size: 12px;
   text-align: center;
   color: #a6a6a6;
@@ -26,6 +28,8 @@
   padding-right: 30px;
   border-style: solid;
   border-color: #a6a6a6;
+  width: 50px;
+  margin: auto;
 }
 
 #attack {
@@ -63,7 +67,8 @@
 
 #text-module {
   display: none;
-  position: absolute;
+  margin: auto;
+  /*position: absolute;*/
   top: 100px;
   left: 20px;
   text-align:center;
@@ -88,12 +93,13 @@
 
 #combat-module {
   display: none;
+  margin: auto;
 }
 
 .interact {
   border-style: solid;
   border-color: #e6e6e6;
-  position: absolute;
+  /*position: absolute;*/
   right: 0;
   bottom: 0;
   font-size: 12px;
@@ -102,11 +108,12 @@
 }
 #avatar {
   font-size: 12px;
-  position: absolute;
+  position: relative;
+  margin: auto;
   padding: 2px;
   top: 176px;
   left: 233px;
-  background-color: white;
+  /*background-color: ;*/
 }
 .fog {
   padding: 20px;
@@ -118,11 +125,12 @@
   outline-style: solid;
   outline-width: 500px;
   z-index: 2;
-  /*display: none; */
+  display: none;
 
 }
 #worldContent {
   font-size: 12px;
   position: inherit;
   z-index: 1;
+  margin: auto;
 }
