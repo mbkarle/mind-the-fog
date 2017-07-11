@@ -68,12 +68,12 @@
 #text-module {
   display: none;
   margin: auto;
-  /*position: absolute;*/
-  top: 100px;
-  left: 20px;
+  position: relative;
+  top: 150px;
+  left: -5px;
   text-align:center;
   font-size: 14px;
-  padding-bottom: 100px;
+  /*padding-bottom: 100px;*/
   /*padding-right: 300px;*/
   width: 450px;
   border-style: solid;
@@ -87,7 +87,7 @@
 #text-box {
     font-size: 16px;
     /*padding: 10px 0;*/
-    /*margin:auto auto auto auto;*/
+    margin:auto auto auto auto;
     background: blue;
 }
 
@@ -112,7 +112,7 @@
   margin: auto;
   padding: 2px;
   top: 176px;
-  left: 233px;
+  left: 244px;
   /*background-color: ;*/
 }
 .fog {
@@ -129,8 +129,8 @@
 
 }
 #worldContent {
-  font-size: 12px;
-  position: inherit;
-  z-index: 1;
+  font-size: 18px;
+  position: relative;
+  z-index: -1;
   margin: auto;
 }

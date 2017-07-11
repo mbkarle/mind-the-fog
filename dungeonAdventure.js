@@ -1,3 +1,25 @@
+class Location {
+    constructor(name, message, objid, symbol, rowID, colID){
+        this.name = name;
+        this.message = message;
+        this.objid = objid;
+        this.symbol = symbol;
+        this.hero_present = false;
+        this.xCoord = colID * 15;
+        this.yCoord = rowID * 15;
+        this.rowID = rowID;
+        this.colID = colID;
+    }
+
+    setHero(bool){
+        this.hero_present = bool;
+        return 1;
+    }
+
+
+};
+
+
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //TODO: two separate problems with the chests after the first:
 // lastMessage becomes undefined
@@ -9,8 +31,8 @@ var DireRat = new Character("Dire Rat", 1, 15, 20, "enemy");
 var DireRat2 = new Character("Dire Rat", 1.5, 15, 20, "enemy");
 var Ogre = new Character("Ogre", 9, 1, 60, "enemy");
 var Sorcerer = new Character("Sorcerer", 6, 4, 20, "enemy");
-var avatarX = 233;
-var avatarY = 176;
+var avatarX = 20;
+var avatarY = 15;
 var messageCount = 0;
 var fogTop = 170;
 var fogBottom = 20;
@@ -18,15 +40,12 @@ var fogLeft = 230;
 var fogRight = 20;
 var fightChance = Math.random();
 var canMove = true;
-var TreasureChest = new Location(
-    "Treasure Chest",
-    "A wooden chest. It's locked, but no wood can withstand your blade.",
-    "treasure",
-    "V",
-);
-var TreasureChest2 = jQuery.extend({}, TreasureChest);
-var TreasureChest3 = jQuery.extend({}, TreasureChest2);
-var locations = [TreasureChest, TreasureChest2, TreasureChest3];
+var TreasureChest = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", Math.floor(30*Math.random()), Math.floor(40*Math.random()));
+var TreasureChest2 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", Math.floor(30*Math.random()), Math.floor(40*Math.random()));
+var TreasureChest3 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", Math.floor(30*Math.random()), Math.floor(40*Math.random()));
+var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
+// var treasuresXs = [TreasureChest.colID, TreasureChest2.colID, TreasureChest3.colID];
+// var treasuresYs = [TreasureChest.rowID, TreasureChest2.rowID, TreasureChest3.rowID]; //TODO: chests could be stacked!!
 var itemList = [];
 var HeroShield = new Item("the shield", null, null, 20, false, "defend");
 var MasterSword = new Item("the master sword", 25, 17, 30, false, null);
@@ -47,9 +66,30 @@ window.addEventListener("keydown", move, false);
 combat(Hero, globalEnemies);
 
 
+/*BIG LOCATION UPDATE:
+* Locations are now a 2D array...
+
+*/
+var world_map = new Array(30)
+for (var i = 0; i < 30; i++) {
+  world_map[i] = new Array(40);
+  for(var j = 0; j < 40; j++){
+      world_map[i][j] = new Location("Tile","","tile",".",i,j);
+  }
+};
+//
+world_map[TreasureChest.rowID][TreasureChest.colID] = TreasureChest;
+world_map[TreasureChest2.rowID][TreasureChest2.colID] = TreasureChest2;
+world_map[TreasureChest3.rowID][TreasureChest3.colID] = TreasureChest3;
+
+world_map[avatarY][avatarX].hero_present = true;
+
+
 //----------------------------------------------------------------
 //                      HELPER FUNCTIONS
 //----------------------------------------------------------------
+
+
 
 function Character(name, strength, dexterity, vitality, objid) {
     this.name = name;
@@ -76,77 +116,85 @@ function Item(name, strength, dexterity, vitality, toList, objid) {
     this.list();
 }
 
-function Location(name, message, objid, symbol) {
-    this.name = name;
-    this.message = message;
-    this.objid = objid;
-    this.symbol = symbol;
-    this.xCoord = 15.75 + 19.75 * Math.floor(Math.random() * 25);
-    this.yCoord = 3.5 + 11.5 * Math.floor(Math.random() * 25);
-}
+
 // function Dex(Character){
 //   return Math.pow(Math.random(), 1 / (Character.dexterity / 3));
 // }
 function move(e) {
     if (canMove == true) {
         fightChance = Math.random();
-        if (e.keyCode == "87" && avatarY > 3.5) { //up; bound = 3.5
-            avatarY -= 11.5;
-            if ((avatarY - fogTop) < 40) {
-                fogTop -= 20;
-                fogBottom += 20;
-            }
-        } else if (e.keyCode == "83" && avatarY < 360) { //down; bound = 360
-            avatarY += 11.5;
-            if (fogTop + fogBottom - avatarY < 40) {
-                fogBottom += 20;
-            }
-        } else if (e.keyCode == "65" && avatarX > 15.75) { //left; bound = 15.75
-            avatarX -= 19.75
-            if (avatarX - fogLeft < 40) {
-                fogLeft -= 20;
-                fogRight += 20;
-            }
-        } else if (e.keyCode == "68" && avatarX < 489.75) { //right; bound = 430.5
-            avatarX += 19.75;
-            if (fogLeft + fogRight - avatarX < 40) {
-                fogRight += 20;
-            }
+        if (e.keyCode == "87" && avatarY > 0) { //up; bound = 3.5
+            world_map[avatarY][avatarX].hero_present = false;
+            avatarY --;
+            world_map[avatarY][avatarX].hero_present = true;
+            // if ((avatarY - fogTop) < 40) {
+            //     fogTop -= 20;
+            //     fogBottom += 20;
+            // }
+        } else if (e.keyCode == "83" && avatarY < 29) { //down; bound = 360
+            world_map[avatarY][avatarX].hero_present = false;
+            avatarY ++;
+            world_map[avatarY][avatarX].hero_present = true;
+            // if (fogTop + fogBottom - avatarY < 39) {
+            //     fogBottom += 20;
+            // }
+        } else if (e.keyCode == "65" && avatarX > 0) { //left; bound = 15.75
+            world_map[avatarY][avatarX].hero_present = false;
+            avatarX --;
+            world_map[avatarY][avatarX].hero_present = true;
+            // if (avatarX - fogLeft < 40) {
+            //     fogLeft -= 20;
+            //     fogRight += 20;
+            // }
+        } else if (e.keyCode == "68" && avatarX < 39) { //right; bound = 430.5
+            world_map[avatarY][avatarX].hero_present = false;
+            avatarX ++;
+            world_map[avatarY][avatarX].hero_present = true;
+            // if (fogLeft + fogRight - avatarX < 40) {
+            //     fogRight += 20;
+            // }
         } else if (e.keyCode == "66") {
             console.log("dev tools activated");
-            buildMap(locations);
+            buildMap(world_map);
             equip(Hero, MasterSword);
             $(".fog").css({
                 "display": "none"
             });
         }
-        $(".fog").css({
-            "top": fogTop + "px",
-            "padding-bottom": fogBottom + "px",
-            "left": fogLeft + "px",
-            "padding-right": fogRight + "px"
-        });
+        // $(".fog").css({
+        //     "top": fogTop + "px",
+        //     "padding-bottom": fogBottom + "px",
+        //     "left": fogLeft + "px",
+        //     "padding-right": fogRight + "px"
+        // });
         $("#avatar").css({
             "top": avatarY + "px",
             "left": avatarX + "px"
         });
+        buildMap(world_map);
 
-    }
-    if (fightChance > 0.95 && !floorCleared) {
-        $("#text-module").show();
-        canMove = false;
-    } else {
-        canMove = true;
-    }
-    for (var b = 0; b < locations.length; b++) {
-        if (avatarX == locations[b].xCoord && avatarY == locations[b].yCoord) {
+
+        //chance to enter combat
+        if (fightChance > 10.95 && !floorCleared) {
+            $("#text-module").show();
+            canMove = false;
+        } else {
+            canMove = true;
+        }
+
+        //check if on a chest
+
+        if(world_map[avatarY][avatarX].objid === "treasure"){ //if both coords of same chest and its a match
             $("#text-module").show();
             $("#enter").hide();
             $("#open").show();
-            msg = print("message", locations[b].message);
+            canMove = false;
+            msg = print("message", world_map[avatarY][avatarX].message);
             openChest(true);
-        }
+        };
     }
+
+
 }
 
 function Damage(source_character, target_character) {
@@ -194,6 +242,7 @@ function openChest(stage) {
                 $("#open").off("click")
                 $("#enter").show();
                 $("#text-module").hide();
+                canMove = true;
                 print("lastMessage", 2);
                 return;
             }
@@ -235,15 +284,21 @@ function print(messageType, message) {
 
 function buildMap(array) {
     var worldContents = "";
-    var a;
-    for (a = 0; a < array.length; a++) {
-        if (array[a + 1] !== undefined && array[a].xCoord == array[a + 1].xCoord) {
-            array[a].xCoord = 15.75 + 19.75 * Math.floor(Math.random() * 25);
+    for (var i = 0; i < array.length; i++) {
+        for(var j = 0; j < array[0].length; j++){
+            symbol = array[i][j].symbol;
+            if(array[i][j].hero_present){
+                symbol = 'x';
+            }
+            worldContents += "<div id='" + array[i][j].objid + "' style='top:" + array[i][j].yCoord + "px; left:" + array[i][j].xCoord + "px; position: absolute;'>" + symbol + "</div>";
+
         }
-        if (array[a + 1] !== undefined && array[a].yCoord == array[a + 1].yCoord) {
-            array[a].yCoord = 3.5 + 11.5 * Math.floor(Math.random() * 25);
-        }
-        worldContents += "<div id='" + array[a].objid + "' style='top:" + array[a].yCoord + "px; left:" + array[a].xCoord + "px; position: fixed;'>" + array[a].symbol + "</div>";
+        // if (array[a + 1] !== undefined && array[a].xCoord == array[a + 1].xCoord) {
+        //     array[a].xCoord = 15.75 + 19.75 * Math.floor(Math.random() * 25);
+        // }
+        // if (array[a + 1] !== undefined && array[a].yCoord == array[a + 1].yCoord) {
+        //     array[a].yCoord = 3.5 + 11.5 * Math.floor(Math.random() * 25);
+        // }
     }
     document.getElementById("worldContent").innerHTML = worldContents;
 }
@@ -262,7 +317,7 @@ function combat(hero, enemyListArg) { //take in enemy list
     // for(enemy_index = 0; enemy_index < enemyListArg.length; enemy_index++){
     window.onload = function() {
         combat_helper(hero, enemyListArg, 0);
-        buildMap(locations);
+        buildMap(world_map);
     };
 
 }
