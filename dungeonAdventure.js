@@ -247,6 +247,10 @@ function move(e) {
             console.log("dev tools activated");
             buildMap(world_map);
             equip(Hero, MasterSword);
+
+            Hero.vitality = 100000;
+            Hero.ogVit = 100000;
+
             // $(".fog").css({
             //     "display": "none"
             // });
@@ -272,7 +276,7 @@ function move(e) {
 
 
         //chance to enter combat
-        if (fightChance > 10.95 && !floorCleared) {
+        if (fightChance > .95 && !floorCleared) {
             $("#text-module").show();
             canMove = false;
         } else {
@@ -434,8 +438,8 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
     print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")
     document.getElementById("enter").onclick = function() {
         $("#text-module").animate({
-            top: '350px',
-            left: '20px'
+            top: '300px'
+            // left: '20px'
         }, 500);
         $("#combat-module").show(500);
         $("#enter").hide();
@@ -474,10 +478,10 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
             $("#attackSlider").show();
             $("#attackSlider").animate({
                 width: '0px'
-            }, 10000 / Hero.dexterity, function() {
+            }, 8000 / Hero.dexterity, function() {
                 $("#attackSlider").hide();
                 $("#attackSlider").animate({
-                    width: '87px'
+                    width: '110px'
                 }, 1);
             });
         }
@@ -505,8 +509,8 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
             window.clearInterval(enemyAttack);
             $("#combat-module").hide(1000);
             $("#text-module").animate({
-                top: "100px",
-                left: "20px"
+                top: "100px"
+                // left: "20px"
             }, 1000);
             print("message", "You've defeated the beast!");
             if (idx < enemyList.length - 1) {

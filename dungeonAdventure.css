@@ -6,7 +6,7 @@
 #hero {
   position: relative;
   top: 200px;
-  left: 100px;
+  left: 350px;
   margin: auto;
 }
 
@@ -18,7 +18,7 @@
 }
 
 #attack, #defend {
-  position: relative;
+  position: absolute;
   font-size: 12px;
   text-align: center;
   color: #a6a6a6;
@@ -33,18 +33,18 @@
 }
 
 #attack {
-  top: 300px;
-  left: 50px;
+  top: 250px;
+  left: 150px;
 }
 
 #defend {
-  top: 300px;
-  left: 200px;
+  top: 250px;
+  left: 320px;
 }
 
 .coolDown {
   padding-top: 10px;
-  padding-bottom: 17px;
+  padding-bottom: 15px;
   background-color: #e6e6e6;
   opacity: .5;
 }
@@ -53,7 +53,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 87px;
+  width: 110px;
   display: none;
 }
 
@@ -69,7 +69,7 @@
   display: none;
   margin: auto;
   position: relative;
-  top: 150px;
+  top: 175px;
   left: -5px;
   text-align:center;
   font-size: 14px;
@@ -94,19 +94,22 @@
 #combat-module {
   display: none;
   margin: auto;
+  position: relative;
 }
 
 .interact {
   border-style: solid;
   border-color: #e6e6e6;
-  /*position: absolute;*/
+  position: absolute;
   right: 0;
   bottom: 0;
   font-size: 12px;
   font-family: cursive;
   z-index: 4;
 }
-#avatar {
+
+
+/*#avatar {
   font-size: 12px;
   position: relative;
   margin: auto;
@@ -114,8 +117,9 @@
   top: 176px;
   left: 244px;
   /*background-color: ;*/
-}
-.fog {
+} */
+
+/*.fog {
   padding: 20px;
   border-width: thin;
   position: absolute;
@@ -127,10 +131,17 @@
   z-index: 2;
   display: none;
 
+}*/
+
+/*I found that the old fog absolute was required for centering the world
+EVEN if I tried to put the world's position to absolute it broke... so I'm
+adding this class just for world so I can scrap fog.*/
+.worldCentered{
+    position: absolute;
 }
 #worldContent {
   font-size: 18px;
-  position: relative;
+  position: absolute;
   z-index: -1;
   margin: auto;
 }
