@@ -9,14 +9,12 @@ class Location {
         this.yCoord = rowID * 15;
         this.rowID = rowID;
         this.colID = colID;
+        this.fog = true;
     }
-
     setHero(bool){
         this.hero_present = bool;
         return 1;
     }
-
-
 };
 
 
@@ -83,7 +81,7 @@ world_map[TreasureChest2.rowID][TreasureChest2.colID] = TreasureChest2;
 world_map[TreasureChest3.rowID][TreasureChest3.colID] = TreasureChest3;
 
 world_map[avatarY][avatarX].hero_present = true;
-
+removeFog(avatarX,avatarY, world_map);
 
 //----------------------------------------------------------------
 //                      HELPER FUNCTIONS
@@ -116,6 +114,98 @@ function Item(name, strength, dexterity, vitality, toList, objid) {
     this.list();
 }
 
+function removeFog(avX, avY, map){
+    neigh = getValidNeighbors(avX,avY,map,1);
+    for(var i = 0; i < neigh.length; i++){
+        neigh[i].fog = false;
+    };
+
+}
+
+function getValidNeighbors(avX, avY, map, flashlight){
+    neigh = [];
+    if(avX > 0){neigh.push(map[avY][avX-1]);} //left
+    if(avX < 39){neigh.push(map[avY][avX+1]);} //right
+    if(avY > 0){neigh.push(map[avY-1][avX]);} //up
+    if(avY < 29){neigh.push(map[avY+1][avX]);} //down
+    if(avX > 0 && avY > 0){neigh.push(map[avY-1][avX-1]);} //top left corner
+    if(avX > 0 && avY < 29){neigh.push(map[avY+1][avX-1]);} //bot left corner
+    if(avX < 39 && avY > 0){neigh.push(map[avY-1][avX+1]);} //top right corner
+    if(avX < 39 && avY < 29){neigh.push(map[avY+1][avX+1]);} //bot right corner
+
+
+    if(flashlight > 0){ //radius increases...
+        possCoords = []
+        //5 on right
+        possCoords.push([avX+2,avY+2]);
+        possCoords.push([avX+2,avY+1]);
+        possCoords.push([avX+2,avY]);
+        possCoords.push([avX+2,avY-1]);
+        possCoords.push([avX+2,avY-2]);
+
+        //5 on left
+        possCoords.push([avX-2,avY+2]);
+        possCoords.push([avX-2,avY+1]);
+        possCoords.push([avX-2,avY]);
+        possCoords.push([avX-2,avY-1]);
+        possCoords.push([avX-2,avY-2]);
+
+        //missing 3 up top
+        possCoords.push([avX-1,avY+2]);
+        possCoords.push([avX,avY+2]);
+        possCoords.push([avX+1,avY+2]);
+
+        //missing 3 on bottom
+        possCoords.push([avX-1,avY-2]);
+        possCoords.push([avX,avY-2]);
+        possCoords.push([avX+1,avY-2]);
+
+        //5x5 square complete... fill to be 6x6 with corners missing
+        //right row
+        //5 on right
+        // possCoords.push([avX+3,avY+2]);
+        possCoords.push([avX+3,avY+1]);
+        possCoords.push([avX+3,avY]);
+        possCoords.push([avX+3,avY-1]);
+        // possCoords.push([avX+3,avY-2]);
+
+        //5 on left
+        // possCoords.push([avX-3,avY+2]);
+        possCoords.push([avX-3,avY+1]);
+        possCoords.push([avX-3,avY]);
+        possCoords.push([avX-3,avY-1]);
+        // possCoords.push([avX-3,avY-2]);
+
+        //5 on top
+        // possCoords.push([avX-2,avY+3]);
+        possCoords.push([avX-1,avY+3]);
+        possCoords.push([avX,avY+3]);
+        possCoords.push([avX+1,avY+3]);
+        // possCoords.push([avX+2,avY+3]);
+
+
+        //5 on bottom
+        // possCoords.push([avX-2,avY-3]);
+        possCoords.push([avX-1,avY-3]);
+        possCoords.push([avX,avY-3]);
+        possCoords.push([avX+1,avY-3]);
+        // possCoords.push([avX+2,avY-3]);
+
+
+        for(var i = 0; i < possCoords.length; i++){
+            cx = possCoords[i][0];
+            cy = possCoords[i][1];
+            if(isValidCoord(cx,cy)){
+                neigh.push(map[cy][cx]);
+            }
+        }
+    }
+    return neigh;
+}
+
+function isValidCoord(avX, avY){
+    return (avX >= 0 && avY >= 0 && avX < 40 && avY < 30);
+}
 
 // function Dex(Character){
 //   return Math.pow(Math.random(), 1 / (Character.dexterity / 3));
@@ -157,9 +247,16 @@ function move(e) {
             console.log("dev tools activated");
             buildMap(world_map);
             equip(Hero, MasterSword);
-            $(".fog").css({
-                "display": "none"
-            });
+            // $(".fog").css({
+            //     "display": "none"
+            // });
+
+            //remove fog
+            for(var i = 0; i < 30; i ++){
+                for(var j = 0; j < 40; j++){
+                    world_map[i][j].fog = false;
+                }
+            }
         }
         // $(".fog").css({
         //     "top": fogTop + "px",
@@ -167,10 +264,10 @@ function move(e) {
         //     "left": fogLeft + "px",
         //     "padding-right": fogRight + "px"
         // });
-        $("#avatar").css({
-            "top": avatarY + "px",
-            "left": avatarX + "px"
-        });
+        // $("#avatar").css({
+        //     "top": avatarY + "px",
+        //     "left": avatarX + "px"
+        // });
         buildMap(world_map);
 
 
@@ -284,15 +381,20 @@ function print(messageType, message) {
 
 function buildMap(array) {
     var worldContents = "";
+    removeFog(avatarX,avatarY,world_map);
     for (var i = 0; i < array.length; i++) {
         for(var j = 0; j < array[0].length; j++){
             symbol = array[i][j].symbol;
+            if(array[i][j].fog){
+                symbol = '';
+            }
             if(array[i][j].hero_present){
                 symbol = 'x';
             }
             worldContents += "<div id='" + array[i][j].objid + "' style='top:" + array[i][j].yCoord + "px; left:" + array[i][j].xCoord + "px; position: absolute;'>" + symbol + "</div>";
 
         }
+
         // if (array[a + 1] !== undefined && array[a].xCoord == array[a + 1].xCoord) {
         //     array[a].xCoord = 15.75 + 19.75 * Math.floor(Math.random() * 25);
         // }
