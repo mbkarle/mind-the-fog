@@ -1,33 +1,41 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Dungeon Adventure</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="dungeonAdventure.js"></script>
-    <link href="dungeonAdventure.css" rel="stylesheet" type="text/css" />
-  </head>
 
-  <body>
-    <div id="worldMap">
-      <div id="avatar">x</div>
-      <img id="map" src="http://files.site-fusion.co.uk/webfusion159311/image/9d-binche_sample.png">
-      <div class="fog"></div>
-      <div id="worldContent"></div>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Dungeon Adventure</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="dungeonAdventure.js"></script>
+  <link href="dungeonAdventure.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<!-- width of 504px bc thats the width of game board img -->
+  <div style="width:600px; margin:0 auto;">
+    <div id="worldMap" style="margin:0 auto">
+      <!-- <div id="avatar">x</div> -->
+      <!-- <img id="map" src="http://files.site-fusion.co.uk/webfusion159311/image/9d-binche_sample.png"> -->
+      <!-- <div class="worldCentered"></div> -->
+      <div id="worldContent" style="margin:0 auto" class="worldCentered"></div>
     </div>
-  <div id="combat-module">
-    <div id="hero"></div>
-    <div id="enemy"></div>
-    <div id="attack">Sword<div id="attackSlider" class="coolDown"></div></div>
-    <div id="defend"></div>
-    <div id="defendSlider" class="coolDown"></div>
+    <div id="combat-module" style="margin:0 auto">
+      <div id="hero"></div>
+      <div id="enemy"></div>
+      <div id="attack">Sword
+        <div id="attackSlider" class="coolDown"></div>
+      </div>
+      <div id="defend">
+          <div id="defendSlider" class="coolDown"></div>
+      </div>
+    </div>
+    <div id="text-module" style="margin:0 auto">
+      <div id="textBox" style="margin:0 auto"></div>
+      <div class="interact" id="enter">Engage</div>
+      <div class="interact" id="open" style="display: none">––&#62;</div>
+      <div class="interact" id="equip" style="display:none;bottom:90px;">Equip</div>
+    </div>
   </div>
-  <div id="text-module">
-    <div id="textBox"></div>
-    <div class="interact" id="enter">Engage</div>
-    <div class="interact" id="open" style="display: none">––&#62;</div>
-    <div class="interact" id="equip" style="display:none;bottom:90px;">Equip</div>
-  </div>
-  </body>
+</body>
+
 </html>
