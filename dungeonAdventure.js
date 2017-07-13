@@ -10,6 +10,8 @@ class Location {
         this.rowID = rowID;
         this.colID = colID;
         this.fog = true;
+        this.opened_chest = false;
+        this.treasureID = -1;
     }
     setHero(bool){
         this.hero_present = bool;
@@ -38,10 +40,7 @@ var fogLeft = 230;
 var fogRight = 20;
 var fightChance = Math.random();
 var canMove = true;
-var TreasureChest = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", Math.floor(30*Math.random()), Math.floor(40*Math.random()));
-var TreasureChest2 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", Math.floor(30*Math.random()), Math.floor(40*Math.random()));
-var TreasureChest3 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", Math.floor(30*Math.random()), Math.floor(40*Math.random()));
-var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
+
 // var treasuresXs = [TreasureChest.colID, TreasureChest2.colID, TreasureChest3.colID];
 // var treasuresYs = [TreasureChest.rowID, TreasureChest2.rowID, TreasureChest3.rowID]; //TODO: chests could be stacked!!
 var itemList = [];
@@ -51,6 +50,24 @@ var IronHelm = new Item("iron helm", null, -1, 10, true, null);
 var katana = new Item("katana", 1, 1, null, true, null);
 var ritDagger = new Item("ritual dagger", -2, 2, 5, true, null);
 var thornArmor = new Item("armor of thorns", 1, -1, 5, true, null);
+
+
+//treasures must go after the Items because we need to set an ID for the treasure inside!
+tChest1Loc = [Math.floor(30*Math.random()), Math.floor(40*Math.random())]
+tChest2Loc = rollLocation([tChest1Loc]);
+tChest3Loc = rollLocation([tChest1Loc, tChest2Loc]);
+
+var TreasureChest = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest1Loc[0], tChest1Loc[1]);
+var TreasureChest2 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest2Loc[0], tChest2Loc[1]);
+var TreasureChest3 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest3Loc[0], tChest3Loc[1]);
+var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
+
+TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
+TreasureChest2.treasureID = Math.floor(itemList.length * Math.random());
+TreasureChest3.treasureID = Math.floor(itemList.length * Math.random());
+
+// TreasureChest.
+
 var protected = false;
 var ready = true;
 var shielded;
@@ -75,7 +92,6 @@ for (var i = 0; i < 30; i++) {
       world_map[i][j] = new Location("Tile","","tile",".",i,j);
   }
 };
-//
 world_map[TreasureChest.rowID][TreasureChest.colID] = TreasureChest;
 world_map[TreasureChest2.rowID][TreasureChest2.colID] = TreasureChest2;
 world_map[TreasureChest3.rowID][TreasureChest3.colID] = TreasureChest3;
@@ -83,10 +99,35 @@ world_map[TreasureChest3.rowID][TreasureChest3.colID] = TreasureChest3;
 world_map[avatarY][avatarX].hero_present = true;
 removeFog(avatarX,avatarY, world_map);
 
+
+
 //----------------------------------------------------------------
 //                      HELPER FUNCTIONS
 //----------------------------------------------------------------
 
+
+function rollLocation(locs){
+    //locs is a 2D array of locations not to be placed on...
+    //locs[0] is a 2 element array (row / col)
+    var loc = [-1,-1];
+    found = false;
+    while(!found){
+        loc = [Math.floor(30*Math.random()), Math.floor(40*Math.random())] //new random location
+        passed = true;
+        for(var i = 0; i < locs.length; i++){ //check it really is unique as per 8 rooks problem
+            if(locs[i].indexOf(loc[0]) >= 0 || locs[i].indexOf(loc[1]) >= 0){ //if row or col not unique...
+                passed = false;
+                break;
+            }
+        }
+        if(passed){
+            found = true;
+        }
+    }
+
+    return loc;
+
+}
 
 
 function Character(name, strength, dexterity, vitality, objid) {
@@ -285,12 +326,13 @@ function move(e) {
 
         //check if on a chest
 
-        if(world_map[avatarY][avatarX].objid === "treasure"){ //if both coords of same chest and its a match
+        if(world_map[avatarY][avatarX].objid === "treasure" && !world_map[avatarY][avatarX].opened_chest){ //if both coords of same chest and its a match
             $("#text-module").show();
             $("#enter").hide();
             $("#open").show();
             canMove = false;
             msg = print("message", world_map[avatarY][avatarX].message);
+            world_map[avatarY][avatarX].message = "the chest lays smashed by your blade, its treasures still there."
             openChest(true);
         };
     }
@@ -325,13 +367,14 @@ function openChest(stage) {
 
         function() {
             if (stage) {
-                var chestContent = Math.floor(Math.random() * itemList.length);
-                print("item", itemList[chestContent]);
+                // var chestContent = Math.floor(Math.random() * itemList.length);
+                print("item", itemList[world_map[avatarY][avatarX].treasureID]);
                 $("#equip").show();
-                console.log(itemList[chestContent]);
+                console.log(itemList[world_map[avatarY][avatarX].treasureID]);
                 $("#equip").click(
                     function() {
-                        equip(Hero, itemList[chestContent]);
+                        world_map[avatarY][avatarX].opened_chest = true;
+                        equip(Hero, itemList[world_map[avatarY][avatarX].treasureID]);
                         $("#equip").hide();
                     })
                 stage = !stage;
