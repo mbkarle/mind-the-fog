@@ -1,7 +1,43 @@
-//------------------------------------------------------------------------------------------------
+world_height//------------------------------------------------------------------------------------------------
 // This script should be the game runner. Other classes should live in the
 // ./world_objects/ folder,although this script can have helper methods and global variables.
 //------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------
+//          Some magical game variables...
+//------------------------------------------------------
+//variables to track the current position of hero
+var avatarX = 20; //TODO rename!
+var avatarY = 15;
+
+//variables to track printed messages
+var messageArray = [];
+var messageCount = 0;
+
+//variables of hero status
+var canMove = true;
+var hero_protected = false;
+var ready = true;
+var shielded;
+
+//------------------------------------------------------
+//              Spinning up your world...
+//------------------------------------------------------
+//world dimensions
+var floorCleared = false;
+var world_width = 40;
+var world_height = 30;
+
+//the game board itself!
+var world_map = new Array(world_height)
+
+//populate it with Tile locations
+for (var i = 0; i < world_height; i++) {
+  world_map[i] = new Array(world_width);
+  for(var j = 0; j < world_width; j++){
+      world_map[i][j] = new Location("Tile","","tile",".",i,j);
+  }
+};
 
 //------------------------------------------------------
 //              Initialize Characters
@@ -30,7 +66,7 @@ var thornArmor = new Item("armor of thorns", 1, -1, 5, true, null, itemList);
 //        Initialize Treasures + other Locations
 //------------------------------------------------------
 //treasures must go after the Items because we need to set an ID for the treasure inside!
-tChest1Loc = [Math.floor(30*Math.random()), Math.floor(40*Math.random())]
+tChest1Loc = [Math.floor(world_height*Math.random()), Math.floor(world_width*Math.random())]
 tChest2Loc = rollLocation([tChest1Loc]);
 tChest3Loc = rollLocation([tChest1Loc, tChest2Loc]);
 
@@ -43,47 +79,14 @@ TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
 TreasureChest2.treasureID = Math.floor(itemList.length * Math.random());
 TreasureChest3.treasureID = Math.floor(itemList.length * Math.random());
 
-//------------------------------------------------------
-//          Some magical game variables...
-//------------------------------------------------------
-//variables to track the current position of hero
-var avatarX = 20; //TODO rename!
-var avatarY = 15;
-
-//variables to track printed messages
-var messageArray = [];
-var messageCount = 0;
-
-//variables of hero status
-var canMove = true;
-var hero_protected = false;
-var ready = true;
-var shielded;
-
-//------------------------------------------------------
-//              Spinning up your world...
-//------------------------------------------------------
-//world dimensions
-var floorCleared = false;
-var world_width = 30;
-var world_height = 40;
-
-//the game board itself!
-var world_map = new Array(world_width)
-
-//populate it with Tile locations
-for (var i = 0; i < world_width; i++) {
-  world_map[i] = new Array(world_height);
-  for(var j = 0; j < world_height; j++){
-      world_map[i][j] = new Location("Tile","","tile",".",i,j);
-  }
-};
-
 //add your treasures! //TODO for loop!
-world_map[TreasureChest.rowID][TreasureChest.colID] = TreasureChest;
-world_map[TreasureChest2.rowID][TreasureChest2.colID] = TreasureChest2;
-world_map[TreasureChest3.rowID][TreasureChest3.colID] = TreasureChest3;
+for(var i = 0; i < treasures.length; i++){
+    world_map[treasures[i].rowID][treasures[i].colID] = treasures[i];
+}
 
+//------------------------------------------------------
+//                  And we're off!!
+//------------------------------------------------------
 //get ready to start...
 world_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
 removeFog(avatarX,avatarY, world_map); //remove the fog around the hero
@@ -94,9 +97,10 @@ combat(Hero);
 
 
 
-//----------------------------------------------------------------
+
+//================================================================
 //                      HELPER FUNCTIONS
-//----------------------------------------------------------------
+//================================================================
 
 function combat(hero) { //take in enemy list
     enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre]; //was previously "globalEnemies"
@@ -106,14 +110,13 @@ function combat(hero) { //take in enemy list
     };
 }
 
-
 function rollLocation(locs){
     //locs is a 2D array of locations not to be placed on...
     //locs[0] is a 2 element array (row / col)
     var loc = [-1,-1];
     found = false;
     while(!found){
-        loc = [Math.floor(30*Math.random()), Math.floor(40*Math.random())] //new random location
+        loc = [Math.floor(world_height*Math.random()), Math.floor(world_width*Math.random())] //new random location
         passed = true;
         for(var i = 0; i < locs.length; i++){ //check it really is unique as per 8 rooks problem
             if(locs[i].indexOf(loc[0]) >= 0 || locs[i].indexOf(loc[1]) >= 0){ //if row or col not unique...
@@ -139,13 +142,13 @@ function removeFog(avX, avY, map){
 function getValidNeighbors(avX, avY, map, flashlight){
     neigh = [];
     if(avX > 0){neigh.push(map[avY][avX-1]);} //left
-    if(avX < 39){neigh.push(map[avY][avX+1]);} //right
+    if(avX < world_width-1){neigh.push(map[avY][avX+1]);} //right
     if(avY > 0){neigh.push(map[avY-1][avX]);} //up
-    if(avY < 29){neigh.push(map[avY+1][avX]);} //down
+    if(avY < world_height-1){neigh.push(map[avY+1][avX]);} //down
     if(avX > 0 && avY > 0){neigh.push(map[avY-1][avX-1]);} //top left corner
-    if(avX > 0 && avY < 29){neigh.push(map[avY+1][avX-1]);} //bot left corner
-    if(avX < 39 && avY > 0){neigh.push(map[avY-1][avX+1]);} //top right corner
-    if(avX < 39 && avY < 29){neigh.push(map[avY+1][avX+1]);} //bot right corner
+    if(avX > 0 && avY < world_height-1){neigh.push(map[avY+1][avX-1]);} //bot left corner
+    if(avX < world_width-1 && avY > 0){neigh.push(map[avY-1][avX+1]);} //top right corner
+    if(avX < world_width-1 && avY < world_height-1){neigh.push(map[avY+1][avX+1]);} //bot right corner
 
     if(flashlight > 0){ //radius increases...
         possCoords = []
@@ -214,34 +217,40 @@ function getValidNeighbors(avX, avY, map, flashlight){
 }
 
 function isValidCoord(avX, avY){
-    return (avX >= 0 && avY >= 0 && avX < 40 && avY < 30);
+    return (avX >= 0 && avY >= 0 && avX < world_width && avY < world_height);
 }
 
 // function Dex(Character){
 //   return Math.pow(Math.random(), 1 / (Character.dexterity / 3));
 // }
+
 function move(e) {
     if (canMove == true) {
+        var didMove = false;
         var fightChance = Math.random();
         if (e.keyCode == "87" && avatarY > 0) { //up
             world_map[avatarY][avatarX].hero_present = false;
             avatarY --;
             world_map[avatarY][avatarX].hero_present = true;
+            didMove = true;
 
-        } else if (e.keyCode == "83" && avatarY < 29) { //down
+        } else if (e.keyCode == "83" && avatarY < world_height-1) { //down
             world_map[avatarY][avatarX].hero_present = false;
             avatarY ++;
             world_map[avatarY][avatarX].hero_present = true;
+            didMove = true;
 
         } else if (e.keyCode == "65" && avatarX > 0) { //left
             world_map[avatarY][avatarX].hero_present = false;
             avatarX --;
             world_map[avatarY][avatarX].hero_present = true;
+            didMove = true;
 
-        } else if (e.keyCode == "68" && avatarX < 39) { //right
+        } else if (e.keyCode == "68" && avatarX < world_width-1) { //right
             world_map[avatarY][avatarX].hero_present = false;
             avatarX ++;
             world_map[avatarY][avatarX].hero_present = true;
+            didMove = true;
 
         } else if (e.keyCode == "66") {
             console.log("Dev tools activated");
@@ -252,8 +261,8 @@ function move(e) {
             Hero.ogVit = 100000;
 
             //remove fog
-            for(var i = 0; i < 30; i ++){
-                for(var j = 0; j < 40; j++){
+            for(var i = 0; i < world_height; i ++){
+                for(var j = 0; j < world_width; j++){
                     world_map[i][j].fog = false;
                 }
             }
@@ -262,7 +271,7 @@ function move(e) {
 
 
         //chance to enter combat
-        if (fightChance > .95 && !floorCleared) {
+        if (fightChance > .95 && !floorCleared && didMove) {
             $("#text-module").show();
             canMove = false;
         } else {
