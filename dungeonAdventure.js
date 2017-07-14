@@ -66,9 +66,9 @@ var thornArmor = new Item("armor of thorns", 1, -1, 5, true, null, itemList);
 //        Initialize Treasures + other Locations
 //------------------------------------------------------
 //treasures must go after the Items because we need to set an ID for the treasure inside!
-tChest1Loc = [Math.floor(world_height*Math.random()), Math.floor(world_width*Math.random())]
-tChest2Loc = rollLocation([tChest1Loc]);
-tChest3Loc = rollLocation([tChest1Loc, tChest2Loc]);
+tChest1Loc = rollLocation([[avatarY,avatarX]])
+tChest2Loc = rollLocation([[avatarY,avatarX],tChest1Loc]);
+tChest3Loc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc]);
 
 var TreasureChest = new Chest("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest1Loc[0], tChest1Loc[1]);
 var TreasureChest2 = new Chest("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest2Loc[0], tChest2Loc[1]);
@@ -79,7 +79,7 @@ TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
 TreasureChest2.treasureID = Math.floor(itemList.length * Math.random());
 TreasureChest3.treasureID = Math.floor(itemList.length * Math.random());
 
-//add your treasures! //TODO for loop!
+//add your treasures!
 for(var i = 0; i < treasures.length; i++){
     world_map[treasures[i].rowID][treasures[i].colID] = treasures[i];
 }
