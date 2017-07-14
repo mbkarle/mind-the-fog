@@ -73,8 +73,6 @@
   left: -5px;
   text-align:center;
   font-size: 14px;
-  /*padding-bottom: 100px;*/
-  /*padding-right: 300px;*/
   width: 450px;
   border-style: solid;
   border-color: #a6a6a6;
@@ -107,31 +105,6 @@
   font-family: cursive;
   z-index: 4;
 }
-
-
-/*#avatar {
-  font-size: 12px;
-  position: relative;
-  margin: auto;
-  padding: 2px;
-  top: 176px;
-  left: 244px;
-  /*background-color: ;*/
-} */
-
-/*.fog {
-  padding: 20px;
-  border-width: thin;
-  position: absolute;
-  top: 170px;
-  left: 230px;
-  outline-color: white;
-  outline-style: solid;
-  outline-width: 500px;
-  z-index: 2;
-  display: none;
-
-}*/
 
 /*I found that the old fog absolute was required for centering the world
 EVEN if I tried to put the world's position to absolute it broke... so I'm

@@ -69,6 +69,7 @@ var thornArmor = new Item("armor of thorns", 1, -1, 5, true, null, itemList);
 tChest1Loc = rollLocation([[avatarY,avatarX]])
 tChest2Loc = rollLocation([[avatarY,avatarX],tChest1Loc]);
 tChest3Loc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc]);
+trapdoorLoc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc, tChest3Loc]);
 
 var TreasureChest = new Chest(tChest1Loc[0], tChest1Loc[1]);
 var TreasureChest2 = new Chest(tChest2Loc[0], tChest2Loc[1]);
@@ -84,7 +85,10 @@ for(var i = 0; i < treasures.length; i++){
     world_map[treasures[i].rowID][treasures[i].colID] = treasures[i];
 }
 
-// var trapdoor = new Trapdoor("Trapdoor", )
+//trapdoor!!
+var trapdoor = new Trapdoor(trapdoorLoc[0],trapdoorLoc[1])
+world_map[trapdoor.rowID][trapdoor.colID] = trapdoor;
+
 
 //------------------------------------------------------
 //                  And we're off!!
@@ -290,9 +294,44 @@ function move(e) {
             world_map[avatarY][avatarX].message = "the chest lays smashed by your blade, its treasures still there."
             openChest(true);
         };
+
+        //check if on the trapdoor
+        if(world_map[avatarY][avatarX].objid === 'trapdoor'){
+            //only if floor cleared....
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#descend").show();
+            $("#stay").show();
+
+            canMove = false;
+            msg = print("message", world_map[avatarY][avatarX].message);
+
+            $("#descend").click(
+                function() {
+                    console.log("Enter new floor")
+                    descend(true)
+                }
+            )
+            $("#stay").click(
+                function() {
+                    console.log("Stay on this floor")
+                    descend(false)
+                }
+            )
+        }
     }
+}
 
-
+function descend(descend){
+    $("#descend").off("click")
+    $("#stay").off("click")
+    $("#stay").hide();
+    $("#enter").hide();
+    $("#enter").show();
+    $("#text-module").hide();
+    $("#descend").hide();
+    canMove = true;
+    print("lastMessage", 2);
 }
 
 function Damage(source_character, target_character) {
