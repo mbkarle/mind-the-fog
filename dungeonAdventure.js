@@ -35,7 +35,7 @@ var world_map = new Array(world_height)
 for (var i = 0; i < world_height; i++) {
   world_map[i] = new Array(world_width);
   for(var j = 0; j < world_width; j++){
-      world_map[i][j] = new Location("Tile","","tile",".",i,j);
+      world_map[i][j] = new Tile(i,j);
   }
 };
 
@@ -70,9 +70,9 @@ tChest1Loc = rollLocation([[avatarY,avatarX]])
 tChest2Loc = rollLocation([[avatarY,avatarX],tChest1Loc]);
 tChest3Loc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc]);
 
-var TreasureChest = new Chest("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest1Loc[0], tChest1Loc[1]);
-var TreasureChest2 = new Chest("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest2Loc[0], tChest2Loc[1]);
-var TreasureChest3 = new Chest("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest3Loc[0], tChest3Loc[1]);
+var TreasureChest = new Chest(tChest1Loc[0], tChest1Loc[1]);
+var TreasureChest2 = new Chest(tChest2Loc[0], tChest2Loc[1]);
+var TreasureChest3 = new Chest(tChest3Loc[0], tChest3Loc[1]);
 var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
 
 TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
@@ -83,6 +83,8 @@ TreasureChest3.treasureID = Math.floor(itemList.length * Math.random());
 for(var i = 0; i < treasures.length; i++){
     world_map[treasures[i].rowID][treasures[i].colID] = treasures[i];
 }
+
+// var trapdoor = new Trapdoor("Trapdoor", )
 
 //------------------------------------------------------
 //                  And we're off!!
