@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width">
   <title>Dungeon Adventure</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="world_objects/Location.js"></script>
+  <script type="text/javascript" src="world_objects/Item.js"></script>
+  <script type="text/javascript" src="world_objects/Character.js"></script>
   <script type="text/javascript" src="dungeonAdventure.js"></script>
   <link href="dungeonAdventure.css" rel="stylesheet" type="text/css" />
 </head>
@@ -33,6 +36,8 @@
       <div id="textBox" style="margin:0 auto"></div>
       <div class="interact" id="enter">Engage</div>
       <div class="interact" id="open" style="display: none">––&#62;</div>
+      <div class="interact" id="descend" style="display: none">Descend</div>
+      <div class="interact" id="stay" style="display: none;bottom:30px;">Stay</div>
       <div class="interact" id="equip" style="display:none;bottom:90px;">Equip</div>
     </div>
   </div>

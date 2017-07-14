@@ -1,110 +1,120 @@
-class Location {
-    constructor(name, message, objid, symbol, rowID, colID){
-        this.name = name;
-        this.message = message;
-        this.objid = objid;
-        this.symbol = symbol;
-        this.hero_present = false;
-        this.xCoord = colID * 15;
-        this.yCoord = rowID * 15;
-        this.rowID = rowID;
-        this.colID = colID;
-        this.fog = true;
-        this.opened_chest = false;
-        this.treasureID = -1;
-    }
-    setHero(bool){
-        this.hero_present = bool;
-        return 1;
-    }
+world_height//------------------------------------------------------------------------------------------------
+// This script should be the game runner. Other classes should live in the
+// ./world_objects/ folder,although this script can have helper methods and global variables.
+//------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------
+//          Some magical game variables...
+//------------------------------------------------------
+//variables to track the current position of hero
+var avatarX = 20; //TODO rename!
+var avatarY = 15;
+
+//variables to track printed messages
+var messageArray = [];
+var messageCount = 0;
+
+//variables of hero status
+var canMove = true;
+var hero_protected = false;
+var ready = true;
+var shielded;
+
+//------------------------------------------------------
+//              Spinning up your world...
+//------------------------------------------------------
+//world dimensions
+var floorCleared = false;
+var world_width = 40;
+var world_height = 30;
+
+//the game board itself!
+var world_map = new Array(world_height)
+
+//populate it with Tile locations
+for (var i = 0; i < world_height; i++) {
+  world_map[i] = new Array(world_width);
+  for(var j = 0; j < world_width; j++){
+      world_map[i][j] = new Tile(i,j);
+  }
 };
 
-
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//TODO: two separate problems with the chests after the first:
-// lastMessage becomes undefined
-// equip button equips multiple items on top of what is listed
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//------------------------------------------------------
+//              Initialize Characters
+//------------------------------------------------------
 var Hero = new Character("The Hero", 5, 3, 20, "hero");
 var Troglodyte = new Character("Troglodyte", 3, 2, 30, "enemy");
 var DireRat = new Character("Dire Rat", 1, 15, 20, "enemy");
 var DireRat2 = new Character("Dire Rat", 1.5, 15, 20, "enemy");
 var Ogre = new Character("Ogre", 9, 1, 60, "enemy");
 var Sorcerer = new Character("Sorcerer", 6, 4, 20, "enemy");
-var avatarX = 20;
-var avatarY = 15;
-var messageCount = 0;
-var fogTop = 170;
-var fogBottom = 20;
-var fogLeft = 230;
-var fogRight = 20;
-var fightChance = Math.random();
-var canMove = true;
 
-// var treasuresXs = [TreasureChest.colID, TreasureChest2.colID, TreasureChest3.colID];
-// var treasuresYs = [TreasureChest.rowID, TreasureChest2.rowID, TreasureChest3.rowID]; //TODO: chests could be stacked!!
-var itemList = [];
-var HeroShield = new Item("the shield", null, null, 20, false, "defend");
-var MasterSword = new Item("the master sword", 25, 17, 30, false, null);
-var IronHelm = new Item("iron helm", null, -1, 10, true, null);
-var katana = new Item("katana", 1, 1, null, true, null);
-var ritDagger = new Item("ritual dagger", -2, 2, 5, true, null);
-var thornArmor = new Item("armor of thorns", 1, -1, 5, true, null);
+//------------------------------------------------------
+//              Initialize Items
+//------------------------------------------------------
+itemList = []
+//pass the itemList pointer to the [] to each Item class
+//and if toList is true, it will be pushed to itemList
+var HeroShield = new Item("the shield", null, null, 20, false, "defend", itemList);
+var MasterSword = new Item("the master sword", 25, 17, 30, false, null, itemList);
+var IronHelm = new Item("iron helm", null, -1, 10, true, null, itemList);
+var katana = new Item("katana", 1, 1, null, true, null, itemList);
+var ritDagger = new Item("ritual dagger", -2, 2, 5, true, null, itemList);
+var thornArmor = new Item("armor of thorns", 1, -1, 5, true, null, itemList);
 
-
+//------------------------------------------------------
+//        Initialize Treasures + other Locations
+//------------------------------------------------------
 //treasures must go after the Items because we need to set an ID for the treasure inside!
-tChest1Loc = [Math.floor(30*Math.random()), Math.floor(40*Math.random())]
-tChest2Loc = rollLocation([tChest1Loc]);
-tChest3Loc = rollLocation([tChest1Loc, tChest2Loc]);
+tChest1Loc = rollLocation([[avatarY,avatarX]])
+tChest2Loc = rollLocation([[avatarY,avatarX],tChest1Loc]);
+tChest3Loc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc]);
+trapdoorLoc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc, tChest3Loc]);
 
-var TreasureChest = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest1Loc[0], tChest1Loc[1]);
-var TreasureChest2 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest2Loc[0], tChest2Loc[1]);
-var TreasureChest3 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest3Loc[0], tChest3Loc[1]);
+var TreasureChest = new Chest(tChest1Loc[0], tChest1Loc[1]);
+var TreasureChest2 = new Chest(tChest2Loc[0], tChest2Loc[1]);
+var TreasureChest3 = new Chest(tChest3Loc[0], tChest3Loc[1]);
 var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
 
 TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
 TreasureChest2.treasureID = Math.floor(itemList.length * Math.random());
 TreasureChest3.treasureID = Math.floor(itemList.length * Math.random());
 
-// TreasureChest.
+//add your treasures!
+for(var i = 0; i < treasures.length; i++){
+    world_map[treasures[i].rowID][treasures[i].colID] = treasures[i];
+}
 
-var protected = false;
-var ready = true;
-var shielded;
-var floorCleared = false;
-//var hit;
-var startOver;
-var enemyAttack;
-var globalEnemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre];
-var messageArray = [];
+//trapdoor!!
+var trapdoor = new Trapdoor(trapdoorLoc[0],trapdoorLoc[1])
+world_map[trapdoor.rowID][trapdoor.colID] = trapdoor;
+
+
+//------------------------------------------------------
+//                  And we're off!!
+//------------------------------------------------------
+//get ready to start...
+world_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
+removeFog(avatarX,avatarY, world_map); //remove the fog around the hero
+
+//LetsiGO!
 window.addEventListener("keydown", move, false);
-combat(Hero, globalEnemies);
-
-
-/*BIG LOCATION UPDATE:
-* Locations are now a 2D array...
-
-*/
-var world_map = new Array(30)
-for (var i = 0; i < 30; i++) {
-  world_map[i] = new Array(40);
-  for(var j = 0; j < 40; j++){
-      world_map[i][j] = new Location("Tile","","tile",".",i,j);
-  }
-};
-world_map[TreasureChest.rowID][TreasureChest.colID] = TreasureChest;
-world_map[TreasureChest2.rowID][TreasureChest2.colID] = TreasureChest2;
-world_map[TreasureChest3.rowID][TreasureChest3.colID] = TreasureChest3;
-
-world_map[avatarY][avatarX].hero_present = true;
-removeFog(avatarX,avatarY, world_map);
+combat(Hero);
 
 
 
-//----------------------------------------------------------------
+
+//================================================================
 //                      HELPER FUNCTIONS
-//----------------------------------------------------------------
+//================================================================
 
+function combat(hero) { //take in enemy list
+    enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre]; //was previously "globalEnemies"
+    window.onload = function() {
+        combat_helper(hero, enemies, 0);
+        buildMap(world_map);
+    };
+}
 
 function rollLocation(locs){
     //locs is a 2D array of locations not to be placed on...
@@ -112,7 +122,7 @@ function rollLocation(locs){
     var loc = [-1,-1];
     found = false;
     while(!found){
-        loc = [Math.floor(30*Math.random()), Math.floor(40*Math.random())] //new random location
+        loc = [Math.floor(world_height*Math.random()), Math.floor(world_width*Math.random())] //new random location
         passed = true;
         for(var i = 0; i < locs.length; i++){ //check it really is unique as per 8 rooks problem
             if(locs[i].indexOf(loc[0]) >= 0 || locs[i].indexOf(loc[1]) >= 0){ //if row or col not unique...
@@ -124,35 +134,7 @@ function rollLocation(locs){
             found = true;
         }
     }
-
     return loc;
-
-}
-
-
-function Character(name, strength, dexterity, vitality, objid) {
-    this.name = name;
-    this.strength = strength;
-    this.dexterity = dexterity;
-    this.vitality = vitality;
-    this.ogVit = vitality;
-    this.objid = objid;
-}
-
-function Item(name, strength, dexterity, vitality, toList, objid) {
-    this.name = name;
-    this.strength = strength;
-    this.dexterity = dexterity;
-    this.vitality = vitality;
-    this.ogVit = vitality;
-    this.toList = toList;
-    this.objid = objid;
-    this.list = function() {
-        if (this.toList == true) {
-            itemList.push(this)
-        }
-    }
-    this.list();
 }
 
 function removeFog(avX, avY, map){
@@ -166,14 +148,13 @@ function removeFog(avX, avY, map){
 function getValidNeighbors(avX, avY, map, flashlight){
     neigh = [];
     if(avX > 0){neigh.push(map[avY][avX-1]);} //left
-    if(avX < 39){neigh.push(map[avY][avX+1]);} //right
+    if(avX < world_width-1){neigh.push(map[avY][avX+1]);} //right
     if(avY > 0){neigh.push(map[avY-1][avX]);} //up
-    if(avY < 29){neigh.push(map[avY+1][avX]);} //down
+    if(avY < world_height-1){neigh.push(map[avY+1][avX]);} //down
     if(avX > 0 && avY > 0){neigh.push(map[avY-1][avX-1]);} //top left corner
-    if(avX > 0 && avY < 29){neigh.push(map[avY+1][avX-1]);} //bot left corner
-    if(avX < 39 && avY > 0){neigh.push(map[avY-1][avX+1]);} //top right corner
-    if(avX < 39 && avY < 29){neigh.push(map[avY+1][avX+1]);} //bot right corner
-
+    if(avX > 0 && avY < world_height-1){neigh.push(map[avY+1][avX-1]);} //bot left corner
+    if(avX < world_width-1 && avY > 0){neigh.push(map[avY-1][avX+1]);} //top right corner
+    if(avX < world_width-1 && avY < world_height-1){neigh.push(map[avY+1][avX+1]);} //bot right corner
 
     if(flashlight > 0){ //radius increases...
         possCoords = []
@@ -202,7 +183,6 @@ function getValidNeighbors(avX, avY, map, flashlight){
         possCoords.push([avX+1,avY-2]);
 
         //5x5 square complete... fill to be 6x6 with corners missing
-        //right row
         //5 on right
         // possCoords.push([avX+3,avY+2]);
         possCoords.push([avX+3,avY+1]);
@@ -224,14 +204,12 @@ function getValidNeighbors(avX, avY, map, flashlight){
         possCoords.push([avX+1,avY+3]);
         // possCoords.push([avX+2,avY+3]);
 
-
         //5 on bottom
         // possCoords.push([avX-2,avY-3]);
         possCoords.push([avX-1,avY-3]);
         possCoords.push([avX,avY-3]);
         possCoords.push([avX+1,avY-3]);
         // possCoords.push([avX+2,avY-3]);
-
 
         for(var i = 0; i < possCoords.length; i++){
             cx = possCoords[i][0];
@@ -245,79 +223,61 @@ function getValidNeighbors(avX, avY, map, flashlight){
 }
 
 function isValidCoord(avX, avY){
-    return (avX >= 0 && avY >= 0 && avX < 40 && avY < 30);
+    return (avX >= 0 && avY >= 0 && avX < world_width && avY < world_height);
 }
 
 // function Dex(Character){
 //   return Math.pow(Math.random(), 1 / (Character.dexterity / 3));
 // }
+
 function move(e) {
     if (canMove == true) {
-        fightChance = Math.random();
-        if (e.keyCode == "87" && avatarY > 0) { //up; bound = 3.5
+        var didMove = false;
+        var fightChance = Math.random();
+        if (e.keyCode == "87" && avatarY > 0) { //up
             world_map[avatarY][avatarX].hero_present = false;
             avatarY --;
             world_map[avatarY][avatarX].hero_present = true;
-            // if ((avatarY - fogTop) < 40) {
-            //     fogTop -= 20;
-            //     fogBottom += 20;
-            // }
-        } else if (e.keyCode == "83" && avatarY < 29) { //down; bound = 360
+            didMove = true;
+
+        } else if (e.keyCode == "83" && avatarY < world_height-1) { //down
             world_map[avatarY][avatarX].hero_present = false;
             avatarY ++;
             world_map[avatarY][avatarX].hero_present = true;
-            // if (fogTop + fogBottom - avatarY < 39) {
-            //     fogBottom += 20;
-            // }
-        } else if (e.keyCode == "65" && avatarX > 0) { //left; bound = 15.75
+            didMove = true;
+
+        } else if (e.keyCode == "65" && avatarX > 0) { //left
             world_map[avatarY][avatarX].hero_present = false;
             avatarX --;
             world_map[avatarY][avatarX].hero_present = true;
-            // if (avatarX - fogLeft < 40) {
-            //     fogLeft -= 20;
-            //     fogRight += 20;
-            // }
-        } else if (e.keyCode == "68" && avatarX < 39) { //right; bound = 430.5
+            didMove = true;
+
+        } else if (e.keyCode == "68" && avatarX < world_width-1) { //right
             world_map[avatarY][avatarX].hero_present = false;
             avatarX ++;
             world_map[avatarY][avatarX].hero_present = true;
-            // if (fogLeft + fogRight - avatarX < 40) {
-            //     fogRight += 20;
-            // }
-        } else if (e.keyCode == "66") {
-            console.log("dev tools activated");
-            buildMap(world_map);
-            equip(Hero, MasterSword);
+            didMove = true;
 
-            Hero.vitality = 100000;
+        } else if (e.keyCode == "66") {
+            console.log("Dev tools activated");
+            console.log("So...., you're either a developer, or a cheater, or just lazy...")
+            equip(Hero, MasterSword); //give absurd weapons
+
+            Hero.vitality = 100000; //set absurd health stats
             Hero.ogVit = 100000;
 
-            // $(".fog").css({
-            //     "display": "none"
-            // });
-
             //remove fog
-            for(var i = 0; i < 30; i ++){
-                for(var j = 0; j < 40; j++){
+            for(var i = 0; i < world_height; i ++){
+                for(var j = 0; j < world_width; j++){
                     world_map[i][j].fog = false;
                 }
             }
         }
-        // $(".fog").css({
-        //     "top": fogTop + "px",
-        //     "padding-bottom": fogBottom + "px",
-        //     "left": fogLeft + "px",
-        //     "padding-right": fogRight + "px"
-        // });
-        // $("#avatar").css({
-        //     "top": avatarY + "px",
-        //     "left": avatarX + "px"
-        // });
         buildMap(world_map);
 
 
         //chance to enter combat
-        if (fightChance > .95 && !floorCleared) {
+        if (fightChance > .95 && !floorCleared && didMove) {
             $("#text-module").show();
             canMove = false;
         } else {
@@ -325,8 +285,7 @@ function move(e) {
         }
 
         //check if on a chest
-
-        if(world_map[avatarY][avatarX].objid === "treasure" && !world_map[avatarY][avatarX].opened_chest){ //if both coords of same chest and its a match
+        if(world_map[avatarY][avatarX].objid === "treasure" && !world_map[avatarY][avatarX].emptied_chest){ //if both coords of same chest and its a match
             $("#text-module").show();
             $("#enter").hide();
             $("#open").show();
@@ -335,9 +294,44 @@ function move(e) {
             world_map[avatarY][avatarX].message = "the chest lays smashed by your blade, its treasures still there."
             openChest(true);
         };
+
+        //check if on the trapdoor
+        if(world_map[avatarY][avatarX].objid === 'trapdoor'){
+            //only if floor cleared....
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#descend").show();
+            $("#stay").show();
+
+            canMove = false;
+            msg = print("message", world_map[avatarY][avatarX].message);
+
+            $("#descend").click(
+                function() {
+                    console.log("Enter new floor")
+                    descend(true)
+                }
+            )
+            $("#stay").click(
+                function() {
+                    console.log("Stay on this floor")
+                    descend(false)
+                }
+            )
+        }
     }
+}
 
-
+function descend(descend){
+    $("#descend").off("click")
+    $("#stay").off("click")
+    $("#stay").hide();
+    $("#enter").hide();
+    $("#enter").show();
+    $("#text-module").hide();
+    $("#descend").hide();
+    canMove = true;
+    print("lastMessage", 2);
 }
 
 function Damage(source_character, target_character) {
@@ -353,7 +347,7 @@ function Damage(source_character, target_character) {
 function Shield() { //TODO fix during recursion
     Hero.vitality += 2;
     document.getElementById("hero").innerHTML = Hero.vitality;
-    protected = true;
+    hero_protected = true;
 }
 
 function readyUp() {
@@ -362,18 +356,15 @@ function readyUp() {
 }
 
 function openChest(stage) {
-
     $("#open").click(
-
         function() {
             if (stage) {
-                // var chestContent = Math.floor(Math.random() * itemList.length);
                 print("item", itemList[world_map[avatarY][avatarX].treasureID]);
                 $("#equip").show();
                 console.log(itemList[world_map[avatarY][avatarX].treasureID]);
                 $("#equip").click(
                     function() {
-                        world_map[avatarY][avatarX].opened_chest = true;
+                        world_map[avatarY][avatarX].emptied_chest = true;
                         equip(Hero, itemList[world_map[avatarY][avatarX].treasureID]);
                         $("#equip").hide();
                     })
@@ -421,8 +412,6 @@ function print(messageType, message) {
         messageArray.push(message);
     }
     messageCount++
-    //console.log(messageArray.toString());
-    // console.log(messageCount);
     return messageArray[messageCount-1];
 }
 
@@ -441,13 +430,6 @@ function buildMap(array) {
             worldContents += "<div id='" + array[i][j].objid + "' style='top:" + array[i][j].yCoord + "px; left:" + array[i][j].xCoord + "px; position: absolute;'>" + symbol + "</div>";
 
         }
-
-        // if (array[a + 1] !== undefined && array[a].xCoord == array[a + 1].xCoord) {
-        //     array[a].xCoord = 15.75 + 19.75 * Math.floor(Math.random() * 25);
-        // }
-        // if (array[a + 1] !== undefined && array[a].yCoord == array[a + 1].yCoord) {
-        //     array[a].yCoord = 3.5 + 11.5 * Math.floor(Math.random() * 25);
-        // }
     }
     document.getElementById("worldContent").innerHTML = worldContents;
 }
@@ -462,17 +444,10 @@ function equip(target, equipment) {
     }
 }
 
-function combat(hero, enemyListArg) { //take in enemy list
-    // for(enemy_index = 0; enemy_index < enemyListArg.length; enemy_index++){
-    window.onload = function() {
-        combat_helper(hero, enemyListArg, 0);
-        buildMap(world_map);
-    };
-
-}
 
 
 function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
+    var enemyAttack; //not used outside this function = NOT GLOBAL, SIR!
     Hero.vitality = Hero.ogVit;
     HeroShield.vitality = HeroShield.ogVit;
     if (Hero.vitality <= 0) {
@@ -482,14 +457,13 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
     document.getElementById("enter").onclick = function() {
         $("#text-module").animate({
             top: '300px'
-            // left: '20px'
         }, 500);
         $("#combat-module").show(500);
         $("#enter").hide();
         $("#worldMap").hide();
         enemyAttack = setInterval(function() {
             print("combat start", "The enemy strikes!");
-            if (protected == true) {
+            if (hero_protected == true) {
                 Damage(enemyList[idx], HeroShield)
             } else {
                 Damage(enemyList[idx], Hero)
@@ -500,7 +474,7 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
             }
             if (HeroShield.vitality <= 0) {
                 window.clearInterval(shielded);
-                protected = false;
+                hero_protected = false;
                 //jquery animation:
                 $("#defendSlider").hide('fast');
             }
@@ -530,7 +504,7 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
         }
     };
 
-    if (protected == false && HeroShield.vitality > 0) {
+    if (hero_protected == false && HeroShield.vitality > 0) {
         document.getElementById("defend").onclick = function() {
             shielded = setInterval(function() {
                 Shield()
@@ -541,9 +515,9 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
 
     // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], HeroShield)} else{Damage(enemyList[idx], Hero)}}, 10000 / enemyList[idx].dexterity);
     window.onclick = function() {
-        if (protected == true || HeroShield.vitality <= 0) {
+        if (hero_protected == true || HeroShield.vitality <= 0) {
             window.clearInterval(shielded);
-            protected = false;
+            hero_protected = false;
             //jquery animation:
             $("#defendSlider").hide('fast');
         }
