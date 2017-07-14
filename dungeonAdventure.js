@@ -70,9 +70,9 @@ tChest1Loc = [Math.floor(world_height*Math.random()), Math.floor(world_width*Mat
 tChest2Loc = rollLocation([tChest1Loc]);
 tChest3Loc = rollLocation([tChest1Loc, tChest2Loc]);
 
-var TreasureChest = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest1Loc[0], tChest1Loc[1]);
-var TreasureChest2 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest2Loc[0], tChest2Loc[1]);
-var TreasureChest3 = new Location("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest3Loc[0], tChest3Loc[1]);
+var TreasureChest = new Chest("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest1Loc[0], tChest1Loc[1]);
+var TreasureChest2 = new Chest("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest2Loc[0], tChest2Loc[1]);
+var TreasureChest3 = new Chest("Treasure Chest","A wooden chest. It's locked, but no wood can withstand your blade.","treasure","v", tChest3Loc[0], tChest3Loc[1]);
 var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
 
 TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
@@ -279,7 +279,7 @@ function move(e) {
         }
 
         //check if on a chest
-        if(world_map[avatarY][avatarX].objid === "treasure" && !world_map[avatarY][avatarX].opened_chest){ //if both coords of same chest and its a match
+        if(world_map[avatarY][avatarX].objid === "treasure" && !world_map[avatarY][avatarX].emptied_chest){ //if both coords of same chest and its a match
             $("#text-module").show();
             $("#enter").hide();
             $("#open").show();
@@ -323,7 +323,7 @@ function openChest(stage) {
                 console.log(itemList[world_map[avatarY][avatarX].treasureID]);
                 $("#equip").click(
                     function() {
-                        world_map[avatarY][avatarX].opened_chest = true;
+                        world_map[avatarY][avatarX].emptied_chest = true;
                         equip(Hero, itemList[world_map[avatarY][avatarX].treasureID]);
                         $("#equip").hide();
                     })
