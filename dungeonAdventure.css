@@ -59,8 +59,8 @@
 
 #defendSlider {
   position: absolute;
-  top: 301px;
-  left: 201px;
+  top: 0;
+  left: 0;
   width: 112px;
   display: none;
 }

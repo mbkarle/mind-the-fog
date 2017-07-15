@@ -55,7 +55,7 @@ var Sorcerer = new Character("Sorcerer", 6, 4, 20, "enemy");
 itemList = []
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var HeroShield = new Item("the shield", null, null, 20, false, "defend", itemList);
+var HeroShield = new Item("the shield", null, null, 20, false, "defendText", itemList);
 var MasterSword = new Item("the master sword", 25, 17, 30, false, null, itemList);
 var IronHelm = new Item("iron helm", null, -1, 10, true, null, itemList);
 var katana = new Item("katana", 1, 1, null, true, null, itemList);
@@ -264,7 +264,7 @@ function move(e) {
             equip(Hero, MasterSword); //give absurd weapons
 
             Hero.vitality = 100000; //set absurd health stats
-            Hero.ogVit = 100000;
+            Hero.maxVitality = 100000;
 
             //remove fog
             for(var i = 0; i < world_height; i ++){
@@ -340,12 +340,14 @@ function Damage(source_character, target_character) {
     document.getElementById(source_character.objid).innerHTML = source_character.vitality;
     document.getElementById(target_character.objid).innerHTML = target_character.vitality /*+ target_character.name */ ;
     document.getElementById("hero").innerHTML = Hero.vitality;
-    document.getElementById("defend").innerHTML = "Shield: " + HeroShield.vitality; //TODO
+    document.getElementById("defendText").innerHTML = "Shield: " + HeroShield.vitality; //TODO
     return hit;
 }
 
-function Shield() { //TODO fix during recursion
+function Shield() { //TODO fix
+    if(Hero.vitality + 2 <= Hero.maxVitality){
     Hero.vitality += 2;
+}
     document.getElementById("hero").innerHTML = Hero.vitality;
     hero_protected = true;
 }
@@ -448,8 +450,8 @@ function equip(target, equipment) {
 
 function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
     var enemyAttack; //not used outside this function = NOT GLOBAL, SIR!
-    Hero.vitality = Hero.ogVit;
-    HeroShield.vitality = HeroShield.ogVit;
+    Hero.vitality = Hero.maxVitality;
+    HeroShield.vitality = HeroShield.maxVitality;
     if (Hero.vitality <= 0) {
         return;
     }
@@ -462,11 +464,11 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
         $("#enter").hide();
         $("#worldMap").hide();
         enemyAttack = setInterval(function() {
-            print("combat start", "The enemy strikes!");
             if (hero_protected == true) {
                 Damage(enemyList[idx], HeroShield)
             } else {
                 Damage(enemyList[idx], Hero)
+                print("combat start", "The enemy strikes!");
             }
             if (Hero.vitality <= 0) {
                 print("lul", "You died!");
@@ -483,7 +485,7 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
 
     document.getElementById("hero").innerHTML = Hero.vitality;
     document.getElementById("enemy").innerHTML = enemyList[idx].vitality;
-    document.getElementById("defend").innerHTML = "Shield: " + HeroShield.vitality;
+    document.getElementById("defendText").innerHTML = "Shield: " + HeroShield.vitality;
 
     document.getElementById("attack").onclick = function() {
         if (ready) {
@@ -506,6 +508,7 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
 
     if (hero_protected == false && HeroShield.vitality > 0) {
         document.getElementById("defend").onclick = function() {
+            window.setTimeout(function(){print("message", "You manage to raise your shield and deflect the blows. Behind it you begin to recover.")}, 4000);
             shielded = setInterval(function() {
                 Shield()
             }, 4000);
@@ -524,6 +527,12 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
         if (enemyList[idx].vitality <= 0) {
             enemyList[idx].vitality = 0;
             window.clearInterval(enemyAttack);
+
+            // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
+            window.clearInterval(shielded);
+            hero_protected = false;
+            $("#defendSlider").hide('fast');
+
             $("#combat-module").hide(1000);
             $("#text-module").animate({
                 top: "100px"

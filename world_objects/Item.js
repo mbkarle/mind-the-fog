@@ -4,7 +4,7 @@ class Item {
         this.strength = strength;
         this.dexterity = dexterity;
         this.vitality = vitality;
-        this.ogVit = vitality;
+        this.maxVitality = vitality;
         this.toList = toList;
         this.objid = objid;
 
