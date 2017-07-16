@@ -48,6 +48,7 @@ var DireRat = new Character("Dire Rat", 1, 15, 20, "enemy");
 var DireRat2 = new Character("Dire Rat", 1.5, 15, 20, "enemy");
 var Ogre = new Character("Ogre", 9, 1, 60, "enemy");
 var Sorcerer = new Character("Sorcerer", 6, 4, 20, "enemy");
+var Golem = new Character("Golem", 7, 3, 50, "enemy");
 
 //------------------------------------------------------
 //              Initialize Items
@@ -62,6 +63,8 @@ var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, itemL
 var katana = new Item("katana", "weapon", 1, 1, null, true, null, itemList);
 var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, true, null, itemList);
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, itemList);
+var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, itemList);
+var GreatSword = new Item("greatsword", "weapon", 3, null, null, false, null, itemList);
 
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
@@ -71,6 +74,7 @@ tChest1Loc = rollLocation([[avatarY,avatarX]])
 tChest2Loc = rollLocation([[avatarY,avatarX],tChest1Loc]);
 tChest3Loc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc]);
 trapdoorLoc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc, tChest3Loc]);
+StatueLoc = rollLocation([[avatarY,avatarX], tChest1Loc, tChest2Loc, tChest3Loc]);
 
 var TreasureChest = new Chest(tChest1Loc[0], tChest1Loc[1]);
 var TreasureChest2 = new Chest(tChest2Loc[0], tChest2Loc[1]);
@@ -90,6 +94,11 @@ for(var i = 0; i < treasures.length; i++){
 var trapdoor = new Trapdoor(trapdoorLoc[0],trapdoorLoc[1])
 world_map[trapdoor.rowID][trapdoor.colID] = trapdoor;
 
+//Golem Statue!!!
+var GolemStatue = new Statue(StatueLoc[0],StatueLoc[1]);
+world_map[GolemStatue.rowID][GolemStatue.colID] = GolemStatue;
+
+//inventory!!!!
 var inventory = {
     weapon: startWeapon,
     headgear: null,
@@ -104,7 +113,7 @@ removeFog(avatarX,avatarY, world_map); //remove the fog around the hero
 
 //LetsiGO!
 window.addEventListener("keydown", move, false);
-combat(Hero);
+combat(Hero, "default");
 
 
 
@@ -112,11 +121,23 @@ combat(Hero);
 //                      HELPER FUNCTIONS
 //================================================================
 
-function combat(hero) { //take in enemy list
+function combat(hero, opponents) { //take in enemy list
+    if(typeof opponents != "string"){ //combat call is custom combat outside of default list
+        enemy = [opponents]
+        combat_helper(hero, enemy, 0, true);
+    }
     enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre]; //was previously "globalEnemies"
+    if(opponents == "return"){
+        for(i = 0; i < enemies.length; i++){
+        if(!enemies[i].vitality <= 0){
+            console.log(i);
+        combat_helper(hero, enemies, i, false);
+        break;
+            }
+        }
+    }
     window.onload = function() {
-
-        combat_helper(hero, enemies, 0);
+        combat_helper(hero, enemies, 0, false);
         buildMap(world_map);
 
         //Inventory can now be opened either by clicking InvOpen button or pressing I
@@ -125,7 +146,7 @@ function combat(hero) { //take in enemy list
             $("#info-module").toggle(100);
             refreshInfo();
         }
-        
+
     };
 }
 
@@ -286,10 +307,6 @@ function move(e) {
                 }
             }
         }
-        else if (e.keyCode == 73){
-            $("#info-module").toggle(100);
-            refreshInfo();
-        }
         buildMap(world_map);
 
 
@@ -341,6 +358,40 @@ function move(e) {
                 }
             )
         }
+
+        //check if on statue
+        if(world_map[avatarY][avatarX].objid === 'statue' && !world_map[avatarY][avatarX].destroyed_statue){
+            $("#text-module").show();
+            $("#enter").hide();
+            //using descend buttons for position and convenience
+            $("#descend").show();
+            $("#stay").show();
+
+            canMove = false;
+            msg = print("message", world_map[avatarY][avatarX].message);
+            document.getElementById("descend").innerHTML = "Take Sword";
+            document.getElementById("stay").innerHTML = "Leave";
+
+            $("#descend").click(
+                function() {
+                    descend(false);
+                    canMove = false;
+                    print("message", "The statue springs to life and raises its sword. There's no escape!");
+                    $("#text-module").show();
+                    combat(Hero, Golem);
+                }
+            )
+            $("#stay").click(
+                function() {
+                    descend(false);
+                }
+            )
+        }
+    }
+    //keypresses outside of canMove
+    if (e.keyCode == 73){
+        $("#info-module").toggle(100);
+        refreshInfo();
     }
 }
 
@@ -353,7 +404,11 @@ function descend(descend){
     $("#text-module").hide();
     $("#descend").hide();
     canMove = true;
-    print("lastMessage", 2);
+    print("lastMessage", "enemy-message");
+
+    //in case innerHTMl was changed; resets to default
+    document.getElementById("descend").innerHTML = "Descend"
+    document.getElementById("stay").innerHTML = "Stay"
 }
 
 function refreshInfo() { // updates info box
@@ -415,7 +470,7 @@ function openChest(stage) {
                 $("#enter").show();
                 $("#text-module").hide();
                 canMove = true;
-                print("lastMessage", 2);
+                print("lastMessage", "enemy-message");
                 return;
             }
         });
@@ -423,7 +478,7 @@ function openChest(stage) {
 
 /*message is either:
 * a number for damage
-* an index for messageArray
+* a key for messageArray
 * an item object
 * a string thats actually a message
 * TODO: clean this up... functions within classes?
@@ -431,11 +486,21 @@ function openChest(stage) {
 function print(messageType, message) {
     if (messageType == "damageDealt") {
         document.getElementById("textBox").innerHTML = "You strike for " + message + " damage!"
-        messageArray.push("You strike for " + message + " damage!")
-    } else if (messageType == "lastMessage") {
-        document.getElementById("textBox").innerHTML = messageArray[messageCount - message];
-        messageArray.push(messageArray[messageCount - message])
-    } else if (messageType == "item") {
+        messageArray.push([messageType, "You strike for " + message + " damage!"])
+    }
+    else if (messageType == "lastMessage") {
+        //guide: to use lastMessage, pass the desired messageType as your message
+        var prevMessage = "";
+        for(i = messageArray.length - 1; i >= 0; i--){
+            if(messageArray[i][0] == message){
+                prevMessage += messageArray[i][1];
+                break;
+            }
+        }
+        document.getElementById("textBox").innerHTML = prevMessage;
+        messageArray.push([messageType, prevMessage]);
+    }
+    else if (messageType == "item") {
         var itemMessage = "The chest contains: " + message.name + "<br>"
         for (attribute in message) {
             if (typeof message[attribute] == "number") {
@@ -444,12 +509,14 @@ function print(messageType, message) {
         }
         document.getElementById("textBox").innerHTML = itemMessage;
         messageCount--; //NEED TO DECREMENT BC ITEM NOT PUSHED
-    } else {
+    }
+    else {
         document.getElementById("textBox").innerHTML = message;
-        messageArray.push(message);
+        messageArray.push([messageType, message]);
     }
     messageCount++
-    return messageArray[messageCount-1];
+    //console.log(messageArray.toString());
+    return messageArray[messageCount-1][1];
 }
 
 function buildMap(array) {
@@ -498,13 +565,14 @@ function Unequip(target, equipment) {
 
 
 
-function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
+function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIABLES
     var enemyAttack; //not used outside this function = NOT GLOBAL, SIR!
     HeroShield.vitality = HeroShield.maxVitality;
     if (Hero.vitality <= 0) {
         return;
     }
-    print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")
+    if(customCombat == false){
+    print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")}
     document.getElementById("enter").onclick = function() {
         $("#text-module").animate({
             top: '300px'
@@ -520,7 +588,7 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
                 print("combat start", "The enemy strikes!");
             }
             if (Hero.vitality <= 0) {
-                print("lul", "You died!");
+                print("message", "You died!");
                 $("#combat-module").hide(1000);
             }
             if (HeroShield.vitality <= 0) {
@@ -592,8 +660,8 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
                 // left: "20px"
             }, 1000);
             print("message", "You've defeated the beast!");
-            if (idx < enemyList.length - 1) {
-                idx++;
+            if (idx < enemyList.length - 1 || customCombat == true) {
+
                 document.getElementById("enter").innerHTML = "––>";
                 $("#enter").show();
                 document.getElementById("enter").onclick = function() {
@@ -606,7 +674,13 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
                     $("#text-module").hide();
                     $("#worldMap").show();
                     document.getElementById("enter").innerHTML = "Engage";
-                    combat_helper(hero, enemyList, idx);
+                    if(customCombat == false){
+                    idx++;
+                    combat_helper(hero, enemyList, idx, false);}
+                    else{
+                        combat(Hero, "return");
+                        return;
+                    }
                 }
 
             } //success
@@ -622,6 +696,12 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
                         $("#worldMap").show();
                         $("#open").off("click");
                     })
+                    for(var i = 0; i < world_height; i ++){
+                        for(var j = 0; j < world_width; j++){
+                            world_map[i][j].fog = false;
+                        }
+                    }
+                    buildMap(world_map);
             }
         };
     };

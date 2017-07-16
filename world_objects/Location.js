@@ -32,3 +32,14 @@ class Tile extends Location {
         super(rowID, colID, 'Tile', "tile", '.', '')//style preference? '·' instead??
     }
 }
+
+class Statue extends Location {
+    constructor(rowID, colID){
+        super(rowID, colID)
+        this.name = 'Statue';
+        this.message = 'A mysterious statue stands impassively in front of you. It clutches a steel blade in its stony fingers which glimmers with a menacing edge.';
+        this.objid = 'statue';
+        this.symbol = 's';
+        this.destroyed_statue = false;
+    }
+}
