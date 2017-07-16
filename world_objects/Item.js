@@ -1,6 +1,7 @@
 class Item {
-    constructor(name, strength, dexterity, vitality, toList, objid, items) {
+    constructor(name, type, strength, dexterity, vitality, toList, objid, items) {
         this.name = name;
+        this.type = type;
         this.strength = strength;
         this.dexterity = dexterity;
         this.vitality = vitality;

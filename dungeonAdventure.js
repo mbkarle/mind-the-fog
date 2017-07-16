@@ -55,12 +55,13 @@ var Sorcerer = new Character("Sorcerer", 6, 4, 20, "enemy");
 itemList = []
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var HeroShield = new Item("the shield", null, null, 20, false, "defendText", itemList);
-var MasterSword = new Item("the master sword", 25, 17, 30, false, null, itemList);
-var IronHelm = new Item("iron helm", null, -1, 10, true, null, itemList);
-var katana = new Item("katana", 1, 1, null, true, null, itemList);
-var ritDagger = new Item("ritual dagger", -2, 2, 5, true, null, itemList);
-var thornArmor = new Item("armor of thorns", 1, -1, 5, true, null, itemList);
+var HeroShield = new Item("the shield", "shield", null, null, 20, false, "defendText", itemList);
+var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, itemList);
+var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null, itemList);
+var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, itemList);
+var katana = new Item("katana", "weapon", 1, 1, null, true, null, itemList);
+var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, true, null, itemList);
+var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, itemList);
 
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
@@ -89,7 +90,11 @@ for(var i = 0; i < treasures.length; i++){
 var trapdoor = new Trapdoor(trapdoorLoc[0],trapdoorLoc[1])
 world_map[trapdoor.rowID][trapdoor.colID] = trapdoor;
 
-
+var inventory = {
+    weapon: startWeapon,
+    headgear: null,
+    armor: null
+}
 //------------------------------------------------------
 //                  And we're off!!
 //------------------------------------------------------
@@ -273,6 +278,10 @@ function move(e) {
                 }
             }
         }
+        else if (e.keyCode == 73){
+            $("#info-module").toggle(100);
+            refreshInfo();
+        }
         buildMap(world_map);
 
 
@@ -282,6 +291,11 @@ function move(e) {
             canMove = false;
         } else {
             canMove = true;
+        }
+        if(Hero.vitality + 2 <= Hero.maxVitality && didMove) {
+            Hero.vitality += 2;
+            document.getElementById("hero").innerHTML = Hero.vitality;
+            refreshInfo();
         }
 
         //check if on a chest
@@ -334,19 +348,32 @@ function descend(descend){
     print("lastMessage", 2);
 }
 
+function refreshInfo() { // updates info box
+    document.getElementById("characterInfo").innerHTML = "Health: <br>" + Hero.vitality + " / " + Hero.maxVitality + "<br>";
+    var inventoryMessage = "Equipped: <br><br>"
+    for(attribute in inventory){
+        if(inventory[attribute] != null){
+            inventoryMessage += attribute + ": " + inventory[attribute].name + "<br><br>";
+        }
+    }
+    document.getElementById("inventory").innerHTML = inventoryMessage;
+}
+
 function Damage(source_character, target_character) {
     hit = Math.floor(Math.random() * source_character.strength + source_character.strength);
     target_character.vitality -= hit;
     document.getElementById(source_character.objid).innerHTML = source_character.vitality;
     document.getElementById(target_character.objid).innerHTML = target_character.vitality /*+ target_character.name */ ;
     document.getElementById("hero").innerHTML = Hero.vitality;
-    document.getElementById("defendText").innerHTML = "Shield: " + HeroShield.vitality; //TODO
+    document.getElementById("defendText").innerHTML = "Shield: " + HeroShield.vitality;
+    refreshInfo();
     return hit;
 }
 
 function Shield() { //TODO fix
     if(Hero.vitality + 2 <= Hero.maxVitality){
     Hero.vitality += 2;
+    refreshInfo();
 }
     document.getElementById("hero").innerHTML = Hero.vitality;
     hero_protected = true;
@@ -438,10 +465,25 @@ function buildMap(array) {
 
 function equip(target, equipment) {
     console.log(target.name + " equipped " + equipment.name);
+    if(inventory[equipment.type] != null){
+        Unequip(Hero, inventory[equipment.type]);
+
+    }
+    inventory[equipment.type] = equipment;
+    refreshInfo();
     var attribute;
     for (attribute in equipment) {
         if (typeof equipment[attribute] == "number") {
             target[attribute] += equipment[attribute];
+        }
+    }
+}
+function Unequip(target, equipment) {
+    console.log(target.name + " unequipped " + equipment.name) // finish inventory
+    var attribute;
+    for (attribute in equipment) {
+        if (typeof equipment[attribute] == "number") {
+            target[attribute] -= equipment[attribute];
         }
     }
 }
@@ -450,7 +492,6 @@ function equip(target, equipment) {
 
 function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
     var enemyAttack; //not used outside this function = NOT GLOBAL, SIR!
-    Hero.vitality = Hero.maxVitality;
     HeroShield.vitality = HeroShield.maxVitality;
     if (Hero.vitality <= 0) {
         return;
@@ -486,6 +527,7 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
     document.getElementById("hero").innerHTML = Hero.vitality;
     document.getElementById("enemy").innerHTML = enemyList[idx].vitality;
     document.getElementById("defendText").innerHTML = "Shield: " + HeroShield.vitality;
+    refreshInfo();
 
     document.getElementById("attack").onclick = function() {
         if (ready) {
@@ -508,7 +550,10 @@ function combat_helper(hero, enemyList, idx) { //TODO GLOBAL VARIABLES
 
     if (hero_protected == false && HeroShield.vitality > 0) {
         document.getElementById("defend").onclick = function() {
-            window.setTimeout(function(){print("message", "You manage to raise your shield and deflect the blows. Behind it you begin to recover.")}, 4000);
+            window.setTimeout(function(){
+                if(Hero.vitality > 0){
+                print("message", "You manage to raise your shield and deflect the blows. Behind it you begin to recover.")}}, 4000);
+
             shielded = setInterval(function() {
                 Shield()
             }, 4000);
