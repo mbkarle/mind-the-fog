@@ -4,7 +4,7 @@ class Character{
         this.strength = strength;
         this.dexterity = dexterity;
         this.vitality = vitality;
-        this.ogVit = vitality;
+        this.maxVitality = vitality;
         this.objid = objid;
     }
 }
