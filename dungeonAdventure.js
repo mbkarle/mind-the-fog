@@ -108,7 +108,6 @@ combat(Hero);
 
 
 
-
 //================================================================
 //                      HELPER FUNCTIONS
 //================================================================
@@ -116,8 +115,17 @@ combat(Hero);
 function combat(hero) { //take in enemy list
     enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre]; //was previously "globalEnemies"
     window.onload = function() {
+
         combat_helper(hero, enemies, 0);
         buildMap(world_map);
+
+        //Inventory can now be opened either by clicking InvOpen button or pressing I
+        //not sure where else to initialize this
+        document.getElementById("InvOpen").onclick = function() {
+            $("#info-module").toggle(100);
+            refreshInfo();
+        }
+        
     };
 }
 
