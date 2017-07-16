@@ -56,7 +56,7 @@ var Golem = new Character("Golem", 7, 3, 50, "enemy");
 itemList = []
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var HeroShield = new Item("the shield", "shield", null, null, 20, false, "defendText", itemList);
+var HeroShield = new Item("the shield", "shield", null, null, 50, false, "defendText", itemList);
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, itemList);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null, itemList);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, itemList);
@@ -567,7 +567,7 @@ function Unequip(target, equipment) {
 
 function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIABLES
     var enemyAttack; //not used outside this function = NOT GLOBAL, SIR!
-    HeroShield.vitality = HeroShield.maxVitality;
+    //HeroShield.vitality = HeroShield.maxVitality;
     if (Hero.vitality <= 0) {
         return;
     }
