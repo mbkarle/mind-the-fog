@@ -7,7 +7,7 @@
 //              Spinning up your world...
 //------------------------------------------------------
 //world dimensions
-var floorCleared = false;
+var floorCleared = true;
 var world_width = 40;
 var world_height = 30;
 var world_depth = 3;
@@ -295,9 +295,6 @@ function move(e) {
     if (canMove == true) {
         var didMove = false;
         var fightChance = Math.random();
-        if(curr_floor === 0){
-            fightChance = 0;
-        }
         if (e.keyCode == "87" && avatarY > 0) { //up
             world_map[avatarY][avatarX][curr_floor].hero_present = false;
             avatarY --;
@@ -366,21 +363,23 @@ function move(e) {
 
         //check if on the trapdoor
         if(world_map[avatarY][avatarX][curr_floor].objid === 'trapdoor'){
-            //only if floor cleared....
             $("#text-module").show();
             $("#enter").hide();
-            $("#descend").show();
             $("#stay").show();
 
             canMove = false;
             msg = print("message", world_map[avatarY][avatarX][curr_floor].message);
 
-            $("#descend").click(
-                function() {
-                    console.log("Enter new floor")
-                    descend(true)
-                }
-            )
+            if(floorCleared){
+                $("#descend").show();
+                $("#descend").click(
+                    function() {
+                        console.log("Enter new floor")
+                        descend(true)
+                    }
+                )
+            }
+
             $("#stay").click(
                 function() {
                     console.log("Stay on this floor")
@@ -441,6 +440,7 @@ function descend(descend){
         curr_floor++; //TODO can leave the last floor....
         build_floor(curr_floor);
         world_map[avatarY][avatarX][curr_floor].hero_present = true;
+        floorCleared = false;
         buildMap(world_map);
 
     }
@@ -512,8 +512,10 @@ function readyUp() {
 function openChest(stage) {
     $("#open").click(
         function() {
+            // console.log('here')
             if (stage) {
-                print("item", itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
+                msg = print("item", itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
+                // console.log(msg)
                 $("#equip").show();
                 console.log(itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
                 $("#equip").click(
@@ -560,7 +562,7 @@ function print(messageType, message) {
             }
         }
         document.getElementById("textBox").innerHTML = prevMessage;
-        messageArray.push([messageType, prevMessage]);
+        messageArray.push([message, prevMessage]); //was messageType, prevMessage-- want to push that its an enemy-message, not a 'lastMessage', right?
     }
     else if (messageType == "item") {
         var itemMessage = "The chest contains: " + message.name + "<br>"
@@ -634,7 +636,8 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         return;
     }
     if(customCombat == false){
-    print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")}
+        print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")
+    }
     document.getElementById("enter").onclick = function() {
         $("#text-module").animate({
             top: '300px'
@@ -701,71 +704,75 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
 
     // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], HeroShield)} else{Damage(enemyList[idx], Hero)}}, 10000 / enemyList[idx].dexterity);
     window.onclick = function() {
-        if (hero_protected == true || HeroShield.vitality <= 0) {
-            window.clearInterval(shielded);
-            hero_protected = false;
-            //jquery animation:
-            $("#defendSlider").hide('fast');
-        }
-        if (enemyList[idx].vitality <= 0) {
-            enemyList[idx].vitality = 0;
-            window.clearInterval(enemyAttack);
+        if(!floorCleared || customCombat){ //shouldn't keep printing last enemy + enemy defeated if floorCleared! Fixes #18.. kinda, see #18
+            if (hero_protected == true || HeroShield.vitality <= 0) {
+                window.clearInterval(shielded);
+                hero_protected = false;
+                //jquery animation:
+                $("#defendSlider").hide('fast');
+            }
+            if (enemyList[idx].vitality <= 0) {
+                enemyList[idx].vitality = 0;
+                window.clearInterval(enemyAttack);
 
-            // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
-            window.clearInterval(shielded);
-            hero_protected = false;
-            $("#defendSlider").hide('fast');
+                // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
+                window.clearInterval(shielded);
+                hero_protected = false;
+                $("#defendSlider").hide('fast');
 
-            $("#combat-module").hide(1000);
-            $("#text-module").animate({
-                top: "100px"
-                // left: "20px"
-            }, 1000);
-            print("message", "You've defeated the beast!");
-            if (idx < enemyList.length - 1 || customCombat == true) {
+                $("#combat-module").hide(1000);
+                $("#text-module").animate({
+                    top: "100px"
+                    // left: "20px"
+                }, 1000);
+                print("message", "You've defeated the beast!");
+                if (idx < enemyList.length - 1 || customCombat == true) {
 
-                document.getElementById("enter").innerHTML = "––>";
-                $("#enter").show();
-                document.getElementById("enter").onclick = function() {
-                    canMove = true;
-                    // $("#combat-module").hide(500);
-                    // $("#text-module").animate({
-                    //   top: "100px",
-                    //   left: "20px"
-                    // }, 500).hide();
-                    $("#text-module").hide();
-                    $("#worldMap").show();
-                    document.getElementById("enter").innerHTML = "Engage";
-                    if(customCombat == false){
-                    idx++;
-                    combat_helper(hero, enemyList, idx, false);}
-                    else{
-                        combat(Hero, "return");
-                        return;
-                    }
-                }
-
-            } //success
-            else {
-                print("message", "The fog clears, and looking around there seemed to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
-                floorCleared = true;
-                $("#open").show().click(
-                    function(){
+                    document.getElementById("enter").innerHTML = "––>";
+                    $("#enter").show();
+                    document.getElementById("enter").onclick = function() {
                         canMove = true;
-                        document.getElementById("enter").innerHTML = "Engage";
-                        $("#open").hide();
+                        // $("#combat-module").hide(500);
+                        // $("#text-module").animate({
+                        //   top: "100px",
+                        //   left: "20px"
+                        // }, 500).hide();
                         $("#text-module").hide();
                         $("#worldMap").show();
-                        $("#open").off("click");
-                    })
-                    for(var i = 0; i < world_height; i ++){
-                        for(var j = 0; j < world_width; j++){
-                            world_map[i][j][curr_floor].fog = false;
+                        document.getElementById("enter").innerHTML = "Engage";
+                        if(customCombat == false){
+                        idx++;
+                        combat_helper(hero, enemyList, idx, false);}
+                        else{
+                            combat(Hero, "return");
+                            return;
                         }
                     }
-                    buildMap(world_map);
-            }
-        };
+
+                } //success
+                else {
+                    print("message", "The fog clears, and looking around there seemed to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
+                    floorCleared = true;
+                    $("#open").show()
+                    $("#open").click(
+                        function(){
+                            canMove = true;
+                            document.getElementById("enter").innerHTML = "Engage";
+                            $("#open").hide();
+                            $("#text-module").hide();
+                            $("#worldMap").show();
+                            $("#open").off("click");
+                        })
+                        for(var i = 0; i < world_height; i ++){
+                            for(var j = 0; j < world_width; j++){
+                                world_map[i][j][curr_floor].fog = false;
+                            }
+                        }
+                        buildMap(world_map);
+                }
+            };
+        }
+
     };
     //jquery animation:
     $("#defend").click(function() {
