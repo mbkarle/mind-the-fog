@@ -39,3 +39,9 @@ class Statue extends Location {
         this.destroyed_statue = false;
     }
 }
+
+class DungeonEntrance extends Location{
+    constructor(rowID,colID){
+        super(rowID, colID, 'Dungeon Entrance', 'entrance', 'D', 'The entrance to the dungeon stands, forboding and dark.');
+    }
+}

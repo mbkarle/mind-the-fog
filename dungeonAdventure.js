@@ -82,6 +82,7 @@ var inventory = {
     headgear: null,
     armor: null
 }
+
 //------------------------------------------------------
 //                  And we're off!!
 //------------------------------------------------------
@@ -102,11 +103,11 @@ combat(Hero, "default");
 function build_floor(floor_num){
     if(floor_num == 0){
         //special locations
-        //trapdoor!!
-        trapdoorLoc = rollLocation([[avatarY,avatarX]])
+        //dungeon entrance!!
+        entranceLoc = rollLocation([[avatarY,avatarX]])
 
-        var trapdoor = new Trapdoor(trapdoorLoc[0],trapdoorLoc[1])
-        world_map[trapdoor.rowID][trapdoor.colID][floor_num] = trapdoor;
+        var entrance = new DungeonEntrance(entranceLoc[0],entranceLoc[1])
+        world_map[entrance.rowID][entrance.colID][floor_num] = entrance;
 
         //after creating all special locations, turn fog off!
         for(var i = 0; i < world_height; i++){
@@ -362,7 +363,7 @@ function move(e) {
         };
 
         //check if on the trapdoor
-        if(world_map[avatarY][avatarX][curr_floor].objid === 'trapdoor'){
+        if(world_map[avatarY][avatarX][curr_floor].objid === 'trapdoor' || world_map[avatarY][avatarX][curr_floor].objid === 'entrance'){
             $("#text-module").show();
             $("#enter").hide();
             $("#stay").show();
