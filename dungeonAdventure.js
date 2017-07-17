@@ -64,18 +64,19 @@ var Golem = new Character("Golem", 7, 3, 50, "enemy");
 //------------------------------------------------------
 //              Initialize Items
 //------------------------------------------------------
-itemList = []
+itemList = [];
+mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var HeroShield = new Item("the shield", "shield", null, null, 50, false, "defendText", itemList);
-var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, itemList);
-var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null, itemList);
-var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, itemList);
-var katana = new Item("katana", "weapon", 1, 1, null, true, null, itemList);
-var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, true, null, itemList);
-var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, itemList);
-var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, itemList);
-var GreatSword = new Item("greatsword", "weapon", 3, null, null, false, null, itemList);
+var HeroShield = new Item("the shield", "shield", null, null, 50, false, "defendText", [itemList]);
+var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList]);
+var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null, [itemList]);
+var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList]);
+var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList, mobDrops]);
+var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, true, null, [itemList]);
+var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList]);
+var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList, mobDrops]);
+var GreatSword = new Item("greatsword", "weapon", 3, null, null, false, null, [itemList]);
 
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
@@ -575,7 +576,8 @@ function openChest(stage) {
 * a string thats actually a message
 * TODO: clean this up... functions within classes?
 */
-function print(messageType, message) {
+function print(messageType, message) { //TODO: change so that multiple items can appear in chests: sub-divs inside textbox, etc.
+    $("#textBox").off('mouseenter').off('mouseleave');
     if (messageType == "damageDealt") {
         document.getElementById("textBox").innerHTML = "You strike for " + message + " damage!"
         messageArray.push([messageType, "You strike for " + message + " damage!"])
@@ -593,13 +595,21 @@ function print(messageType, message) {
         messageArray.push([message, prevMessage]); //was messageType, prevMessage-- want to push that its an enemy-message, not a 'lastMessage', right?
     }
     else if (messageType == "item") {
-        var itemMessage = "The chest contains: " + message.name + "<br>"
+        var itemMessage = "You find: <br>" + message.name + "<br>";
+        var itemInfo = message.name + "<br>";
         for (attribute in message) {
             if (typeof message[attribute] == "number") {
-                itemMessage += attribute + ": +" + message[attribute] + "<br>";
+                itemInfo += attribute + ": +" + message[attribute] + "<br>";
             }
         }
+        $("#textBox").mouseenter(function(){
+            $("#hoverInfo").show();
+        })
+        $("#textBox").mouseleave(function(){
+            $("#hoverInfo").hide();
+        })
         document.getElementById("textBox").innerHTML = itemMessage;
+        document.getElementById("hoverInfo").innerHTML = itemInfo;
         messageCount--; //NEED TO DECREMENT BC ITEM NOT PUSHED
     }
     else {
@@ -664,8 +674,9 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         return;
     }
     if(customCombat == false){
-        print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")
-    }
+    print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")
+    enemyList[idx].lootId = Math.floor(Math.random() * mobDrops.length);
+}
     document.getElementById("enter").onclick = function() {
         $("#text-module").animate({
             top: '300px'
@@ -731,22 +742,72 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
     }
 
     // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], HeroShield)} else{Damage(enemyList[idx], Hero)}}, 10000 / enemyList[idx].dexterity);
-    window.onclick = function() {
-        if(!floorCleared || customCombat){ //shouldn't keep printing last enemy + enemy defeated if floorCleared! Fixes #18.. kinda, see #18
-            if (hero_protected == true || HeroShield.vitality <= 0) {
-                window.clearInterval(shielded);
-                hero_protected = false;
-                //jquery animation:
-                $("#defendSlider").hide('fast');
-            }
-            if (enemyList[idx].vitality <= 0) {
-                enemyList[idx].vitality = 0;
-                window.clearInterval(enemyAttack);
+    document.getElementById('combat-module').onclick = function() {
+        console.log("clicked combat-module")
+        if (hero_protected == true || HeroShield.vitality <= 0) {
+            window.clearInterval(shielded);
+            hero_protected = false;
+            //jquery animation:
+            $("#defendSlider").hide('fast');
+        }
+        if (enemyList[idx].vitality <= 0) {
+            enemyList[idx].vitality = 0;
+            window.clearInterval(enemyAttack);
 
-                // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
-                window.clearInterval(shielded);
-                hero_protected = false;
-                $("#defendSlider").hide('fast');
+            // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
+            window.clearInterval(shielded);
+            hero_protected = false;
+            $("#defendSlider").hide('fast');
+
+            $("#combat-module").hide(1000);
+            $("#text-module").animate({
+                top: "100px"
+                // left: "20px"
+            }, 1000);
+            print("message", "You've defeated the beast!");
+            $("#combat-module").off('click');
+            var dropChance = Math.random();
+            if(!customCombat && dropChance > 0.85){
+            console.log(dropChance);
+            $("#open").show();
+            $("#open").click(
+                function() {
+                    console.log("clicked open")
+                    print("item", mobDrops[enemyList[idx].lootId]);
+                    console.log(mobDrops[enemyList[idx].lootId]);
+                    $("#open").hide();
+                    $("#equip").show();
+                    $("#equip").click(
+                        function(){
+                            equip(Hero, mobDrops[enemyList[idx].lootId]);
+                            $("#equip").hide().off('click');
+                        })
+                    $("#open").off('click');
+                }
+            );}
+            if (idx < enemyList.length - 1 || customCombat == true) {
+                console.log("moving on");
+                document.getElementById("enter").innerHTML = "––>";
+                $("#enter").show();
+                document.getElementById("enter").onclick = function() {
+                    canMove = true;
+                    // $("#combat-module").hide(500);
+                    // $("#text-module").animate({
+                    //   top: "100px",
+                    //   left: "20px"
+                    // }, 500).hide();
+                    $("#equip").hide();
+                    $("#text-module").hide();
+                    $("#worldMap").show();
+                    document.getElementById("enter").innerHTML = "Engage";
+                    if(customCombat == false){
+                    idx++;
+                    combat_helper(hero, enemyList, idx, false);}
+                    else{
+                        combat(Hero, "return");
+                        return;
+                    }
+                }
 
                 $("#combat-module").hide(1000);
                 $("#text-module").animate({
