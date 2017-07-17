@@ -431,6 +431,7 @@ function move(e) {
                     print("message", "The statue springs to life and raises its sword. There's no escape!");
                     $("#text-module").show();
                     combat(Hero, Golem);
+                    GolemStatue.destroyed_statue = true;
                 }
             )
             $("#stay").click(
