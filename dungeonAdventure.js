@@ -26,8 +26,6 @@ for (var i = 0; i < world_height; i++) {
   }
 }
 
-
-
 //------------------------------------------------------
 //          Some magical game variables...
 //------------------------------------------------------
@@ -76,7 +74,7 @@ var GreatSword = new Item("greatsword", "weapon", 3, null, null, false, null, it
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
 //------------------------------------------------------
-build_floor(curr_floor)
+build_floor(curr_floor) //this will initialize the treasures and other locations
 
 //inventory!!!!
 var inventory = {
@@ -297,6 +295,9 @@ function move(e) {
     if (canMove == true) {
         var didMove = false;
         var fightChance = Math.random();
+        if(curr_floor === 0){
+            fightChance = 0;
+        }
         if (e.keyCode == "87" && avatarY > 0) { //up
             world_map[avatarY][avatarX][curr_floor].hero_present = false;
             avatarY --;
@@ -403,7 +404,7 @@ function move(e) {
 
             $("#descend").click(
                 function() {
-                    descend(false);
+                    statue_fight(false);
                     canMove = false;
                     print("message", "The statue springs to life and raises its sword. There's no escape!");
                     $("#text-module").show();
@@ -412,7 +413,7 @@ function move(e) {
             )
             $("#stay").click(
                 function() {
-                    descend(false);
+                    statue_fight(false);
                 }
             )
         }
@@ -425,6 +426,38 @@ function move(e) {
 }
 
 function descend(descend){
+    if(descend){
+        $("#descend").off("click")
+        $("#stay").off("click")
+        $("#stay").hide();
+        $("#enter").hide();
+        $("#enter").show();
+        $("#text-module").hide();
+        $("#descend").hide();
+        canMove = true;
+        print("lastMessage", "enemy-message");
+
+        //rebuild the floor and make the new map!
+        curr_floor++; //TODO can leave the last floor....
+        build_floor(curr_floor);
+        world_map[avatarY][avatarX][curr_floor].hero_present = true;
+        buildMap(world_map);
+
+    }
+    else{
+        $("#descend").off("click")
+        $("#stay").off("click")
+        $("#stay").hide();
+        $("#enter").hide();
+        $("#enter").show();
+        $("#text-module").hide();
+        $("#descend").hide();
+        canMove = true;
+        print("lastMessage", "enemy-message");
+    }
+}
+
+function statue_fight(fight){
     $("#descend").off("click")
     $("#stay").off("click")
     $("#stay").hide();
