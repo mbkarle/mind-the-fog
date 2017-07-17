@@ -76,34 +76,7 @@ var GreatSword = new Item("greatsword", "weapon", 3, null, null, false, null, it
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
 //------------------------------------------------------
-//treasures must go after the Items because we need to set an ID for the treasure inside!
-tChest1Loc = rollLocation([[avatarY,avatarX]])
-tChest2Loc = rollLocation([[avatarY,avatarX],tChest1Loc]);
-tChest3Loc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc]);
-trapdoorLoc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc, tChest3Loc]);
-StatueLoc = rollLocation([[avatarY,avatarX], tChest1Loc, tChest2Loc, tChest3Loc]);
-
-var TreasureChest = new Chest(tChest1Loc[0], tChest1Loc[1]);
-var TreasureChest2 = new Chest(tChest2Loc[0], tChest2Loc[1]);
-var TreasureChest3 = new Chest(tChest3Loc[0], tChest3Loc[1]);
-var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
-
-TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
-TreasureChest2.treasureID = Math.floor(itemList.length * Math.random());
-TreasureChest3.treasureID = Math.floor(itemList.length * Math.random());
-
-//add your treasures!
-for(var i = 0; i < treasures.length; i++){
-    world_map[treasures[i].rowID][treasures[i].colID][curr_floor] = treasures[i];
-}
-
-//trapdoor!!
-var trapdoor = new Trapdoor(trapdoorLoc[0],trapdoorLoc[1])
-world_map[trapdoor.rowID][trapdoor.colID][curr_floor] = trapdoor;
-
-//Golem Statue!!!
-var GolemStatue = new Statue(StatueLoc[0],StatueLoc[1]);
-world_map[GolemStatue.rowID][GolemStatue.colID][curr_floor] = GolemStatue;
+build_floor(curr_floor)
 
 //inventory!!!!
 var inventory = {
@@ -127,6 +100,55 @@ combat(Hero, "default");
 //================================================================
 //                      HELPER FUNCTIONS
 //================================================================
+
+function build_floor(floor_num){
+    if(floor_num == 0){
+        //special locations
+        //trapdoor!!
+        trapdoorLoc = rollLocation([[avatarY,avatarX]])
+
+        var trapdoor = new Trapdoor(trapdoorLoc[0],trapdoorLoc[1])
+        world_map[trapdoor.rowID][trapdoor.colID][floor_num] = trapdoor;
+
+        //after creating all special locations, turn fog off!
+        for(var i = 0; i < world_height; i++){
+            for(var j = 0; j < world_width; j++){
+                world_map[i][j][0].fog = false;
+            }
+        }
+    }
+    else{
+        //treasures must go after the Items because we need to set an ID for the treasure inside!
+        tChest1Loc = rollLocation([[avatarY,avatarX]])
+        tChest2Loc = rollLocation([[avatarY,avatarX],tChest1Loc]);
+        tChest3Loc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc]);
+        trapdoorLoc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc, tChest3Loc]);
+        StatueLoc = rollLocation([[avatarY,avatarX], tChest1Loc, tChest2Loc, tChest3Loc]);
+
+        var TreasureChest = new Chest(tChest1Loc[0], tChest1Loc[1]);
+        var TreasureChest2 = new Chest(tChest2Loc[0], tChest2Loc[1]);
+        var TreasureChest3 = new Chest(tChest3Loc[0], tChest3Loc[1]);
+        var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
+
+        TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
+        TreasureChest2.treasureID = Math.floor(itemList.length * Math.random());
+        TreasureChest3.treasureID = Math.floor(itemList.length * Math.random());
+
+        //add your treasures!
+        for(var i = 0; i < treasures.length; i++){
+            world_map[treasures[i].rowID][treasures[i].colID][floor_num] = treasures[i];
+        }
+
+        //trapdoor!!
+        var trapdoor = new Trapdoor(trapdoorLoc[0],trapdoorLoc[1])
+        world_map[trapdoor.rowID][trapdoor.colID][floor_num] = trapdoor;
+
+        //Golem Statue!!!
+        var GolemStatue = new Statue(StatueLoc[0],StatueLoc[1]);
+        world_map[GolemStatue.rowID][GolemStatue.colID][floor_num] = GolemStatue;
+
+    }
+}
 
 function combat(hero, opponents) { //take in enemy list
     if(typeof opponents != "string"){ //combat call is custom combat outside of default list
