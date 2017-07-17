@@ -10,7 +10,9 @@ class Item {
         this.objid = objid;
 
         if(toList){
-            items.push(this);
+            for(i = 0; i < items.length; i++){
+            items[i].push(this);
+        }
         }
     }
 }
