@@ -70,7 +70,7 @@ var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList, mob
 var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, true, null, [itemList]);
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList]);
 var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList, mobDrops]);
-var GreatSword = new Item("greatsword", "weapon", 3, null, null, false, null, [itemList]);
+var GreatSword = new Item("greatsword", "weapon", 3, null, null, false, null, [[]]);
 
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
@@ -409,7 +409,7 @@ function move(e) {
                     print("message", "The statue springs to life and raises its sword. There's no escape!");
                     $("#text-module").show();
                     combat(Hero, Golem);
-                    GolemStatue.destroyed_statue = true;
+                    world_map[avatarY][avatarX][curr_floor].destroyed_statue = true;
                 }
             )
             $("#stay").click(
@@ -550,7 +550,7 @@ function openChest(stage) {
 * TODO: clean this up... functions within classes?
 */
 function print(messageType, message) { //TODO: change so that multiple items can appear in chests: sub-divs inside textbox, etc.
-    $("#textBox").off('mouseenter').off('mouseleave');
+    $(".itemInfo").off('mouseenter').off('mouseleave');
     if (messageType == "damageDealt") {
         document.getElementById("textBox").innerHTML = "You strike for " + message + " damage!"
         messageArray.push([messageType, "You strike for " + message + " damage!"])
@@ -568,20 +568,21 @@ function print(messageType, message) { //TODO: change so that multiple items can
         messageArray.push([message, prevMessage]); //was messageType, prevMessage-- want to push that its an enemy-message, not a 'lastMessage', right?
     }
     else if (messageType == "item") {
-        var itemMessage = "You find: <br>" + message.name + "<br>";
+        var itemMessage = "You find: <br> <div class='itemInfo'>" + message.name + "<div id='equip' class='interact'>Equip</div></div><br>";
         var itemInfo = message.name + "<br>";
         for (attribute in message) {
             if (typeof message[attribute] == "number") {
                 itemInfo += attribute + ": +" + message[attribute] + "<br>";
             }
         }
-        $("#textBox").mouseenter(function(){
+
+        document.getElementById("textBox").innerHTML = itemMessage;
+        $(".itemInfo").mouseenter(function(){
             $("#hoverInfo").show();
         })
-        $("#textBox").mouseleave(function(){
+        $(".itemInfo").mouseleave(function(){
             $("#hoverInfo").hide();
         })
-        document.getElementById("textBox").innerHTML = itemMessage;
         document.getElementById("hoverInfo").innerHTML = itemInfo;
         messageCount--; //NEED TO DECREMENT BC ITEM NOT PUSHED
     }
@@ -780,39 +781,10 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                         combat(Hero, "return");
                         return;
                     }
-                }
+                }}
 
-                $("#combat-module").hide(1000);
-                $("#text-module").animate({
-                    top: "100px"
-                    // left: "20px"
-                }, 1000);
-                print("message", "You've defeated the beast!");
-                if (idx < enemyList.length - 1 || customCombat == true) {
-
-                    document.getElementById("enter").innerHTML = "––>";
-                    $("#enter").show();
-                    document.getElementById("enter").onclick = function() {
-                        canMove = true;
-                        // $("#combat-module").hide(500);
-                        // $("#text-module").animate({
-                        //   top: "100px",
-                        //   left: "20px"
-                        // }, 500).hide();
-                        $("#text-module").hide();
-                        $("#worldMap").show();
-                        document.getElementById("enter").innerHTML = "Engage";
-                        if(customCombat == false){
-                        idx++;
-                        combat_helper(hero, enemyList, idx, false);}
-                        else{
-                            combat(Hero, "return");
-                            return;
-                        }
-                    }
-
-                } //success
                 else {
+                    console.log("floor cleared!")
                     print("message", "The fog clears, and looking around there seemed to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
                     floorCleared = true;
                     $("#open").show()
@@ -832,10 +804,8 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                         }
                         buildMap(world_map);
                 }
-            };
+            }
         }
-
-    };
     //jquery animation:
     $("#defend").click(function() {
         $("#defendSlider").show(4000);
