@@ -21,7 +21,13 @@ for (var i = 0; i < world_height; i++) {
       //populate it with Tile locations
       world_map[i][j] = new Array(world_depth)
       for(var f = 0; f < world_depth; f++){
-          world_map[i][j][f] = new Tile(i,j);
+          //boundaries should be walls... aesthetic thing
+          if(i === 0 || j === 0 || i === world_height-1 || j === world_width - 1){
+              world_map[i][j][f] = new Wall(i,j);
+          }
+          else{
+              world_map[i][j][f] = new Tile(i,j);
+          }
       }
   }
 }
@@ -30,7 +36,7 @@ for (var i = 0; i < world_height; i++) {
 //          Some magical game variables...
 //------------------------------------------------------
 //variables to track the current position of hero
-var avatarX = Math.floor(world_width/2); //TODO rename!
+var avatarX = Math.floor(world_width/8);
 var avatarY = Math.floor(world_height/2);
 var curr_floor = 0;
 
@@ -101,18 +107,29 @@ combat(Hero, "default");
 //================================================================
 
 function build_floor(floor_num){
-    if(floor_num == 0){
+    if(floor_num == 0){ //special first floor...
         //special locations
         //dungeon entrance!!
-        entranceLoc = rollLocation([[avatarY,avatarX]])
+        entranceLoc = [Math.floor(world_height/2), Math.floor(world_width*(7/8))]//rollLocation([[avatarY,avatarX]])
 
         var entrance = new DungeonEntrance(entranceLoc[0],entranceLoc[1])
         world_map[entrance.rowID][entrance.colID][floor_num] = entrance;
 
         //after creating all special locations, turn fog off!
+        //insert empty tiles and walls
         for(var i = 0; i < world_height; i++){
             for(var j = 0; j < world_width; j++){
+
+                if(i === Math.floor(world_height/3) || i === Math.floor(world_height*(2/3))){
+                    world_map[i][j][0] = new Wall(i,j);
+                }
+
+                else if(i <= Math.floor(world_height/3) || i >= Math.floor(world_height*(2/3))){
+                    world_map[i][j][0] = new EmptyTile(i,j);
+                }
+
                 world_map[i][j][0].fog = false;
+
             }
         }
     }
@@ -184,7 +201,7 @@ function rollLocation(locs){
     var loc = [-1,-1];
     found = false;
     while(!found){
-        loc = [Math.floor(world_height*Math.random()), Math.floor(world_width*Math.random())] //new random location
+        loc = [Math.floor((world_height-2)*Math.random())+1, Math.floor((world_width-2)*Math.random())+1] //new random location
         passed = true;
         for(var i = 0; i < locs.length; i++){ //check it really is unique as per 8 rooks problem
             if(locs[i].indexOf(loc[0]) >= 0 || locs[i].indexOf(loc[1]) >= 0){ //if row or col not unique...
@@ -297,29 +314,34 @@ function move(e) {
         var didMove = false;
         var fightChance = Math.random();
         if (e.keyCode == "87" && avatarY > 0) { //up
-            world_map[avatarY][avatarX][curr_floor].hero_present = false;
-            avatarY --;
-            world_map[avatarY][avatarX][curr_floor].hero_present = true;
-            didMove = true;
+            if(world_map[avatarY-1][avatarX][curr_floor].passable){
+                world_map[avatarY][avatarX][curr_floor].hero_present = false;
+                avatarY --;
+                world_map[avatarY][avatarX][curr_floor].hero_present = true;
+                didMove = true;
+            }
 
         } else if (e.keyCode == "83" && avatarY < world_height-1) { //down
-            world_map[avatarY][avatarX][curr_floor].hero_present = false;
-            avatarY ++;
-            world_map[avatarY][avatarX][curr_floor].hero_present = true;
-            didMove = true;
-
+            if(world_map[avatarY+1][avatarX][curr_floor].passable){
+                world_map[avatarY][avatarX][curr_floor].hero_present = false;
+                avatarY ++;
+                world_map[avatarY][avatarX][curr_floor].hero_present = true;
+                didMove = true;
+            }
         } else if (e.keyCode == "65" && avatarX > 0) { //left
-            world_map[avatarY][avatarX][curr_floor].hero_present = false;
-            avatarX --;
-            world_map[avatarY][avatarX][curr_floor].hero_present = true;
-            didMove = true;
-
+            if(world_map[avatarY][avatarX-1][curr_floor].passable){
+                world_map[avatarY][avatarX][curr_floor].hero_present = false;
+                avatarX --;
+                world_map[avatarY][avatarX][curr_floor].hero_present = true;
+                didMove = true;
+            }
         } else if (e.keyCode == "68" && avatarX < world_width-1) { //right
-            world_map[avatarY][avatarX][curr_floor].hero_present = false;
-            avatarX ++;
-            world_map[avatarY][avatarX][curr_floor].hero_present = true;
-            didMove = true;
-
+            if(world_map[avatarY][avatarX+1][curr_floor].passable){
+                world_map[avatarY][avatarX][curr_floor].hero_present = false;
+                avatarX ++;
+                world_map[avatarY][avatarX][curr_floor].hero_present = true;
+                didMove = true;
+            }
         } else if (e.keyCode == "66") {
             console.log("Dev tools activated");
             console.log("So...., you're either a developer, or a cheater, or just lazy...")
@@ -427,6 +449,10 @@ function move(e) {
 
 function descend(descend){
     if(descend){
+        if(curr_floor === 0){
+            world_width = 40;
+            world_height = 30;
+        }
         $("#descend").off("click")
         $("#stay").off("click")
         $("#stay").hide();
