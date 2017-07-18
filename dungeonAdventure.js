@@ -51,24 +51,13 @@ var ready = true;
 var shielded;
 
 //------------------------------------------------------
-//              Initialize Characters
-//------------------------------------------------------
-var Hero = new Character("The Hero", 5, 3, 20, "hero");
-var Troglodyte = new Character("Troglodyte", 3, 2, 30, "enemy");
-var DireRat = new Character("Dire Rat", 1, 15, 20, "enemy");
-var DireRat2 = new Character("Dire Rat", 1.5, 15, 20, "enemy");
-var Ogre = new Character("Ogre", 9, 1, 60, "enemy");
-var Sorcerer = new Character("Sorcerer", 6, 4, 20, "enemy");
-var Golem = new Character("Golem", 7, 3, 50, "enemy");
-
-//------------------------------------------------------
 //              Initialize Items
 //------------------------------------------------------
 itemList = [];
 mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var HeroShield = new Item("the shield", "shield", null, null, 50, false, "defendText", [itemList]);
+var heroShield = new Item("the shield", "shield", null, null, 50, false, "defendText", [itemList]);
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList]);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null, [itemList]);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList]);
@@ -76,7 +65,18 @@ var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList, mob
 var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, true, null, [itemList]);
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList]);
 var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList, mobDrops]);
-var GreatSword = new Item("greatsword", "weapon", 3, null, null, false, null, [[]]);
+var GreatSword = new Item("greatsword", "weapon", 3, null, null, true, null, [[]]);
+
+//------------------------------------------------------
+//              Initialize Characters
+//------------------------------------------------------
+var hero = new Hero("The Hero", 5, 3, 20, "hero");
+var Troglodyte = new Enemy("Troglodyte", 3, 2, 30, "enemy");
+var DireRat = new Enemy("Dire Rat", 1, 15, 20, "enemy");
+var DireRat2 = new Enemy("Dire Rat", 1.5, 15, 20, "enemy");
+var Ogre = new Enemy("Ogre", 9, 1, 60, "enemy");
+var Sorcerer = new Enemy("Sorcerer", 6, 4, 20, "enemy");
+var Golem = new Boss("Golem", 7, 3, 50, "enemy", GreatSword.items[0]);
 
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
@@ -99,7 +99,7 @@ removeFog(avatarX,avatarY, world_map); //remove the fog around the hero
 
 //LetsiGO!
 window.addEventListener("keydown", move, false);
-combat(Hero, "default");
+combat(hero, "default");
 
 
 
@@ -346,10 +346,10 @@ function move(e) {
         } else if (e.keyCode == "66") {
             console.log("Dev tools activated");
             console.log("So...., you're either a developer, or a cheater, or just lazy...")
-            equip(Hero, MasterSword); //give absurd weapons
+            equip(hero, MasterSword); //give absurd weapons
 
-            Hero.vitality = 100000; //set absurd health stats
-            Hero.maxVitality = 100000;
+            hero.vitality = 100000; //set absurd health stats
+            hero.maxVitality = 100000;
 
             //remove fog
             for(var i = 0; i < world_height; i ++){
@@ -368,9 +368,9 @@ function move(e) {
         } else {
             canMove = true;
         }
-        if(Hero.vitality + 2 <= Hero.maxVitality && didMove) {
-            Hero.vitality += 2;
-            document.getElementById("hero").innerHTML = Hero.vitality;
+        if(hero.vitality + 2 <= hero.maxVitality && didMove) {
+            hero.vitality += 2;
+            document.getElementById("hero").innerHTML = hero.vitality;
             refreshInfo();
         }
 
@@ -431,7 +431,7 @@ function move(e) {
                     canMove = false;
                     print("message", "The statue springs to life and raises its sword. There's no escape!");
                     $("#text-module").show();
-                    combat(Hero, Golem);
+                    combat(hero, Golem);
                     world_map[avatarY][avatarX][curr_floor].destroyed_statue = true;
                 }
             )
@@ -503,7 +503,7 @@ function statue_fight(fight){
 }
 
 function refreshInfo() { // updates info box
-    document.getElementById("characterInfo").innerHTML = "Health: <br>" + Hero.vitality + " / " + Hero.maxVitality + "<br>";
+    document.getElementById("characterInfo").innerHTML = "Health: <br>" + hero.vitality + " / " + hero.maxVitality + "<br>";
     var inventoryMessage = "Equipped: <br><br>"
     for(attribute in inventory){
         if(inventory[attribute] != null){
@@ -518,18 +518,18 @@ function Damage(source_character, target_character) {
     target_character.vitality -= hit;
     document.getElementById(source_character.objid).innerHTML = source_character.vitality;
     document.getElementById(target_character.objid).innerHTML = target_character.vitality /*+ target_character.name */ ;
-    document.getElementById("hero").innerHTML = Hero.vitality;
-    document.getElementById("defendText").innerHTML = "Shield: " + HeroShield.vitality;
+    document.getElementById("hero").innerHTML = hero.vitality;
+    document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
     refreshInfo();
     return hit;
 }
 
 function Shield() { //TODO fix
-    if(Hero.vitality + 2 <= Hero.maxVitality){
-    Hero.vitality += 2;
+    if(hero.vitality + 2 <= hero.maxVitality){
+    hero.vitality += 2;
     refreshInfo();
 }
-    document.getElementById("hero").innerHTML = Hero.vitality;
+    document.getElementById("hero").innerHTML = hero.vitality;
     hero_protected = true;
 }
 
@@ -550,7 +550,7 @@ function openChest(stage) {
                 $("#equip").click(
                     function() {
                         world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
-                        equip(Hero, itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
+                        equip(hero, itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
                         $("#equip").hide();
                     })
                 stage = !stage;
@@ -644,7 +644,7 @@ function buildMap(array) {
 function equip(target, equipment) {
     console.log(target.name + " equipped " + equipment.name);
     if(inventory[equipment.type] != null){
-        Unequip(Hero, inventory[equipment.type]);
+        Unequip(hero, inventory[equipment.type]);
 
     }
     inventory[equipment.type] = equipment;
@@ -670,8 +670,8 @@ function Unequip(target, equipment) {
 
 function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIABLES
     var enemyAttack; //not used outside this function = NOT GLOBAL, SIR!
-    //HeroShield.vitality = HeroShield.maxVitality;
-    if (Hero.vitality <= 0) {
+    //heroShield.vitality = heroShield.maxVitality;
+    if (hero.vitality <= 0) {
         return;
     }
     if(customCombat == false){
@@ -687,16 +687,16 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         $("#worldMap").hide();
         enemyAttack = setInterval(function() {
             if (hero_protected == true) {
-                Damage(enemyList[idx], HeroShield)
+                Damage(enemyList[idx], heroShield)
             } else {
-                Damage(enemyList[idx], Hero)
+                Damage(enemyList[idx], hero)
                 print("combat start", "The enemy strikes!");
             }
-            if (Hero.vitality <= 0) {
+            if (hero.vitality <= 0) {
                 print("message", "You died!");
                 $("#combat-module").hide(1000);
             }
-            if (HeroShield.vitality <= 0) {
+            if (heroShield.vitality <= 0) {
                 window.clearInterval(shielded);
                 hero_protected = false;
                 //jquery animation:
@@ -705,22 +705,22 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         }, 10000 / enemyList[idx].dexterity);
     }
 
-    document.getElementById("hero").innerHTML = Hero.vitality;
+    document.getElementById("hero").innerHTML = hero.vitality;
     document.getElementById("enemy").innerHTML = enemyList[idx].vitality;
-    document.getElementById("defendText").innerHTML = "Shield: " + HeroShield.vitality;
+    document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
     refreshInfo();
 
     document.getElementById("attack").onclick = function() {
         if (ready) {
             ready = false;
-            window.setTimeout(readyUp, 10000 / Hero.dexterity);
-            hitprint = Damage(Hero, enemyList[idx]);
+            window.setTimeout(readyUp, 10000 / hero.dexterity);
+            hitprint = Damage(hero, enemyList[idx]);
             print("damageDealt", hitprint);
             //jquery animations:
             $("#attackSlider").show();
             $("#attackSlider").animate({
                 width: '0px'
-            }, 8000 / Hero.dexterity, function() {
+            }, 8000 / hero.dexterity, function() {
                 $("#attackSlider").hide();
                 $("#attackSlider").animate({
                     width: '110px'
@@ -729,10 +729,10 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         }
     };
 
-    if (hero_protected == false && HeroShield.vitality > 0) {
+    if (hero_protected == false && heroShield.vitality > 0) {
         document.getElementById("defend").onclick = function() {
             window.setTimeout(function(){
-                if(Hero.vitality > 0){
+                if(hero.vitality > 0){
                 print("message", "You manage to raise your shield and deflect the blows. Behind it you begin to recover.")}}, 4000);
 
             shielded = setInterval(function() {
@@ -742,10 +742,10 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         }
     }
 
-    // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], HeroShield)} else{Damage(enemyList[idx], Hero)}}, 10000 / enemyList[idx].dexterity);
+    // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], heroShield)} else{Damage(enemyList[idx], hero)}}, 10000 / enemyList[idx].dexterity);
     document.getElementById('combat-module').onclick = function() {
         console.log("clicked combat-module")
-        if (hero_protected == true || HeroShield.vitality <= 0) {
+        if (hero_protected == true || heroShield.vitality <= 0) {
             window.clearInterval(shielded);
             hero_protected = false;
             //jquery animation:
@@ -780,12 +780,30 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                     $("#equip").show();
                     $("#equip").click(
                         function(){
-                            equip(Hero, mobDrops[enemyList[idx].lootId]);
+                            equip(hero, mobDrops[enemyList[idx].lootId]);
                             $("#equip").hide().off('click');
                         })
                     $("#open").off('click');
                 }
             );}
+            else if(customCombat){
+              $("#open").show();
+              $("#open").click(
+                function(){
+                  console.log(enemyList[idx]);
+                  print("item", enemyList[idx].loot);
+                  $("#open").hide();
+                  $("#equip").show();
+                  $("#equip").click(
+                    function(){
+                      equip(hero, enemyList[idx].loot);
+                      $("#equip").hide().off('click');
+                    }
+                  )
+                $("#open").off('click');
+              }
+              )
+            }
             if (idx < enemyList.length - 1 || customCombat == true) {
                 console.log("moving on");
                 document.getElementById("enter").innerHTML = "––>";
@@ -805,7 +823,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                     idx++;
                     combat_helper(hero, enemyList, idx, false);}
                     else{
-                        combat(Hero, "return");
+                        combat(hero, "return");
                         return;
                     }
                 }}
