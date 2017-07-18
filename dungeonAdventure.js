@@ -57,7 +57,7 @@ itemList = [];
 mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var heroShield = new Item("the shield", "shield", null, null, 50, false, "defendText", [itemList]);
+var heroShield = new Shields("the shield", "shield", null, null, 50, false, "defendText", [itemList]);
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList]);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null, [itemList]);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList]);
@@ -653,13 +653,14 @@ function equip(target, equipment) {
 
     }
     inventory[equipment.type] = equipment;
-    refreshInfo();
+
     var attribute;
     for (attribute in equipment) {
         if (typeof equipment[attribute] == "number") {
             target[attribute] += equipment[attribute];
         }
     }
+    refreshInfo();
 }
 function Unequip(target, equipment) {
     console.log(target.name + " unequipped " + equipment.name) // finish inventory
@@ -734,24 +735,37 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         }
     };
 
-    if (hero_protected == false && heroShield.vitality > 0) {
+
         document.getElementById("defend").onclick = function() {
+          if (hero_protected == false && heroShield.vitality > 0) {
+          $("#defend").off('click');
+          $("#defendSlider").show(4000);
             window.setTimeout(function(){
                 if(hero.vitality > 0){
-                print("message", "You manage to raise your shield and deflect the blows. Behind it you begin to recover.")}}, 4000);
-
+                print("message", "You manage to raise your shield and deflect the blows. Behind it you begin to recover.");}
+              heroShield.shield_ready = false;}, 4000);
+                console.log("shield clicked")
+                if(heroShield.shield_ready){
+                  heroShield.shield_ready = false;
             shielded = setInterval(function() {
+              console.log("shielding");
                 Shield()
-            }, 4000);
+            }, 4000);}
 
+
+        }
+        else{
+          $("#defend").off('click');
         }
     }
 
+
     // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], heroShield)} else{Damage(enemyList[idx], hero)}}, 10000 / enemyList[idx].dexterity);
     document.getElementById('combat-module').onclick = function() {
-        console.log("clicked combat-module")
-        if (hero_protected == true || heroShield.vitality <= 0) {
+        if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
+            console.log("turning off shield");
             window.clearInterval(shielded);
+            heroShield.shieldReady();
             hero_protected = false;
             //jquery animation:
             $("#defendSlider").hide('fast');
@@ -856,9 +870,5 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                 }
             }
         }
-    //jquery animation:
-    $("#defend").click(function() {
-        $("#defendSlider").show(4000);
-    })
 
 }

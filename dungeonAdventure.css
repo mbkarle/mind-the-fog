@@ -30,6 +30,7 @@
   border-color: #a6a6a6;
   width: 50px;
   margin: auto;
+  z-index: 2;
 }
 
 #attack {
@@ -47,6 +48,7 @@
   padding-bottom: 15px;
   background-color: #e6e6e6;
   opacity: .5;
+  z-index: 1;
 }
 
 #attackSlider {
@@ -175,4 +177,7 @@ background-color: white;
     left:0;
     bottom: 15px;
 
+}
+.statusBar {
+  position: absolute;
 }
