@@ -25,6 +25,7 @@ class Shields extends Item {
   }
   shieldReady() {
     this.shield_ready = true;
+    clearTimeout(shieldReadyup);
     return this.shield_ready;
   }
 }

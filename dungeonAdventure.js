@@ -49,6 +49,7 @@ var canMove = true;
 var hero_protected = false;
 var ready = true;
 var shielded;
+var shieldReadyup;
 
 //------------------------------------------------------
 //              Initialize Items
@@ -719,6 +720,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             if (heroShield.vitality <= 0) {
                 window.clearInterval(shielded);
                 hero_protected = false;
+                heroShield.shieldReady();
                 //jquery animation:
                 $("#defendSlider").hide('fast');
             }
@@ -752,9 +754,9 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
 
         document.getElementById("defend").onclick = function() {
           if (hero_protected == false && heroShield.vitality > 0) {
-          $("#defend").off('click');
+        //  $("#defend").off('click');
           $("#defendSlider").show(4000);
-            window.setTimeout(function(){
+            shieldReadyup = setTimeout(function(){
               heroShield.shield_ready = false;}, 4000);
                 console.log("shield clicked")
                 if(heroShield.shield_ready){
@@ -766,14 +768,13 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
 
 
         }
-        else{
-          $("#defend").off('click');
-        }
     }
 
 
     // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], heroShield)} else{Damage(enemyList[idx], hero)}}, 10000 / enemyList[idx].dexterity);
     document.getElementById('combat-module').onclick = function() {
+        console.log("hero_protected: " + hero_protected);
+        console.log("heroShield.shield_ready: " + heroShield.shield_ready);
         if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
             console.log("turning off shield");
             window.clearInterval(shielded);
@@ -789,7 +790,11 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
             window.clearInterval(shielded);
             hero_protected = false;
-            $("#defendSlider").hide('fast');
+            heroShield.shieldReady();
+            console.log("hero_protected should now be false and heroShield.shield_ready true");
+            console.log("hero_protected: " + hero_protected);
+            console.log("heroShield.shield_ready: " + heroShield.shield_ready);
+                        $("#defendSlider").hide('fast');
 
             $("#combat-module").hide(1000);
             $("#text-module").animate({
@@ -840,6 +845,8 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                 document.getElementById("enter").innerHTML = "––>";
                 $("#enter").show();
                 document.getElementById("enter").onclick = function() {
+                    console.log("hero_protected: " + hero_protected);
+                    console.log("heroShield.shield_ready: " + heroShield.shield_ready);
                     canMove = true;
                     // $("#combat-module").hide(500);
                     // $("#text-module").animate({
