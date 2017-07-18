@@ -6,6 +6,28 @@ class Character{
         this.vitality = vitality;
         this.maxVitality = vitality;
         this.objid = objid;
-        this.lootId = -1;
     }
+}
+
+class Boss extends Character{
+  constructor(name, strength, dexterity, vitality, objid, lootList){
+    super(name, strength, dexterity, vitality, objid);
+    this.loot = lootList[Math.floor(Math.random() * lootList.length)];
+  }
+}
+
+
+class Hero extends Character{
+  constructor(name, strength, dexterity, vitality, objid){
+    super(name, strength, dexterity, vitality, objid);
+  }
+}
+
+
+
+class Enemy extends Character{
+  constructor(name, strength, dexterity, vitality, objid){
+    super(name, strength, dexterity, vitality, objid);
+    this.lootId = -1;
+  }
 }

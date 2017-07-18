@@ -8,6 +8,7 @@ class Item {
         this.maxVitality = vitality;
         this.toList = toList;
         this.objid = objid;
+        this.items = items;
 
         if(toList){
             for(i = 0; i < items.length; i++){
