@@ -122,7 +122,8 @@ adding this class just for world so I can scrap fog.*/
 }
 
 #info-module {
-    padding: 50px;
+    width: 200px;
+    padding-top: 25px;
     padding-bottom: 200px;
     border-style: solid;
     border-color: #a6a6a6;
@@ -178,6 +179,26 @@ background-color: white;
     bottom: 15px;
 
 }
-.statusBar {
+.statusBar, .statusSlider {
   position: absolute;
+  height: 16px;
+  width: 180px;
+  left: 10px;
+  margin: auto;
+}
+
+.statusBar {
+    font-size: 12px;
+    text-align: center;
+    color: #a6a6a6;
+    border-style: solid;
+    border-color: #a6a6a6;
+    border-width: thin;
+}
+.statusSlider {
+    opacity: .5;
+    background-color: #e6e6e6;
+    height: inherit;
+    left: 0;
+    top: 0;
 }

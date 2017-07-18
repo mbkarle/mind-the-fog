@@ -508,7 +508,18 @@ function statue_fight(fight){
 }
 
 function refreshInfo() { // updates info box
-    document.getElementById("characterInfo").innerHTML = "Health: <br>" + hero.vitality + " / " + hero.maxVitality + "<br>";
+    var healthFraction = hero.vitality/hero.maxVitality;
+    var shieldHealthFraction = heroShield.vitality/heroShield.maxVitality;
+
+    document.getElementById("characterInfo").innerHTML = "Health: <br><div id='healthBar' class='statusBar'>" +
+    hero.vitality + " / " + hero.maxVitality +
+    "<div id='healthSlider' class='statusSlider'></div></div><br><br><hr style='width: 80%'><br>" +
+    "Shield Health: <br><div id='shieldHealthBar' class='statusBar'>" +
+    heroShield.vitality + " / " + heroShield.maxVitality +
+    "<div id='shieldHealthSlider' class='statusSlider'></div></div><br>";
+
+    document.getElementById("healthSlider").style.width = 180 * healthFraction + "px";
+    document.getElementById("shieldHealthSlider").style.width = 180 * shieldHealthFraction + "px";
     var inventoryMessage = "Equipped: <br><br>"
     for(attribute in inventory){
         if(inventory[attribute] != null){
@@ -700,7 +711,10 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             }
             if (hero.vitality <= 0) {
                 print("message", "You died!");
+                hero.vitality = 0;
+                refreshInfo();
                 $("#combat-module").hide(1000);
+                window.clearInterval(enemyAttack);
             }
             if (heroShield.vitality <= 0) {
                 window.clearInterval(shielded);
@@ -741,8 +755,6 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
           $("#defend").off('click');
           $("#defendSlider").show(4000);
             window.setTimeout(function(){
-                if(hero.vitality > 0){
-                print("message", "You manage to raise your shield and deflect the blows. Behind it you begin to recover.");}
               heroShield.shield_ready = false;}, 4000);
                 console.log("shield clicked")
                 if(heroShield.shield_ready){
