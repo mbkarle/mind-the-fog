@@ -66,6 +66,11 @@ var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, true, null, [itemL
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList]);
 var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList, mobDrops]);
 var GreatSword = new Item("greatsword", "weapon", 3, null, null, true, null, [[]]);
+var vikHelm = new Item("viking helmet", "headgear", 1, -1, 2, true, null, [itemList, mobDrops]);
+var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, true, null, [mobDrops]);
+var WarAxe =  new Item("war axe", 1, 1, -2, true, null, [mobDrops]);
+var fireSword = new Item("blazing sword", 1, null, -5, true, null, [mobDrops]);
+
 
 //------------------------------------------------------
 //              Initialize Characters
