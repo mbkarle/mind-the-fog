@@ -135,12 +135,13 @@ adding this class just for world so I can scrap fog.*/
 }
 
 #hoverInfo {
-padding: 50px;
+padding: 10px 20px 10px 20px;
 position: absolute;
 border-color: #a6a6a6;
 border-style: solid;
-right: -250px;
+right: -150px;
 bottom: 0;
+top: 0;
 display: none;
 background-color: white;
 }
