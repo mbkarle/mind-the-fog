@@ -38,7 +38,7 @@ for (var i = 0; i < world_height; i++) {
 //variables to track the current position of hero
 var avatarX = Math.floor(world_width/8);
 var avatarY = Math.floor(world_height/2);
-var curr_floor = 0;
+var curr_floor = 1;
 
 //variables to track printed messages
 var messageArray = [];
@@ -155,9 +155,9 @@ function build_floor(floor_num){
         var TreasureChest3 = new Chest(tChest3Loc[0], tChest3Loc[1]);
         var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
 
-        TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
-        TreasureChest2.treasureID = Math.floor(itemList.length * Math.random());
-        TreasureChest3.treasureID = Math.floor(itemList.length * Math.random());
+        TreasureChest.treasureIDs = [Math.floor(itemList.length * Math.random()), Math.floor(itemList.length * Math.random())];
+        TreasureChest2.treasureIDs = [Math.floor(itemList.length * Math.random()), Math.floor(itemList.length * Math.random())];
+        TreasureChest3.treasureIDs = [Math.floor(itemList.length * Math.random()), Math.floor(itemList.length * Math.random())];
 
         //add your treasures!
         for(var i = 0; i < treasures.length; i++){
@@ -576,23 +576,36 @@ function readyUp() {
 function openChest(stage) {
     $("#open").click(
         function() {
-            // console.log('here')
+            treasureIDs = world_map[avatarY][avatarX][curr_floor].treasureIDs;
+            console.log(treasureIDs)
             if (stage) {
-                msg = print("item", itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
+                items_in_chest = []
+                for(var i = 0; i < treasureIDs.length; i++){
+                    takeID = "take"+i
+                    items_in_chest.push(itemList[treasureIDs[i]])
+                    $(takeID).click(
+                        function() {
+                            world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
+                            equip(hero, itemList[treasureIDs[i]]);
+                            $(takeID).hide();
+                        }
+                    )
+                }
+                print('item', items_in_chest)
                 // console.log(msg)
-                $("#equip").show();
-                console.log(itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
-                $("#equip").click(
-                    function() {
-                        world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
-                        equip(hero, itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
-                        $("#equip").hide();
-                    })
+                // $("#equip").show();
+                // console.log(itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
+
                 stage = !stage;
 
             } else {
-                $("#equip").hide();
-                $("#equip").off("click");
+                // $("#equip").hide();
+                // $("#equip").off("click");
+                for(var i = 0; i < treasureIDs.length; i++){
+                    takeID = "take"+i
+                    $(takeID).hide();
+                    $(takeID).off("click")
+                }
                 $("#open").hide();
                 $("#open").off("click")
                 $("#enter").show();
@@ -630,22 +643,40 @@ function print(messageType, message) { //TODO: change so that multiple items can
         messageArray.push([message, prevMessage]); //was messageType, prevMessage-- want to push that its an enemy-message, not a 'lastMessage', right?
     }
     else if (messageType == "item") {
-        var itemMessage = "You find: <br> <div class='itemInfo'>" + message.name + "<div id='equip' class='interact'>Equip</div></div><br>";
-        var itemInfo = message.name + "<br>";
-        for (attribute in message) {
-            if (typeof message[attribute] == "number") {
-                itemInfo += attribute + ": +" + message[attribute] + "<br>";
+        //ASSUMED: passed an array of items
+        items = message;
+        var itemMessage = "You find: <br>"
+        var itemInfos = []
+        for(var i = 0; i < items.length; i++){
+            //store all the item infos to be displayed upon hover...
+            itemInfos.push((items[i].name + "<br>"))
+            for (attribute in items[i]) {
+                if (typeof items[i][attribute] == "number") {
+                    itemInfos[i] += attribute + ": +" + items[i][attribute] + "<br>";
+                }
             }
+            //build the html to print to the textBox
+            itemMessage += "<div class='itemInfo' id='itemInfo" + i + "'>" + items[i].name + "<div id='take" + i + "' class='interact'> Take </div></div>"; //style='top: " + (25 + takeID*25) + "px;'>
+
+        }
+        console.log(itemInfos)
+        document.getElementById("textBox").innerHTML = itemMessage;
+
+        //need mouse listeners after itemMessage printed...
+        for(var i = 0; i < items.length; i++){
+            var item_to_print =  (' ' + itemInfos[i]).slice(1)
+            var id = '#itemInfo'+i;
+            $(id).attr('item_to_print', item_to_print)
+            $(id).mouseenter(function(){
+                document.getElementById("hoverInfo").innerHTML = $(this).attr('item_to_print');;
+                $("#hoverInfo").show();
+            })
+            $(id).mouseleave(function(){
+                $("#hoverInfo").hide();
+            })
+
         }
 
-        document.getElementById("textBox").innerHTML = itemMessage;
-        $(".itemInfo").mouseenter(function(){
-            $("#hoverInfo").show();
-        })
-        $(".itemInfo").mouseleave(function(){
-            $("#hoverInfo").hide();
-        })
-        document.getElementById("hoverInfo").innerHTML = itemInfo;
         messageCount--; //NEED TO DECREMENT BC ITEM NOT PUSHED
     }
     else {
@@ -828,7 +859,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             $("#open").click(
                 function() {
                     console.log("clicked open")
-                    print("item", mobDrops[enemyList[idx].lootId]);
+                    print("item", [mobDrops[enemyList[idx].lootId]]);
                     console.log(mobDrops[enemyList[idx].lootId]);
                     $("#open").hide();
                     $("#equip").show();
@@ -845,7 +876,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
               $("#open").click(
                 function(){
                   console.log(enemyList[idx]);
-                  print("item", enemyList[idx].loot);
+                  print("item", [enemyList[idx].loot]);
                   $("#open").hide();
                   $("#equip").show();
                   $("#equip").click(

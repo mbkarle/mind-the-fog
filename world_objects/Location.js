@@ -18,7 +18,7 @@ class Chest extends Location {
     constructor(rowID, colID){
         super(rowID, colID,'Treasure Chest', 'treasure', 'v', "A wooden chest. It's locked, but no wood can withstand your blade.",true);
         this.emptied_chest = false; //has the chest been emptied?
-        this.treasureID = -1; //id of treasure Item inside in itemList
+        this.treasureIDs = []; //id of treasure Item inside in itemList
     }
 }
 
