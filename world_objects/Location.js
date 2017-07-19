@@ -58,3 +58,35 @@ class EmptyTile extends Location{
         super(rowID, colID, 'Empty Tile', 'empty', '', 'you shouldnt be here...',false)
     }
 }
+
+class CharDialogue extends Location{
+    constructor(rowID, colID, charId){
+        super(rowID, colID, 'Character Dialogue', 'charDialogue', 'C', "", true);
+        this.charId = charId;
+        var self = this;
+
+        this.dialogue = function(stringArray, thisMessage){
+        print("message", "<div style='font-size:12px;position:absolute;top:0;left:10px;'>" + this.charId + "</div>" + stringArray[thisMessage]);
+        $("#text-module").show();
+        $("#enter").hide();
+        $("#open").show();
+        $("#open").click(
+            function() {
+                $("#open").off('click');
+                if(thisMessage + 1 < stringArray.length){
+                    console.log("next panel");
+                    thisMessage++;
+                    self.dialogue(stringArray, thisMessage);
+                }
+                else{
+                    console.log("dialogue over");
+                    $("#open").hide();
+                    $("#enter").show();
+                    $("#text-module").hide();
+                    print("lastMessage", "enemy-message");
+                    canMove = true;
+                }
+            }
+        )
+    }}
+}

@@ -126,6 +126,11 @@ function build_floor(floor_num){
         var entrance = new DungeonEntrance(entranceLoc[0],entranceLoc[1])
         world_map[entrance.rowID][entrance.colID][floor_num] = entrance;
 
+        gateKeepLoc = [Math.floor(world_height/2) + 3, Math.floor(world_width * (3/4))]
+
+        var gateKeeper = new CharDialogue(gateKeepLoc[0], gateKeepLoc[1], "the gatekeeper");
+        world_map[gateKeeper.rowID][gateKeeper.colID][floor_num] = gateKeeper;
+
         //after creating all special locations, turn fog off!
         //insert empty tiles and walls
         for(var i = 0; i < world_height; i++){
@@ -186,7 +191,7 @@ function combat(hero, opponents) { //opponents is either string "default" or ene
     enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre];
 }
     else if(curr_floor == 2){
-        enemies = [Sorcerer, DireRat2, Vagrant, HellHound];
+        enemies = [Sorcerer, DireRat2, Vagrant, HellHound, Troglodyte];
     }
     if(opponents == "return"){
         for(i = 0; i < enemies.length; i++){
@@ -465,6 +470,21 @@ function move(e) {
                 }
             )
         }
+        if(world_map[avatarY][avatarX][curr_floor].objid === 'charDialogue'){
+            if(didMove){
+            canMove = false}
+            //character dialogue arrays
+            var gateKeeperDialogue = ["Greetings, wanderer.",
+            "Before you lies the dungeon. It is rife with danger but filled with opportunity.",
+            "You may find great fortune within, but be careful. While your blade will provide the means to smite your enemies, " +
+            "it may be necessary to take shelter behind your shield to recover when you suffer their reprisals.",
+            "Good fortune to you, adventurer."
+        ]
+            if(world_map[avatarY][avatarX][curr_floor].charId === "the gatekeeper" && didMove){
+                world_map[avatarY][avatarX][curr_floor].dialogue(gateKeeperDialogue, 0);
+            }
+
+        }
     }
     //keypresses outside of canMove
     if (e.keyCode == 73){
@@ -497,6 +517,8 @@ function descend(descend){
         floorCleared = false;
         buildMap(world_map);
         combat(hero, "default");
+        heroShield.vitality = heroShield.maxVitality;
+        refreshInfo();
     }
     }
     else{
