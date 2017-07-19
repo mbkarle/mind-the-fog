@@ -17,3 +17,15 @@ class Item {
         }
     }
 }
+
+class Shields extends Item {
+  constructor(name, type, strength, dexterity, vitality, toList, objid, items){
+    super(name, type, strength, dexterity, vitality, toList, objid, items);
+    this.shield_ready = true;
+  }
+  shieldReady() {
+    this.shield_ready = true;
+    clearTimeout(shieldReadyup);
+    return this.shield_ready;
+  }
+}

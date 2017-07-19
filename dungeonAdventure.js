@@ -49,6 +49,7 @@ var canMove = true;
 var hero_protected = false;
 var ready = true;
 var shielded;
+var shieldReadyup;
 
 //------------------------------------------------------
 //              Initialize Items
@@ -57,7 +58,7 @@ itemList = [];
 mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var heroShield = new Item("the shield", "shield", null, null, 50, false, "defendText", [itemList]);
+var heroShield = new Shields("the shield", "shield", null, null, 50, false, "defendText", [itemList]);
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList]);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null, [itemList]);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList]);
@@ -66,6 +67,11 @@ var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, true, null, [itemL
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList]);
 var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList, mobDrops]);
 var GreatSword = new Item("greatsword", "weapon", 3, null, null, true, null, [[]]);
+var vikHelm = new Item("viking helmet", "headgear", 1, -1, 2, true, null, [itemList, mobDrops]);
+var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, true, null, [mobDrops]);
+var WarAxe =  new Item("war axe", "weapon", 1, 1, -2, true, null, [mobDrops]);
+var fireSword = new Item("blazing sword", "weapon", 2, 1, null, true, null, [[]]);
+
 
 //------------------------------------------------------
 //              Initialize Characters
@@ -76,6 +82,8 @@ var DireRat = new Enemy("Dire Rat", 1, 15, 20, "enemy");
 var DireRat2 = new Enemy("Dire Rat", 1.5, 15, 20, "enemy");
 var Ogre = new Enemy("Ogre", 9, 1, 60, "enemy");
 var Sorcerer = new Enemy("Sorcerer", 6, 4, 20, "enemy");
+var Vagrant = new Enemy("Wandering Vagrant", 4, 4, 35, "enemy");
+var HellHound = new Boss("Hell Hound", 4, 6, 45, "enemy", fireSword.items[0]);
 var Golem = new Boss("Golem", 7, 3, 50, "enemy", GreatSword.items[0]);
 
 //------------------------------------------------------
@@ -167,12 +175,17 @@ function build_floor(floor_num){
     }
 }
 
-function combat(hero, opponents) { //take in enemy list
+function combat(hero, opponents) { //opponents is either string "default" or enemy object
     if(typeof opponents != "string"){ //combat call is custom combat outside of default list
         enemy = [opponents]
         combat_helper(hero, enemy, 0, true);
     }
-    enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre]; //was previously "globalEnemies"
+    if(curr_floor <= 1){
+    enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre];
+}
+    else if(curr_floor == 2){
+        enemies = [Sorcerer, DireRat2, Vagrant, HellHound];
+    }
     if(opponents == "return"){
         for(i = 0; i < enemies.length; i++){
         if(!enemies[i].vitality <= 0){
@@ -181,6 +194,15 @@ function combat(hero, opponents) { //take in enemy list
         break;
             }
         }
+    }
+    if(opponents == "default" && curr_floor > 1){
+        for(i = 0; i < enemies.length; i++){ //scale enemies
+            enemies[i].maxVitality += 5;
+            enemies[i].vitality = enemies[i].maxVitality;
+            enemies[i].strength += 1;
+            enemies[i].dexterity +=1;
+        }
+        combat_helper(hero, enemies, 0, false);
     }
     window.onload = function() {
         combat_helper(hero, enemies, 0, false);
@@ -466,12 +488,14 @@ function descend(descend){
         print("lastMessage", "enemy-message");
 
         //rebuild the floor and make the new map!
+        if(curr_floor < world_depth - 1){
         curr_floor++; //TODO can leave the last floor....
         build_floor(curr_floor);
         world_map[avatarY][avatarX][curr_floor].hero_present = true;
         floorCleared = false;
         buildMap(world_map);
-
+        combat(hero, "default");
+    }
     }
     else{
         $("#descend").off("click")
@@ -503,7 +527,18 @@ function statue_fight(fight){
 }
 
 function refreshInfo() { // updates info box
-    document.getElementById("characterInfo").innerHTML = "Health: <br>" + hero.vitality + " / " + hero.maxVitality + "<br>";
+    var healthFraction = hero.vitality/hero.maxVitality;
+    var shieldHealthFraction = heroShield.vitality/heroShield.maxVitality;
+
+    document.getElementById("characterInfo").innerHTML = "Health: <br><div id='healthBar' class='statusBar'>" +
+    hero.vitality + " / " + hero.maxVitality +
+    "<div id='healthSlider' class='statusSlider'></div></div><br><br><hr style='width: 80%'><br>" +
+    "Shield Health: <br><div id='shieldHealthBar' class='statusBar'>" +
+    heroShield.vitality + " / " + heroShield.maxVitality +
+    "<div id='shieldHealthSlider' class='statusSlider'></div></div><br>";
+
+    document.getElementById("healthSlider").style.width = 180 * healthFraction + "px";
+    document.getElementById("shieldHealthSlider").style.width = 180 * shieldHealthFraction + "px";
     var inventoryMessage = "Equipped: <br><br>"
     for(attribute in inventory){
         if(inventory[attribute] != null){
@@ -648,13 +683,14 @@ function equip(target, equipment) {
 
     }
     inventory[equipment.type] = equipment;
-    refreshInfo();
+
     var attribute;
     for (attribute in equipment) {
         if (typeof equipment[attribute] == "number") {
             target[attribute] += equipment[attribute];
         }
     }
+    refreshInfo();
 }
 function Unequip(target, equipment) {
     console.log(target.name + " unequipped " + equipment.name) // finish inventory
@@ -694,11 +730,15 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             }
             if (hero.vitality <= 0) {
                 print("message", "You died!");
+                hero.vitality = 0;
+                refreshInfo();
                 $("#combat-module").hide(1000);
+                window.clearInterval(enemyAttack);
             }
             if (heroShield.vitality <= 0) {
                 window.clearInterval(shielded);
                 hero_protected = false;
+                heroShield.shieldReady();
                 //jquery animation:
                 $("#defendSlider").hide('fast');
             }
@@ -729,24 +769,34 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         }
     };
 
-    if (hero_protected == false && heroShield.vitality > 0) {
-        document.getElementById("defend").onclick = function() {
-            window.setTimeout(function(){
-                if(hero.vitality > 0){
-                print("message", "You manage to raise your shield and deflect the blows. Behind it you begin to recover.")}}, 4000);
 
+        document.getElementById("defend").onclick = function() {
+          if (hero_protected == false && heroShield.vitality > 0) {
+        //  $("#defend").off('click');
+          $("#defendSlider").show(4000);
+            shieldReadyup = setTimeout(function(){
+              heroShield.shield_ready = false;}, 4000);
+            //    console.log("shield clicked")
+                if(heroShield.shield_ready){
+                  heroShield.shield_ready = false;
             shielded = setInterval(function() {
+             // console.log("shielding");
                 Shield()
-            }, 4000);
+            }, 4000);}
+
 
         }
     }
 
+
     // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], heroShield)} else{Damage(enemyList[idx], hero)}}, 10000 / enemyList[idx].dexterity);
     document.getElementById('combat-module').onclick = function() {
-        console.log("clicked combat-module")
-        if (hero_protected == true || heroShield.vitality <= 0) {
+    //    console.log("hero_protected: " + hero_protected);
+    //    console.log("heroShield.shield_ready: " + heroShield.shield_ready);
+        if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
+        //    console.log("turning off shield");
             window.clearInterval(shielded);
+            heroShield.shieldReady();
             hero_protected = false;
             //jquery animation:
             $("#defendSlider").hide('fast');
@@ -758,7 +808,11 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
             window.clearInterval(shielded);
             hero_protected = false;
-            $("#defendSlider").hide('fast');
+            heroShield.shieldReady();
+        //    console.log("hero_protected should now be false and heroShield.shield_ready true");
+    //        console.log("hero_protected: " + hero_protected);
+        //    console.log("heroShield.shield_ready: " + heroShield.shield_ready);
+                        $("#defendSlider").hide('fast');
 
             $("#combat-module").hide(1000);
             $("#text-module").animate({
@@ -809,6 +863,8 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                 document.getElementById("enter").innerHTML = "––>";
                 $("#enter").show();
                 document.getElementById("enter").onclick = function() {
+            //        console.log("hero_protected: " + hero_protected);
+            //        console.log("heroShield.shield_ready: " + heroShield.shield_ready);
                     canMove = true;
                     // $("#combat-module").hide(500);
                     // $("#text-module").animate({
@@ -851,9 +907,5 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                 }
             }
         }
-    //jquery animation:
-    $("#defend").click(function() {
-        $("#defendSlider").show(4000);
-    })
 
 }

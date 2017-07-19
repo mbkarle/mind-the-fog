@@ -30,6 +30,7 @@
   border-color: #a6a6a6;
   width: 50px;
   margin: auto;
+  z-index: 2;
 }
 
 #attack {
@@ -47,6 +48,7 @@
   padding-bottom: 15px;
   background-color: #e6e6e6;
   opacity: .5;
+  z-index: 1;
 }
 
 #attackSlider {
@@ -120,7 +122,8 @@ adding this class just for world so I can scrap fog.*/
 }
 
 #info-module {
-    padding: 50px;
+    width: 200px;
+    padding-top: 25px;
     padding-bottom: 200px;
     border-style: solid;
     border-color: #a6a6a6;
@@ -175,4 +178,27 @@ background-color: white;
     left:0;
     bottom: 15px;
 
+}
+.statusBar, .statusSlider {
+  position: absolute;
+  height: 16px;
+  width: 180px;
+  left: 10px;
+  margin: auto;
+}
+
+.statusBar {
+    font-size: 12px;
+    text-align: center;
+    color: #a6a6a6;
+    border-style: solid;
+    border-color: #a6a6a6;
+    border-width: thin;
+}
+.statusSlider {
+    opacity: .5;
+    background-color: #e6e6e6;
+    height: inherit;
+    left: 0;
+    top: 0;
 }
