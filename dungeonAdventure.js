@@ -89,7 +89,7 @@ var Golem = new Boss("Golem", 7, 3, 50, "enemy", GreatSword.items[0]);
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
 //------------------------------------------------------
-build_floor(curr_floor) //this will initialize the treasures and other locations
+build_floor(curr_floor, null) //this will initialize the treasures and other locations
 
 //inventory!!!!
 var inventory = {
@@ -117,10 +117,20 @@ combat(hero, "default");
 //                      HELPER FUNCTIONS
 //================================================================
 
-function build_floor(floor_num){
+function build_floor(floor_num, roomId){
     if(floor_num == 0){ //special first floor...
         //special locations
         //dungeon entrance!!
+
+        //code for room switches
+        // if(typeof roomId != "object"){
+        //     if(roomId == "hall"){
+        //         console.log('in the hall');
+        //     }
+        //     else if(roomId == "roomA"){
+        //         console.log("in room A")
+        //     }
+        // }
         entranceLoc = [Math.floor(world_height/2), Math.floor(world_width*(7/8))]//rollLocation([[avatarY,avatarX]])
 
         var entrance = new DungeonEntrance(entranceLoc[0],entranceLoc[1])
@@ -148,6 +158,13 @@ function build_floor(floor_num){
 
             }
         }
+
+        //Doors
+        // roomAdoorLoc = [Math.floor(world_height/3), Math.floor(world_width/4)];
+        // var roomAdoor = new Door(roomAdoorLoc[0], roomAdoorLoc[1], "hall", "roomA");
+        // world_map[roomAdoor.rowID][roomAdoor.colID][floor_num] = roomAdoor;
+        // world_map[roomAdoor.rowID][roomAdoor.colID][floor_num].fog = false;
+
     }
     else{
         //treasures must go after the Items because we need to set an ID for the treasure inside!
@@ -207,7 +224,6 @@ function combat(hero, opponents) { //opponents is either string "default" or ene
             enemies[i].maxVitality += 5;
             enemies[i].vitality = enemies[i].maxVitality;
             enemies[i].strength += 1;
-            enemies[i].dexterity +=1;
         }
         combat_helper(hero, enemies, 0, false);
     }
@@ -485,6 +501,13 @@ function move(e) {
             }
 
         }
+        if(world_map[avatarY][avatarX][curr_floor].objid === 'door'){
+            if(didMove){
+                canMove = false;
+                world_map[avatarY][avatarX][curr_floor].nextRoom();
+            }
+
+        }
     }
     //keypresses outside of canMove
     if (e.keyCode == 73){
@@ -512,7 +535,7 @@ function descend(descend){
         //rebuild the floor and make the new map!
         if(curr_floor < world_depth - 1){
         curr_floor++; //TODO can leave the last floor....
-        build_floor(curr_floor);
+        build_floor(curr_floor, null);
         world_map[avatarY][avatarX][curr_floor].hero_present = true;
         floorCleared = false;
         buildMap(world_map);
@@ -553,6 +576,8 @@ function statue_fight(fight){
 function refreshInfo() { // updates info box
     var healthFraction = hero.vitality/hero.maxVitality;
     var shieldHealthFraction = heroShield.vitality/heroShield.maxVitality;
+    hero.levelCheck();
+    var xpFraction = (hero.xp - hero.level * 1000) / 1000
 
     document.getElementById("characterInfo").innerHTML = "Health: <br><div id='healthBar' class='statusBar'>" +
     hero.vitality + " / " + hero.maxVitality +
@@ -561,8 +586,13 @@ function refreshInfo() { // updates info box
     heroShield.vitality + " / " + heroShield.maxVitality +
     "<div id='shieldHealthSlider' class='statusSlider'></div></div><br>";
 
+    document.getElementById('xp').innerHTML = "<div id='xpBar' class='statusBar' style='width: 60px'>Level: " +
+    hero.level + "<div id='xpSlider' class='statusSlider'></div></div>"
+
     document.getElementById("healthSlider").style.width = 180 * healthFraction + "px";
     document.getElementById("shieldHealthSlider").style.width = 180 * shieldHealthFraction + "px";
+    document.getElementById("xpSlider").style.width = 60 * xpFraction + "px";
+
     var inventoryMessage = "Equipped: <br><br>"
     for(attribute in inventory){
         if(inventory[attribute] != null && attribute !== 'carried'){
@@ -921,6 +951,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         }
         if (enemyList[idx].vitality <= 0) {
             enemyList[idx].vitality = 0;
+            hero.xp += 200;
             window.clearInterval(enemyAttack);
 
             // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
@@ -960,6 +991,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                     }
             );}
             else if(customCombat){
+            hero.xp += 100;
               $("#open").show();
               $("#open").click(
                 function(){
@@ -1006,6 +1038,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
 
                 else {
                     console.log("floor cleared!")
+                    refreshInfo();
                     print("message", "The fog clears, and looking around there seemed to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
                     floorCleared = true;
                     $("#open").show()

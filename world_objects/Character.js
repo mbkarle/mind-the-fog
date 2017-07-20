@@ -20,6 +20,10 @@ class Boss extends Character{
 class Hero extends Character{
   constructor(name, strength, dexterity, vitality, objid){
     super(name, strength, dexterity, vitality, objid);
+    this.xp = 1000;
+    this.levelCheck = function() {
+        return this.level = Math.floor(this.xp / 1000);
+    }
   }
 }
 

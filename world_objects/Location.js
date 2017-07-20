@@ -90,3 +90,35 @@ class CharDialogue extends Location{
         )
     }}
 }
+
+class Door extends Location{ //highly experimental content at hand here
+    constructor(rowID, colID, roomID, nextRoomID){
+        super(rowID, colID, 'Door', 'door', '–', 'Leave room? Door system is a work in progress', true);
+        this.roomID = roomID;
+        this.nextRoomID = nextRoomID;
+        var self = this;
+
+        this.nextRoom = function() {
+            print("message", self.message);
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#open").show();
+            $("#open").click(
+                function(){
+                    $("#open").off('click');
+                    $("#open").hide();
+                    $("#enter").show();
+                    $("#text-module").hide();
+                    print("lastMessage", "enemy-message");
+
+                    self.oldRoomID = self.roomID;
+                    self.roomID = self.nextRoomID;
+                    self.nextRoomID = self.oldRoomID;
+                    build_floor(curr_floor, self.roomID);
+                    canMove = true;
+                }
+            )
+
+        }
+    }
+}
