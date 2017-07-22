@@ -52,26 +52,35 @@ var shielded;
 var shieldReadyup;
 
 //------------------------------------------------------
+//              Initialize Buffs and Debuffs
+//------------------------------------------------------
+
+var adrenaline = new Buff(null, null, 5000, ["strength", "dexterity"], [1, 1]);
+
+
+
+//------------------------------------------------------
 //              Initialize Items
 //------------------------------------------------------
 itemList = [];
 mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var heroShield = new Shields("the shield", "shield", null, null, 50, false, "defendText", [itemList]);
-var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList]);
-var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null, [itemList]);
-var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList]);
-var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList, mobDrops]);
-var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, true, null, [itemList]);
-var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList]);
-var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList, mobDrops]);
-var GreatSword = new Item("greatsword", "weapon", 3, null, null, true, null, [[]]);
-var vikHelm = new Item("viking helmet", "headgear", 1, -1, 2, true, null, [itemList, mobDrops]);
-var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, true, null, [mobDrops]);
-var WarAxe =  new Item("war axe", "weapon", 1, 1, -2, true, null, [mobDrops]);
-var fireSword = new Item("blazing sword", "weapon", 2, 1, null, true, null, [[]]);
-
+var heroShield = new Shields("the shield", "shield", null, null, 50, null, false, "defendText", [itemList]);
+var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, null, false, null, [itemList]);
+var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, null, false, null,[itemList]);
+var IronHelm = new Item("iron helm", "headgear", null, -1, 10, null, true, null, [itemList]);
+var katana = new Item("katana", "weapon", 1, 1, null, null, true, null, [itemList, mobDrops]);
+var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, null, true, null, [itemList]);
+var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, null, true, null, [itemList]);
+var chainMail = new Item("light chainmail", "armor", null, null, 5, null, true, null, [itemList, mobDrops]);
+var GreatSword = new Item("greatsword", "weapon", 3, null, null, null, true, null, [[]]);
+var vikHelm = new Item("viking helmet", "headgear", 1, -1, null, [adrenaline], true, null, [itemList, mobDrops]);
+var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, null, true, null, [mobDrops]);
+var WarAxe =  new Item("war axe", "weapon", 1, 1, -5, [adrenaline], true, null, [mobDrops]);
+var fireSword = new Item("blazing sword", "weapon", 2, 1, null, null, true, null, [[]]);
+var hoodofOmar = new Item("leather hood", "headgear", null, 1, 3, null, true, null, [itemList, mobDrops]);
+var ironMail = new Item("iron chainmail", "armor", null, -1, 15, null, true, null, [mobDrops]);
 
 //------------------------------------------------------
 //              Initialize Characters
@@ -85,6 +94,7 @@ var Sorcerer = new Enemy("Sorcerer", 6, 4, 20, "enemy");
 var Vagrant = new Enemy("Wandering Vagrant", 4, 4, 35, "enemy");
 var HellHound = new Boss("Hell Hound", 4, 6, 45, "enemy", fireSword.items[0]);
 var Golem = new Boss("Golem", 7, 3, 50, "enemy", GreatSword.items[0]);
+
 
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
@@ -514,6 +524,10 @@ function move(e) {
         $("#info-module").toggle(100);
         refreshInfo();
     }
+    else if(e.keyCode == 77){
+        $("#tree-module").toggle(100);
+        refreshInfo();
+    }
 }
 
 function descend(descend){
@@ -573,7 +587,8 @@ function statue_fight(fight){
     document.getElementById("stay").innerHTML = "Stay"
 }
 
-function refreshInfo() { // updates info box
+function refreshInfo() {
+    // updates info box
     var healthFraction = hero.vitality/hero.maxVitality;
     var shieldHealthFraction = heroShield.vitality/heroShield.maxVitality;
     hero.levelCheck();
@@ -588,6 +603,8 @@ function refreshInfo() { // updates info box
 
     document.getElementById('xp').innerHTML = "<div id='xpBar' class='statusBar' style='width: 60px'>Level: " +
     hero.level + "<div id='xpSlider' class='statusSlider'></div></div>"
+
+    document.getElementById('gold').innerHTML = hero.wallet + " gold"
 
     document.getElementById("healthSlider").style.width = 180 * healthFraction + "px";
     document.getElementById("shieldHealthSlider").style.width = 180 * shieldHealthFraction + "px";
@@ -642,6 +659,12 @@ function refreshInfo() { // updates info box
             $("#inv_hoverInfo").hide();
         })
     }
+    //magic tree:
+    document.getElementById("tree-module").innerHTML = "insert skill tree here"
+
+    //refresh for combat-module:
+    document.getElementById("hero").innerHTML = hero.vitality;
+    document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
 }
 
 function Damage(source_character, target_character) {
@@ -902,6 +925,17 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         if (ready) {
             ready = false;
             window.setTimeout(readyUp, 10000 / hero.dexterity);
+            if(inventory.weapon.buffArray != null){
+                inventory.weapon.buffUp(.2, hero);
+            }
+            if(inventory.armor != null){
+                if(inventory.armor.buffArray != null){
+                inventory.armor.buffUp(.2, hero);
+            }}
+            if(inventory.headgear != null){
+            if(inventory.headgear.buffArray != null){
+                inventory.headgear.buffUp(.2, hero);
+            }}
             hitprint = Damage(hero, enemyList[idx]);
             print("damageDealt", hitprint);
             //jquery animations:
@@ -973,6 +1007,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             var dropChance = Math.random();
             if(!customCombat && dropChance > 0){
                 console.log(dropChance);
+                hero.xp += 100;
                 $("#open").show();
                 $("#open").click(
                     function() {

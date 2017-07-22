@@ -121,7 +121,7 @@ adding this class just for world so I can scrap fog.*/
   margin: auto;
 }
 
-#info-module {
+#info-module, #tree-module {
     width: 200px;
     padding-top: 25px;
     padding-bottom: 200px;

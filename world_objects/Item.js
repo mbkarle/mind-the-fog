@@ -1,5 +1,5 @@
 class Item {
-    constructor(name, type, strength, dexterity, vitality, toList, objid, items) {
+    constructor(name, type, strength, dexterity, vitality, buffArray, toList, objid, items) {
         this.name = name;
         this.type = type;
         this.strength = strength;
@@ -10,11 +10,18 @@ class Item {
         this.objid = objid;
         this.items = items;
         this.equipped = false;
+        this.buffArray = buffArray;
 
         if(toList){
             for(i = 0; i < items.length; i++){
             items[i].push(this);
         }
+        }
+        this.buffUp = function(percent, target){
+            if(Math.random() <= percent){
+                this.buffArray[Math.floor(Math.random() * this.buffArray.length)].applyBuff(target);
+                console.log(hero.strength);
+            }
         }
     }
 }

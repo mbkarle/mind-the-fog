@@ -24,6 +24,10 @@ class Hero extends Character{
     this.levelCheck = function() {
         return this.level = Math.floor(this.xp / 1000);
     }
+    this.wallet = 0;
+    this.addGold = function(gold) {
+        return this.wallet += gold;
+    }
   }
 }
 
