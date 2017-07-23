@@ -546,7 +546,7 @@ function refreshInfo() { // updates info box
             inventoryMessage += attribute + ": " + inventory[attribute].name + "<br><br>";
         }
     }
-    inventoryMessage += "Carried: <br><br>"
+    inventoryMessage += "<hr style='width: 80%'> Carried: <br><br>"
     items_carried = inventory['carried'];
     for(var i = 0; i < items_carried.length; i++){
         inventoryMessage += items_carried[i].name + '<br>'//"<div class='itemInfo' id='itemInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact'> Equip </div></div>"; //style='top: " + (25 + takeID*25) + "px;'>
@@ -589,27 +589,8 @@ function openChest(stage) {
                 for(var i = 0; i < treasureIDs.length; i++){
                     items_in_chest.push(itemList[treasureIDs[i]])
                 }
-                print('item', items_in_chest)
-
-                for(var i = 0; i < treasureIDs.length; i++){
-                    takeID = '#take'+i
-                    item = $().extend(true, {}, itemList[treasureIDs[i]])
-                    $(takeID).attr('item_id', i)
-                    $(takeID).click(
-                        function() {
-                            // console.log('hi Im ' + takeID)
-                            world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
-                            item_to_take = itemList[treasureIDs[$(this).attr('item_id')]];
-                            // equip(hero, item_to_take);
-                            take_item(item_to_take)
-                            $(this).hide();
-                        }
-                    )
-                }
-                // console.log(msg)
-                // $("#equip").show();
-                // console.log(itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
-
+                print('item', items_in_chest) //handles HTML
+                drop_items(items_in_chest) //handles take clicks, etc
                 stage = !stage;
 
             } else {
@@ -635,6 +616,28 @@ function openChest(stage) {
 function take_item(item){
     inventory.carried.push(item)
     refreshInfo();
+}
+
+
+function drop_items(items){
+    console.log(items)
+    console.log(items.length)
+    for(var i = 0; i < items.length; i++){
+        console.log('hi')
+        takeID = '#take'+i
+        item = $().extend(true, {}, items[i])
+        $(takeID).attr('item_id', i)
+        $(takeID).click(
+            function() {
+                // console.log('hi Im ' + takeID)
+                world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
+                item_to_take = items[$(this).attr('item_id')];
+                // equip(hero, item_to_take);
+                take_item(item_to_take)
+                $(this).hide();
+            }
+        )
+    }
 }
 
 /*message is either:
@@ -873,23 +876,24 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             print("message", "You've defeated the beast!");
             $("#combat-module").off('click');
             var dropChance = Math.random();
-            if(!customCombat && dropChance > 0.85){
-            console.log(dropChance);
-            $("#open").show();
-            $("#open").click(
-                function() {
-                    console.log("clicked open")
-                    print("item", [mobDrops[enemyList[idx].lootId]]);
-                    console.log(mobDrops[enemyList[idx].lootId]);
-                    $("#open").hide();
-                    $("#equip").show();
-                    $("#equip").click(
-                        function(){
-                            equip(hero, mobDrops[enemyList[idx].lootId]);
-                            $("#equip").hide().off('click');
-                        })
-                    $("#open").off('click');
-                }
+            if(!customCombat && dropChance > 0){
+                console.log(dropChance);
+                $("#open").show();
+                $("#open").click(
+                    function() {
+                        // console.log("clicked open")
+                        print("item", [mobDrops[enemyList[idx].lootId]]);
+                        drop_items([mobDrops[enemyList[idx].lootId]])
+                        // console.log(mobDrops[enemyList[idx].lootId]);
+                        $("#open").hide();
+                        // $("#equip").show();
+                        // $("#equip").click(
+                        //     function(){
+                        //         equip(hero, mobDrops[enemyList[idx].lootId]);
+                        //         $("#equip").hide().off('click');
+                        //     })
+                        $("#open").off('click');
+                    }
             );}
             else if(customCombat){
               $("#open").show();
@@ -898,13 +902,14 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                   console.log(enemyList[idx]);
                   print("item", [enemyList[idx].loot]);
                   $("#open").hide();
-                  $("#equip").show();
-                  $("#equip").click(
-                    function(){
-                      equip(hero, enemyList[idx].loot);
-                      $("#equip").hide().off('click');
-                    }
-                  )
+                //   $("#equip").show();
+                //   $("#equip").click(
+                //     function(){
+                //       equip(hero, enemyList[idx].loot);
+                //       $("#equip").hide().off('click');
+                //     }
+                //   )
+                drop_items([enemyList[idx].loot])
                 $("#open").off('click');
               }
               )
