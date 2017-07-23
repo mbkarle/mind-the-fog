@@ -7,7 +7,7 @@
 //              Spinning up your world...
 //------------------------------------------------------
 //world dimensions
-var floorCleared = true;
+var floorCleared = false;
 var world_width = 40;
 var world_height = 30;
 var world_depth = 3;
@@ -577,21 +577,28 @@ function openChest(stage) {
     $("#open").click(
         function() {
             treasureIDs = world_map[avatarY][avatarX][curr_floor].treasureIDs;
-            console.log(treasureIDs)
+            // console.log(treasureIDs)
             if (stage) {
                 items_in_chest = []
                 for(var i = 0; i < treasureIDs.length; i++){
-                    takeID = "take"+i
                     items_in_chest.push(itemList[treasureIDs[i]])
+                }
+                print('item', items_in_chest)
+
+                for(var i = 0; i < treasureIDs.length; i++){
+                    takeID = '#take'+i
+                    item = $().extend(true, {}, itemList[treasureIDs[i]])
+                    $(takeID).attr('item_id', i)
                     $(takeID).click(
                         function() {
+                            // console.log('hi Im ' + takeID)
                             world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
-                            equip(hero, itemList[treasureIDs[i]]);
-                            $(takeID).hide();
+                            item_to_take = itemList[treasureIDs[$(this).attr('item_id')]];
+                            equip(hero, item_to_take);
+                            $(this).hide();
                         }
                     )
                 }
-                print('item', items_in_chest)
                 // console.log(msg)
                 // $("#equip").show();
                 // console.log(itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
@@ -602,7 +609,7 @@ function openChest(stage) {
                 // $("#equip").hide();
                 // $("#equip").off("click");
                 for(var i = 0; i < treasureIDs.length; i++){
-                    takeID = "take"+i
+                    takeID = "#take"+i
                     $(takeID).hide();
                     $(takeID).off("click")
                 }
@@ -668,7 +675,7 @@ function print(messageType, message) { //TODO: change so that multiple items can
             var id = '#itemInfo'+i;
             $(id).attr('item_to_print', item_to_print)
             $(id).mouseenter(function(){
-                document.getElementById("hoverInfo").innerHTML = $(this).attr('item_to_print');;
+                document.getElementById("hoverInfo").innerHTML = $(this).attr('item_to_print');
                 $("#hoverInfo").show();
             })
             $(id).mouseleave(function(){
