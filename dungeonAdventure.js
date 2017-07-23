@@ -95,7 +95,8 @@ build_floor(curr_floor) //this will initialize the treasures and other locations
 var inventory = {
     weapon: startWeapon,
     headgear: null,
-    armor: null
+    armor: null,
+    carried: []
 }
 
 //------------------------------------------------------
@@ -541,9 +542,14 @@ function refreshInfo() { // updates info box
     document.getElementById("shieldHealthSlider").style.width = 180 * shieldHealthFraction + "px";
     var inventoryMessage = "Equipped: <br><br>"
     for(attribute in inventory){
-        if(inventory[attribute] != null){
+        if(inventory[attribute] != null && attribute !== 'carried'){
             inventoryMessage += attribute + ": " + inventory[attribute].name + "<br><br>";
         }
+    }
+    inventoryMessage += "Carried: <br><br>"
+    items_carried = inventory['carried'];
+    for(var i = 0; i < items_carried.length; i++){
+        inventoryMessage += items_carried[i].name + '<br>'//"<div class='itemInfo' id='itemInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact'> Equip </div></div>"; //style='top: " + (25 + takeID*25) + "px;'>
     }
     document.getElementById("inventory").innerHTML = inventoryMessage;
 }
@@ -594,7 +600,8 @@ function openChest(stage) {
                             // console.log('hi Im ' + takeID)
                             world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
                             item_to_take = itemList[treasureIDs[$(this).attr('item_id')]];
-                            equip(hero, item_to_take);
+                            // equip(hero, item_to_take);
+                            take_item(item_to_take)
                             $(this).hide();
                         }
                     )
@@ -622,6 +629,12 @@ function openChest(stage) {
                 return;
             }
         });
+}
+
+
+function take_item(item){
+    inventory.carried.push(item)
+    refreshInfo();
 }
 
 /*message is either:
