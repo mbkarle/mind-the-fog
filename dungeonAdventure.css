@@ -207,3 +207,16 @@ background-color: white;
 #inventory {
     line-height: 95%;
 }
+
+#inv_hoverInfo {
+    padding: 10px 20px 10px 20px;
+    position: absolute;
+    border-color: #a6a6a6;
+    border-style: solid;
+    right: -160px;
+    bottom: 0;
+    top: 200px;
+    height: 100px;
+    display: none;
+    background-color: white;
+}

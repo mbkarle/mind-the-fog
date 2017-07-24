@@ -7,7 +7,7 @@
 //              Spinning up your world...
 //------------------------------------------------------
 //world dimensions
-var floorCleared = false;
+var floorCleared = true;
 var world_width = 40;
 var world_height = 30;
 var world_depth = 3;
@@ -38,7 +38,7 @@ for (var i = 0; i < world_height; i++) {
 //variables to track the current position of hero
 var avatarX = Math.floor(world_width/8);
 var avatarY = Math.floor(world_height/2);
-var curr_floor = 1;
+var curr_floor = 0;
 
 //variables to track printed messages
 var messageArray = [];
@@ -559,14 +559,35 @@ function refreshInfo() { // updates info box
     }
     document.getElementById("inventory").innerHTML = inventoryMessage;
 
+    itemInfos = []
+    for(var i = 0; i < items_carried.length; i++){
+        //store all the item infos to be displayed upon hover...
+        itemInfos.push((items_carried[i].name + "<br>"))
+        for (attribute in items_carried[i]) {
+            if (typeof items_carried[i][attribute] == "number") {
+                itemInfos[i] += attribute + ": +" + items_carried[i][attribute] + "<br>";
+            }
+        }
+    }
+
     //set equip listeners to inventory
     for(var i = 0; i < items_carried.length; i++){
         carriedID = '#carried' + i;
+        invCarID = '#invInfo' + i;
+        var item_to_print =  (' ' + itemInfos[i]).slice(1)
         $(carriedID).off('click') //turn old click listeners off
         $(carriedID).attr('inv_idx', i)
+        $(invCarID).attr('item_to_print', item_to_print)
         $(carriedID).click(function(){
             equip(hero,items_carried[$(this).attr('inv_idx')])
             refreshInfo()
+        })
+        $(invCarID).mouseenter(function(){
+            document.getElementById("inv_hoverInfo").innerHTML = $(this).attr('item_to_print');
+            $("#inv_hoverInfo").show();
+        })
+        $(invCarID).mouseleave(function(){
+            $("#inv_hoverInfo").hide();
         })
     }
 }
