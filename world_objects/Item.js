@@ -30,9 +30,10 @@ class Item {
 }
 
 class Shields extends Item {
-  constructor(name, type, strength, dexterity, vitality, toList, objid, items){
+  constructor(name, type, strength, dexterity, vitality, healthBoost, toList, objid, items){
     super(name, type, strength, dexterity, vitality, toList, objid, items);
     this.shield_ready = true;
+    this.healthBoost = healthBoost;
   }
   shieldReady() {
     this.shield_ready = true;

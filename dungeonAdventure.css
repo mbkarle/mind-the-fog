@@ -106,6 +106,7 @@
   font-size: 12px;
   font-family: cursive;
   z-index: 4;
+  border-width: 2px;
 }
 
 /*I found that the old fog absolute was required for centering the world
@@ -221,4 +222,12 @@ background-color: white;
     background-color: white;
     font-size: 12px;
     font-family: cursive;
+}
+
+.small {
+  top: 0;
+  bottom: 0;
+  left: 10px;
+  width: 12px;
+  height: 12px;
 }

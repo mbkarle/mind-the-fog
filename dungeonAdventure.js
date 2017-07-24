@@ -67,7 +67,7 @@ itemList = [];
 mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var heroShield = new Shields("the shield", "shield", null, null, 50, null, false, "defendText", [itemList]);
+var heroShield = new Shields("the shield", "shield", null, null, 50, 2, null, false, "defendText", [itemList]);
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, null, false, null, [itemList]);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, null, false, null,[itemList]);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, null, true, null, [itemList]);
@@ -428,6 +428,9 @@ function move(e) {
             hero.vitality += 2;
             document.getElementById("hero").innerHTML = hero.vitality;
             refreshInfo();
+        } else if(hero.vitality + 1 <= hero.maxVitality && didMove){
+          hero.vitality += 1;
+          refreshInfo();
         }
 
         //check if on a chest
@@ -624,7 +627,8 @@ function refreshInfo() {
             inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact' style='display:none;'> Equip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
         }
         else{
-            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact'> Equip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
+            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name +
+            "<div id='carried" + i + "' class='interact'> Equip </div><div id='invDrop" + i + "' class='interact small'>x</div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
         }
     }
     document.getElementById("inventory").innerHTML = inventoryMessage;
@@ -651,13 +655,21 @@ function refreshInfo() {
     for(var i = 0; i < items_carried.length; i++){
         carriedID = '#carried' + i;
         invCarID = '#invInfo' + i;
+        dropID = "#invDrop" + i;
         var item_to_print =  (' ' + itemInfos[i]).slice(1)
+        $(dropID).off('click');
         $(carriedID).off('click') //turn old click listeners off
         $(carriedID).attr('inv_idx', i)
+        $(dropID).attr('drop_idx', i);
         $(invCarID).attr('item_to_print', item_to_print)
         $(carriedID).click(function(){
             equip(hero,items_carried[$(this).attr('inv_idx')])
             refreshInfo()
+        })
+        $(dropID).click(function(){
+          console.log($(this).attr('drop_idx'));
+          items_carried.splice($(this).attr('drop_idx'), 1);
+          refreshInfo();
         })
         $(invCarID).mouseenter(function(){
             document.getElementById("inv_hoverInfo").innerHTML = $(this).attr('item_to_print');
@@ -686,11 +698,14 @@ function Damage(source_character, target_character) {
     return hit;
 }
 
-function Shield() { //TODO fix
-    if(hero.vitality + 2 <= hero.maxVitality){
-    hero.vitality += 2;
-    refreshInfo();
+function Shield() {
+    if(hero.vitality + heroShield.healthBoost <= hero.maxVitality){
+    hero.vitality += heroShield.healthBoost;
 }
+    else if(hero.vitality + heroShield.healthBoost > hero.maxVitality && hero.vitality < hero.maxVitality){
+      hero.vitality = hero.maxVitality;
+    }
+    refreshInfo();
     document.getElementById("hero").innerHTML = hero.vitality;
     hero_protected = true;
 }
@@ -754,7 +769,7 @@ function drop_items(items){
         $(takeID).attr('item_id', i)
         $(takeID).click(
             function() {
-                // console.log('hi Im ' + takeID)
+                if(inventory['carried'].length < 10){
                 itemsTaken ++;
                 if(itemsTaken == items.length){
                 world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
@@ -763,7 +778,11 @@ function drop_items(items){
                 // equip(hero, item_to_take);
                 take_item(item_to_take)
                 $(this).hide();
+            } else {
+                alert("Your inventory is full");
             }
+
+          }
         )
     }
 }
@@ -804,6 +823,13 @@ function print(messageType, message) { //TODO: change so that multiple items can
             for (attribute in items[i]) {
                 if (typeof items[i][attribute] == "number") {
                     itemInfos[i] += attribute + ": +" + items[i][attribute] + "<br>";
+                }
+            }
+            if(items[i].buffArray !== null){
+                console.log("printing buffs!");
+                for(var j = 0; j < items[i].buffArray.length; j++){
+                    console.log("adding buffs");
+                    itemInfos[i] += "buffs: " + items[i].buffArray[j].name + "<br>";
                 }
             }
             //build the html to print to the textBox
