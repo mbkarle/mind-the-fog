@@ -155,6 +155,7 @@ background-color: white;
     border-color: #a6a6a6;
     height: 25px;
     position: relative;
+    margin-bottom: 5px;
 }
 
 #xp {
@@ -179,7 +180,7 @@ background-color: white;
     bottom: 15px;
 
 }
-.statusBar, .statusSlider {
+.statusBar, .statusSlider, .invCarry {
   position: absolute;
   height: 16px;
   width: 180px;
@@ -187,10 +188,10 @@ background-color: white;
   margin: auto;
 }
 
-.statusBar {
+.statusBar, .invCarry {
     font-size: 12px;
     text-align: center;
-    color: #a6a6a6;
+    /*color: #a6a6a6;*/
     border-style: solid;
     border-color: #a6a6a6;
     border-width: thin;
@@ -201,4 +202,21 @@ background-color: white;
     height: inherit;
     left: 0;
     top: 0;
+}
+
+#inventory {
+    line-height: 95%;
+}
+
+#inv_hoverInfo {
+    padding: 10px 20px 10px 20px;
+    position: absolute;
+    border-color: #a6a6a6;
+    border-style: solid;
+    right: -160px;
+    bottom: 0;
+    top: 200px;
+    height: 100px;
+    display: none;
+    background-color: white;
 }

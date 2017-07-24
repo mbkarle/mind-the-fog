@@ -95,9 +95,11 @@ build_floor(curr_floor) //this will initialize the treasures and other locations
 var inventory = {
     weapon: startWeapon,
     headgear: null,
-    armor: null
+    armor: null,
+    carried: [startWeapon]
 }
 
+startWeapon.equipped = true;
 //------------------------------------------------------
 //                  And we're off!!
 //------------------------------------------------------
@@ -155,9 +157,9 @@ function build_floor(floor_num){
         var TreasureChest3 = new Chest(tChest3Loc[0], tChest3Loc[1]);
         var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
 
-        TreasureChest.treasureID = Math.floor(itemList.length * Math.random());
-        TreasureChest2.treasureID = Math.floor(itemList.length * Math.random());
-        TreasureChest3.treasureID = Math.floor(itemList.length * Math.random());
+        TreasureChest.treasureIDs = [Math.floor(itemList.length * Math.random()), Math.floor(itemList.length * Math.random())];
+        TreasureChest2.treasureIDs = [Math.floor(itemList.length * Math.random()), Math.floor(itemList.length * Math.random())];
+        TreasureChest3.treasureIDs = [Math.floor(itemList.length * Math.random()), Math.floor(itemList.length * Math.random())];
 
         //add your treasures!
         for(var i = 0; i < treasures.length; i++){
@@ -369,7 +371,7 @@ function move(e) {
             console.log("Dev tools activated");
             console.log("So...., you're either a developer, or a cheater, or just lazy...")
             equip(hero, MasterSword); //give absurd weapons
-
+            take_item(MasterSword)
             hero.vitality = 100000; //set absurd health stats
             hero.maxVitality = 100000;
 
@@ -541,11 +543,53 @@ function refreshInfo() { // updates info box
     document.getElementById("shieldHealthSlider").style.width = 180 * shieldHealthFraction + "px";
     var inventoryMessage = "Equipped: <br><br>"
     for(attribute in inventory){
-        if(inventory[attribute] != null){
+        if(inventory[attribute] != null && attribute !== 'carried'){
             inventoryMessage += attribute + ": " + inventory[attribute].name + "<br><br>";
         }
     }
+    inventoryMessage += "<hr style='width: 80%'> Carried: <br><br>"
+    items_carried = inventory['carried'];
+    for(var i = 0; i < items_carried.length; i++){
+        if (items_carried[i].equipped){
+            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact' style='display:none;'> Equip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
+        }
+        else{
+            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact'> Equip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
+        }
+    }
     document.getElementById("inventory").innerHTML = inventoryMessage;
+
+    itemInfos = []
+    for(var i = 0; i < items_carried.length; i++){
+        //store all the item infos to be displayed upon hover...
+        itemInfos.push((items_carried[i].name + "<br>"))
+        for (attribute in items_carried[i]) {
+            if (typeof items_carried[i][attribute] == "number") {
+                itemInfos[i] += attribute + ": +" + items_carried[i][attribute] + "<br>";
+            }
+        }
+    }
+
+    //set equip listeners to inventory
+    for(var i = 0; i < items_carried.length; i++){
+        carriedID = '#carried' + i;
+        invCarID = '#invInfo' + i;
+        var item_to_print =  (' ' + itemInfos[i]).slice(1)
+        $(carriedID).off('click') //turn old click listeners off
+        $(carriedID).attr('inv_idx', i)
+        $(invCarID).attr('item_to_print', item_to_print)
+        $(carriedID).click(function(){
+            equip(hero,items_carried[$(this).attr('inv_idx')])
+            refreshInfo()
+        })
+        $(invCarID).mouseenter(function(){
+            document.getElementById("inv_hoverInfo").innerHTML = $(this).attr('item_to_print');
+            $("#inv_hoverInfo").show();
+        })
+        $(invCarID).mouseleave(function(){
+            $("#inv_hoverInfo").hide();
+        })
+    }
 }
 
 function Damage(source_character, target_character) {
@@ -576,23 +620,25 @@ function readyUp() {
 function openChest(stage) {
     $("#open").click(
         function() {
-            // console.log('here')
+            treasureIDs = world_map[avatarY][avatarX][curr_floor].treasureIDs;
+            // console.log(treasureIDs)
             if (stage) {
-                msg = print("item", itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
-                // console.log(msg)
-                $("#equip").show();
-                console.log(itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
-                $("#equip").click(
-                    function() {
-                        world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
-                        equip(hero, itemList[world_map[avatarY][avatarX][curr_floor].treasureID]);
-                        $("#equip").hide();
-                    })
+                items_in_chest = []
+                for(var i = 0; i < treasureIDs.length; i++){
+                    items_in_chest.push(itemList[treasureIDs[i]])
+                }
+                print('item', items_in_chest) //handles HTML
+                drop_items(items_in_chest) //handles take clicks, etc
                 stage = !stage;
 
             } else {
-                $("#equip").hide();
-                $("#equip").off("click");
+                // $("#equip").hide();
+                // $("#equip").off("click");
+                for(var i = 0; i < treasureIDs.length; i++){
+                    takeID = "#take"+i
+                    $(takeID).hide();
+                    $(takeID).off("click")
+                }
                 $("#open").hide();
                 $("#open").off("click")
                 $("#enter").show();
@@ -602,6 +648,33 @@ function openChest(stage) {
                 return;
             }
         });
+}
+
+
+function take_item(item){
+    inventory.carried.push(item)
+    refreshInfo();
+}
+
+
+function drop_items(items){
+    console.log(items)
+    console.log(items.length)
+    for(var i = 0; i < items.length; i++){
+        takeID = '#take'+i
+        item = $().extend(true, {}, items[i])
+        $(takeID).attr('item_id', i)
+        $(takeID).click(
+            function() {
+                // console.log('hi Im ' + takeID)
+                world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
+                item_to_take = items[$(this).attr('item_id')];
+                // equip(hero, item_to_take);
+                take_item(item_to_take)
+                $(this).hide();
+            }
+        )
+    }
 }
 
 /*message is either:
@@ -630,22 +703,40 @@ function print(messageType, message) { //TODO: change so that multiple items can
         messageArray.push([message, prevMessage]); //was messageType, prevMessage-- want to push that its an enemy-message, not a 'lastMessage', right?
     }
     else if (messageType == "item") {
-        var itemMessage = "You find: <br> <div class='itemInfo'>" + message.name + "<div id='equip' class='interact'>Equip</div></div><br>";
-        var itemInfo = message.name + "<br>";
-        for (attribute in message) {
-            if (typeof message[attribute] == "number") {
-                itemInfo += attribute + ": +" + message[attribute] + "<br>";
+        //ASSUMED: passed an array of items
+        items = message;
+        var itemMessage = "You find: <br>"
+        var itemInfos = []
+        for(var i = 0; i < items.length; i++){
+            //store all the item infos to be displayed upon hover...
+            itemInfos.push((items[i].name + "<br>"))
+            for (attribute in items[i]) {
+                if (typeof items[i][attribute] == "number") {
+                    itemInfos[i] += attribute + ": +" + items[i][attribute] + "<br>";
+                }
             }
+            //build the html to print to the textBox
+            itemMessage += "<div class='itemInfo' id='itemInfo" + i + "'>" + items[i].name + "<div id='take" + i + "' class='interact'> Take </div></div>"; //style='top: " + (25 + takeID*25) + "px;'>
+
+        }
+        console.log(itemInfos)
+        document.getElementById("textBox").innerHTML = itemMessage;
+
+        //need mouse listeners after itemMessage printed...
+        for(var i = 0; i < items.length; i++){
+            var item_to_print =  (' ' + itemInfos[i]).slice(1)
+            var id = '#itemInfo'+i;
+            $(id).attr('item_to_print', item_to_print)
+            $(id).mouseenter(function(){
+                document.getElementById("hoverInfo").innerHTML = $(this).attr('item_to_print');
+                $("#hoverInfo").show();
+            })
+            $(id).mouseleave(function(){
+                $("#hoverInfo").hide();
+            })
+
         }
 
-        document.getElementById("textBox").innerHTML = itemMessage;
-        $(".itemInfo").mouseenter(function(){
-            $("#hoverInfo").show();
-        })
-        $(".itemInfo").mouseleave(function(){
-            $("#hoverInfo").hide();
-        })
-        document.getElementById("hoverInfo").innerHTML = itemInfo;
         messageCount--; //NEED TO DECREMENT BC ITEM NOT PUSHED
     }
     else {
@@ -677,13 +768,15 @@ function buildMap(array) {
 }
 
 function equip(target, equipment) {
-    console.log(target.name + " equipped " + equipment.name);
+    // console.log(target.name + " equipped " + equipment.name);
+    equipment.equipped = true;
     if(inventory[equipment.type] != null){
-        Unequip(hero, inventory[equipment.type]);
-
+        temp_item = inventory[equipment.type];
+        Unequip(hero, temp_item);
     }
     inventory[equipment.type] = equipment;
 
+    //go through and update stats
     var attribute;
     for (attribute in equipment) {
         if (typeof equipment[attribute] == "number") {
@@ -693,7 +786,10 @@ function equip(target, equipment) {
     refreshInfo();
 }
 function Unequip(target, equipment) {
-    console.log(target.name + " unequipped " + equipment.name) // finish inventory
+    // console.log(target.name + " unequipped " + equipment.name) // finish inventory
+
+    //go through and update stats
+    equipment.equipped = false;
     var attribute;
     for (attribute in equipment) {
         if (typeof equipment[attribute] == "number") {
@@ -822,38 +918,40 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             print("message", "You've defeated the beast!");
             $("#combat-module").off('click');
             var dropChance = Math.random();
-            if(!customCombat && dropChance > 0.85){
-            console.log(dropChance);
-            $("#open").show();
-            $("#open").click(
-                function() {
-                    console.log("clicked open")
-                    print("item", mobDrops[enemyList[idx].lootId]);
-                    console.log(mobDrops[enemyList[idx].lootId]);
-                    $("#open").hide();
-                    $("#equip").show();
-                    $("#equip").click(
-                        function(){
-                            equip(hero, mobDrops[enemyList[idx].lootId]);
-                            $("#equip").hide().off('click');
-                        })
-                    $("#open").off('click');
-                }
+            if(!customCombat && dropChance > 0){
+                console.log(dropChance);
+                $("#open").show();
+                $("#open").click(
+                    function() {
+                        // console.log("clicked open")
+                        print("item", [mobDrops[enemyList[idx].lootId]]);
+                        drop_items([mobDrops[enemyList[idx].lootId]])
+                        // console.log(mobDrops[enemyList[idx].lootId]);
+                        $("#open").hide();
+                        // $("#equip").show();
+                        // $("#equip").click(
+                        //     function(){
+                        //         equip(hero, mobDrops[enemyList[idx].lootId]);
+                        //         $("#equip").hide().off('click');
+                        //     })
+                        $("#open").off('click');
+                    }
             );}
             else if(customCombat){
               $("#open").show();
               $("#open").click(
                 function(){
                   console.log(enemyList[idx]);
-                  print("item", enemyList[idx].loot);
+                  print("item", [enemyList[idx].loot]);
                   $("#open").hide();
-                  $("#equip").show();
-                  $("#equip").click(
-                    function(){
-                      equip(hero, enemyList[idx].loot);
-                      $("#equip").hide().off('click');
-                    }
-                  )
+                //   $("#equip").show();
+                //   $("#equip").click(
+                //     function(){
+                //       equip(hero, enemyList[idx].loot);
+                //       $("#equip").hide().off('click');
+                //     }
+                //   )
+                drop_items([enemyList[idx].loot])
                 $("#open").off('click');
               }
               )
