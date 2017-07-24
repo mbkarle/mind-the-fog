@@ -50,13 +50,14 @@ var hero_protected = false;
 var ready = true;
 var shielded;
 var shieldReadyup;
+var magicReady = true;
 
 //------------------------------------------------------
 //              Initialize Buffs and Debuffs
 //------------------------------------------------------
 
-var adrenaline = new Buff(null, null, 5000, ["strength", "dexterity"], [1, 1]);
-
+var adrenaline = new Buff(null, null, 5000, ["strength", "dexterity"], [1, 1], 0.4);
+var indestructible = new Buff(null, null, 10000, ["vitality", "maxVitality"], [20, 20], 0.2);
 
 
 //------------------------------------------------------
@@ -71,7 +72,7 @@ var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, null, false
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, null, false, null,[itemList]);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, null, true, null, [itemList]);
 var katana = new Item("katana", "weapon", 1, 1, null, null, true, null, [itemList, mobDrops]);
-var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, null, true, null, [itemList]);
+var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, [indestructible], true, null, [itemList]);
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, null, true, null, [itemList]);
 var chainMail = new Item("light chainmail", "armor", null, null, 5, null, true, null, [itemList, mobDrops]);
 var GreatSword = new Item("greatsword", "weapon", 3, null, null, null, true, null, [[]]);
@@ -926,15 +927,16 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             ready = false;
             window.setTimeout(readyUp, 10000 / hero.dexterity);
             if(inventory.weapon.buffArray != null){
-                inventory.weapon.buffUp(.2, hero);
+                console.log("buffing up")
+                inventory.weapon.buffUp(hero);
             }
             if(inventory.armor != null){
                 if(inventory.armor.buffArray != null){
-                inventory.armor.buffUp(.2, hero);
+                inventory.armor.buffUp(hero);
             }}
             if(inventory.headgear != null){
             if(inventory.headgear.buffArray != null){
-                inventory.headgear.buffUp(.2, hero);
+                inventory.headgear.buffUp(hero);
             }}
             hitprint = Damage(hero, enemyList[idx]);
             print("damageDealt", hitprint);
@@ -1025,7 +1027,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                         $("#open").off('click');
                     }
             );}
-            else if(customCombat){
+            else if(customCombat || enemyList[idx].constructor.name == "Boss"){
             hero.xp += 100;
               $("#open").show();
               $("#open").click(

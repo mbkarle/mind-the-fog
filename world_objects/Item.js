@@ -17,10 +17,13 @@ class Item {
             items[i].push(this);
         }
         }
-        this.buffUp = function(percent, target){
-            if(Math.random() <= percent){
-                this.buffArray[Math.floor(Math.random() * this.buffArray.length)].applyBuff(target);
-                console.log(hero.strength);
+        this.buffUp = function(target){
+            for(var i = 0; i < this.buffArray.length; i++){
+                console.log(this.buffArray[i].chance);
+                if(Math.random() <= this.buffArray[i].chance){
+                    console.log("applying")
+                    this.buffArray[i].applyBuff(target);
+                }
             }
         }
     }
