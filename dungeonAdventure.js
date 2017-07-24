@@ -96,9 +96,10 @@ var inventory = {
     weapon: startWeapon,
     headgear: null,
     armor: null,
-    carried: []
+    carried: [startWeapon]
 }
 
+startWeapon.equipped = true;
 //------------------------------------------------------
 //                  And we're off!!
 //------------------------------------------------------
@@ -370,7 +371,7 @@ function move(e) {
             console.log("Dev tools activated");
             console.log("So...., you're either a developer, or a cheater, or just lazy...")
             equip(hero, MasterSword); //give absurd weapons
-
+            take_item(MasterSword)
             hero.vitality = 100000; //set absurd health stats
             hero.maxVitality = 100000;
 
@@ -549,9 +550,25 @@ function refreshInfo() { // updates info box
     inventoryMessage += "<hr style='width: 80%'> Carried: <br><br>"
     items_carried = inventory['carried'];
     for(var i = 0; i < items_carried.length; i++){
-        inventoryMessage += items_carried[i].name + '<br>'//"<div class='itemInfo' id='itemInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact'> Equip </div></div>"; //style='top: " + (25 + takeID*25) + "px;'>
+        if (items_carried[i].equipped){
+            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact' style='display:none;'> Equip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
+        }
+        else{
+            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact'> Equip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
+        }
     }
     document.getElementById("inventory").innerHTML = inventoryMessage;
+
+    //set equip listeners to inventory
+    for(var i = 0; i < items_carried.length; i++){
+        carriedID = '#carried' + i;
+        $(carriedID).off('click') //turn old click listeners off
+        $(carriedID).attr('inv_idx', i)
+        $(carriedID).click(function(){
+            equip(hero,items_carried[$(this).attr('inv_idx')])
+            refreshInfo()
+        })
+    }
 }
 
 function Damage(source_character, target_character) {
@@ -623,7 +640,6 @@ function drop_items(items){
     console.log(items)
     console.log(items.length)
     for(var i = 0; i < items.length; i++){
-        console.log('hi')
         takeID = '#take'+i
         item = $().extend(true, {}, items[i])
         $(takeID).attr('item_id', i)
@@ -731,13 +747,15 @@ function buildMap(array) {
 }
 
 function equip(target, equipment) {
-    console.log(target.name + " equipped " + equipment.name);
+    // console.log(target.name + " equipped " + equipment.name);
+    equipment.equipped = true;
     if(inventory[equipment.type] != null){
-        Unequip(hero, inventory[equipment.type]);
-
+        temp_item = inventory[equipment.type];
+        Unequip(hero, temp_item);
     }
     inventory[equipment.type] = equipment;
 
+    //go through and update stats
     var attribute;
     for (attribute in equipment) {
         if (typeof equipment[attribute] == "number") {
@@ -747,7 +765,10 @@ function equip(target, equipment) {
     refreshInfo();
 }
 function Unequip(target, equipment) {
-    console.log(target.name + " unequipped " + equipment.name) // finish inventory
+    // console.log(target.name + " unequipped " + equipment.name) // finish inventory
+
+    //go through and update stats
+    equipment.equipped = false;
     var attribute;
     for (attribute in equipment) {
         if (typeof equipment[attribute] == "number") {
