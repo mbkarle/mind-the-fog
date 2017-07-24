@@ -123,8 +123,9 @@ adding this class just for world so I can scrap fog.*/
 
 #info-module, #tree-module {
     width: 200px;
+    height: 450px;
     padding-top: 25px;
-    padding-bottom: 200px;
+    padding-bottom: 50px;
     border-style: solid;
     border-color: #a6a6a6;
     position: absolute;
@@ -218,4 +219,6 @@ background-color: white;
     height: 100px;
     display: none;
     background-color: white;
+    font-size: 12px;
+    font-family: cursive;
 }

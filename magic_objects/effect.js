@@ -1,6 +1,6 @@
 class Effect {
-    constructor(source, target, duration, attributes, quantity, chance){
-        this.source = source;
+    constructor(name, target, duration, attributes, quantity, chance){
+        this.name = name;
         this.target = target;
         this.duration = duration; //pass in milliseconds
         this.attributes = attributes; //pass an array containing attributes to facilitate buffs with multiple
@@ -11,8 +11,8 @@ class Effect {
 }
 
 class Buff extends Effect {
-    constructor(source, target, duration, attributes, quantity, chance){
-        super(source, target, duration, attributes, quantity, chance);
+    constructor(name, target, duration, attributes, quantity, chance){
+        super(name, target, duration, attributes, quantity, chance);
         var self = this;
         this.active = false;
         this.applyBuff = function(character){
@@ -37,8 +37,8 @@ class Buff extends Effect {
 }
 
 class Debuff extends Effect {
-    constructor(source, target, duration, attributes, quantity, chance){
-        super(source, target, duration, attributes, quantity);
+    constructor(name, target, duration, attributes, quantity, chance){
+        super(name, target, duration, attributes, quantity);
         var self = this;
         this.active = false;
         this.applyDebuff = function(character) {
@@ -64,8 +64,8 @@ class Debuff extends Effect {
 //classes for specific effect debuffs and buffs:
 
 class Exhaustion extends Debuff {
-    constructor(source, target, duration){
-        super(source, target, duration);
+    constructor(name, target, duration){
+        super(name, target, duration);
         this.exhaust = function(){
             magicReady = false;
             window.setTimeout(function(){

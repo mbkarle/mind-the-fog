@@ -56,8 +56,8 @@ var magicReady = true;
 //              Initialize Buffs and Debuffs
 //------------------------------------------------------
 
-var adrenaline = new Buff(null, null, 5000, ["strength", "dexterity"], [1, 1], 0.4);
-var indestructible = new Buff(null, null, 10000, ["vitality", "maxVitality"], [20, 20], 0.2);
+var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1], 0.4);
+var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20], 0.2);
 
 
 //------------------------------------------------------
@@ -638,6 +638,13 @@ function refreshInfo() {
                 itemInfos[i] += attribute + ": +" + items_carried[i][attribute] + "<br>";
             }
         }
+        if(items_carried[i].buffArray !== null){
+            console.log("printing buffs!");
+            for(var j = 0; j < items_carried[i].buffArray.length; j++){
+                console.log("adding buffs");
+                itemInfos[i] += "buffs: " + items_carried[i].buffArray[j].name + "<br>";
+            }
+        }
     }
 
     //set equip listeners to inventory
@@ -730,12 +737,17 @@ function openChest(stage) {
 function take_item(item){
     inventory.carried.push(item)
     refreshInfo();
+    if(world_map[avatarY][avatarX][curr_floor].objid === "treasure"){ //not applicable for mobdrops
+        var indexToRemove = world_map[avatarY][avatarX][curr_floor].treasureIDs.indexOf(item);
+        world_map[avatarY][avatarX][curr_floor].treasureIDs.splice(indexToRemove, 1); //removes item from treasureIDs so that it will not appear on next visit of chest
+    }
 }
 
 
 function drop_items(items){
     console.log(items)
     console.log(items.length)
+    var itemsTaken = 0;
     for(var i = 0; i < items.length; i++){
         takeID = '#take'+i
         item = $().extend(true, {}, items[i])
@@ -743,7 +755,10 @@ function drop_items(items){
         $(takeID).click(
             function() {
                 // console.log('hi Im ' + takeID)
+                itemsTaken ++;
+                if(itemsTaken == items.length){
                 world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
+            }
                 item_to_take = items[$(this).attr('item_id')];
                 // equip(hero, item_to_take);
                 take_item(item_to_take)
@@ -1007,7 +1022,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             print("message", "You've defeated the beast!");
             $("#combat-module").off('click');
             var dropChance = Math.random();
-            if(!customCombat && dropChance > 0){
+            if(!customCombat && dropChance > 0.75){
                 console.log(dropChance);
                 hero.xp += 100;
                 $("#open").show();
