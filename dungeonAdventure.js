@@ -56,8 +56,10 @@ var magicReady = true;
 //              Initialize Buffs and Debuffs
 //------------------------------------------------------
 
-var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1], 0.4);
-var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20], 0.2);
+var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1]);
+var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20]);
+var fire = new damageDebuff("fire", null, 16000, 4000, 3);
+var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2]);
 
 
 //------------------------------------------------------
@@ -67,21 +69,26 @@ itemList = [];
 mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var heroShield = new Shields("the shield", "shield", null, null, 50, 2, null, false, "defendText", [itemList]);
-var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, null, false, null, [itemList]);
-var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, null, false, null,[itemList]);
-var IronHelm = new Item("iron helm", "headgear", null, -1, 10, null, true, null, [itemList]);
-var katana = new Item("katana", "weapon", 1, 1, null, null, true, null, [itemList, mobDrops]);
-var ritDagger = new Item("ritual dagger", "weapon", -2, 2, 5, [indestructible], true, null, [itemList]);
-var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, null, true, null, [itemList]);
-var chainMail = new Item("light chainmail", "armor", null, null, 5, null, true, null, [itemList, mobDrops]);
-var GreatSword = new Item("greatsword", "weapon", 3, null, null, null, true, null, [[]]);
-var vikHelm = new Item("viking helmet", "headgear", 1, -1, null, [adrenaline], true, null, [itemList, mobDrops]);
-var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, null, true, null, [mobDrops]);
-var WarAxe =  new Item("war axe", "weapon", 1, 1, -5, [adrenaline], true, null, [mobDrops]);
-var fireSword = new Item("blazing sword", "weapon", 2, 1, null, null, true, null, [[]]);
-var hoodofOmar = new Item("leather hood", "headgear", null, 1, 3, null, true, null, [itemList, mobDrops]);
-var ironMail = new Item("iron chainmail", "armor", null, -1, 15, null, true, null, [mobDrops]);
+var heroShield = new Shields("the shield", "shield", null, null, 50, 2, false, "defendText", [itemList]);
+var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList]);
+var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null,[itemList]);
+var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList]);
+var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList, mobDrops]);
+var ritDagger = new effectItem("ritual dagger", "weapon", -2, 2, 5, [indestructible], [.2], [], [], true, null, [itemList]);
+var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList]);
+var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList, mobDrops]);
+var GreatSword = new Item("greatsword", "weapon", 3, null, null, true, null, [[]]);
+var vikHelm = new effectItem("viking helmet", "headgear", 1, -1, null, [adrenaline], [.3], [], [], true, null, [itemList, mobDrops]);
+var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, true, null, [mobDrops]);
+var WarAxe =  new effectItem("war axe", "weapon", 1, 1, -5, [adrenaline], [.4], [], [], true, null, [mobDrops]);
+var fireSword = new effectItem("blazing sword", "weapon", 2, 1, null, [], [], [fire], [.4], true, null, [[]]);
+var hoodofOmar = new Item("leather hood", "headgear", null, 1, 3, true, null, [itemList, mobDrops]);
+var ironMail = new Item("iron chainmail", "armor", null, -1, 15, true, null, [mobDrops]);
+var enchantedSword = new effectItem("enchanted sword", "weapon", null, null, null, [adrenaline, indestructible], [.1, .1], [fire, ice], [.1, .1], true, null, [itemList, mobDrops]);
+var mace = new Item("mace", "weapon", 2, -1, null, true, null, [itemList]);
+var iceStaff = new effectItem("ice staff", "weapon", 1, null, null, [indestructible], [.1], [ice], [.3], true, null, [mobDrops]);
+
+var gold = new Currency("gold", 1, null);
 
 //------------------------------------------------------
 //              Initialize Characters
@@ -190,9 +197,10 @@ function build_floor(floor_num, roomId){
         var TreasureChest3 = new Chest(tChest3Loc[0], tChest3Loc[1]);
         var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
 
-        TreasureChest.treasureIDs = [Math.floor(itemList.length * Math.random()), Math.floor(itemList.length * Math.random())];
-        TreasureChest2.treasureIDs = [Math.floor(itemList.length * Math.random()), Math.floor(itemList.length * Math.random())];
-        TreasureChest3.treasureIDs = [Math.floor(itemList.length * Math.random()), Math.floor(itemList.length * Math.random())];
+        TreasureChest.fillChest();
+        TreasureChest2.fillChest();
+        TreasureChest3.fillChest();
+
 
         //add your treasures!
         for(var i = 0; i < treasures.length; i++){
@@ -642,11 +650,14 @@ function refreshInfo() {
                 itemInfos[i] += attribute + ": +" + items_carried[i][attribute] + "<br>";
             }
         }
-        if(items_carried[i].buffArray !== null){
-            console.log("printing buffs!");
+        if(items_carried[i].constructor.name == 'effectItem'){
+
             for(var j = 0; j < items_carried[i].buffArray.length; j++){
-                console.log("adding buffs");
+
                 itemInfos[i] += "buffs: " + items_carried[i].buffArray[j].name + "<br>";
+            }
+            for(var k = 0; k < items_carried[i].debuffArray.length; k++){
+                itemInfos[i] += "debuffs: " + items_carried[i].debuffArray[k].name + "<br>";
             }
         }
     }
@@ -690,11 +701,14 @@ function refreshInfo() {
 function Damage(source_character, target_character) {
     hit = Math.floor(Math.random() * source_character.strength + source_character.strength);
     target_character.vitality -= hit;
-    document.getElementById(source_character.objid).innerHTML = source_character.vitality;
+    //document.getElementById(source_character.objid).innerHTML = source_character.vitality;
     document.getElementById(target_character.objid).innerHTML = target_character.vitality /*+ target_character.name */ ;
     document.getElementById("hero").innerHTML = hero.vitality;
     document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
     refreshInfo();
+    if(target_character.vitality <= 0){
+    $("#combat-module").trigger('click');
+}
     return hit;
 }
 
@@ -719,12 +733,18 @@ function openChest(stage) {
     $("#open").click(
         function() {
             treasureIDs = world_map[avatarY][avatarX][curr_floor].treasureIDs;
+            gold.amount = Math.floor(Math.random() * 50) * 10;
             // console.log(treasureIDs)
             if (stage) {
                 items_in_chest = []
                 for(var i = 0; i < treasureIDs.length; i++){
+                    if(typeof treasureIDs[i] == 'number'){
                     items_in_chest.push(itemList[treasureIDs[i]])
+                } else {
+                    items_in_chest.push(treasureIDs[i]);
                 }
+                }
+
                 print('item', items_in_chest) //handles HTML
                 drop_items(items_in_chest) //handles take clicks, etc
                 stage = !stage;
@@ -750,7 +770,14 @@ function openChest(stage) {
 
 
 function take_item(item){
+    if(item.constructor.name == 'Currency'){
+        item.walletCheck();
+        equip(hero, item);
+        item.wallet = null;
+    }
+    else{
     inventory.carried.push(item)
+}
     refreshInfo();
     if(world_map[avatarY][avatarX][curr_floor].objid === "treasure"){ //not applicable for mobdrops
         var indexToRemove = world_map[avatarY][avatarX][curr_floor].treasureIDs.indexOf(item);
@@ -825,11 +852,14 @@ function print(messageType, message) { //TODO: change so that multiple items can
                     itemInfos[i] += attribute + ": +" + items[i][attribute] + "<br>";
                 }
             }
-            if(items[i].buffArray !== null){
-                console.log("printing buffs!");
+            if(items[i].constructor.name == 'effectItem'){
+
                 for(var j = 0; j < items[i].buffArray.length; j++){
-                    console.log("adding buffs");
+
                     itemInfos[i] += "buffs: " + items[i].buffArray[j].name + "<br>";
+                }
+                for(var k = 0; k < items[i].debuffArray.length; k++){
+                    itemInfos[i] += "debuffs: " + items[i].debuffArray[k].name + "<br>";
                 }
             }
             //build the html to print to the textBox
@@ -887,11 +917,13 @@ function buildMap(array) {
 function equip(target, equipment) {
     // console.log(target.name + " equipped " + equipment.name);
     equipment.equipped = true;
-    if(inventory[equipment.type] != null){
+    if(inventory[equipment.type] != null && equipment.constructor.name != "Currency"){
         temp_item = inventory[equipment.type];
         Unequip(hero, temp_item);
     }
+    if(equipment.constructor.name != "Currency"){
     inventory[equipment.type] = equipment;
+}
 
     //go through and update stats
     var attribute;
@@ -899,6 +931,9 @@ function equip(target, equipment) {
         if (typeof equipment[attribute] == "number") {
             target[attribute] += equipment[attribute];
         }
+    }
+    if(target.dexterity <= 0){ //no dividing by 0 !!
+        target.dexterity = 0.5;
     }
     refreshInfo();
 }
@@ -967,17 +1002,20 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         if (ready) {
             ready = false;
             window.setTimeout(readyUp, 10000 / hero.dexterity);
-            if(inventory.weapon.buffArray != null){
+            if(inventory.weapon.constructor.name == 'effectItem'){
                 console.log("buffing up")
                 inventory.weapon.buffUp(hero);
+                inventory.weapon.debuffUp(enemyList[idx]);
             }
             if(inventory.armor != null){
-                if(inventory.armor.buffArray != null){
+                if(inventory.armor.constructor.name == 'effectItem'){
                 inventory.armor.buffUp(hero);
+                inventory.armor.debuffUp(enemyList[idx]);
             }}
             if(inventory.headgear != null){
-            if(inventory.headgear.buffArray != null){
+            if(inventory.headgear.constructor.name == 'effectItem'){
                 inventory.headgear.buffUp(hero);
+                inventory.headgear.debuffUp(enemyList[idx]);
             }}
             hitprint = Damage(hero, enemyList[idx]);
             print("damageDealt", hitprint);
@@ -1028,7 +1066,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
         }
         if (enemyList[idx].vitality <= 0) {
             enemyList[idx].vitality = 0;
-            hero.xp += 200;
+            hero.xp += 100;
             window.clearInterval(enemyAttack);
 
             // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
@@ -1050,7 +1088,6 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
             var dropChance = Math.random();
             if(!customCombat && dropChance > 0.75){
                 console.log(dropChance);
-                hero.xp += 100;
                 $("#open").show();
                 $("#open").click(
                     function() {
