@@ -11,6 +11,7 @@ var floorCleared = true;
 var world_width = 40;
 var world_height = 30;
 var world_depth = 3;
+var num_rooms = 3;
 
 //the game board itself!
 var world_map = new Array(world_height)
@@ -31,6 +32,12 @@ for (var i = 0; i < world_height; i++) {
       }
   }
 }
+
+
+//Build room 1
+var room_list = new Array(num_rooms)
+
+// room_list[0] = new SafeRoom('Great Hall',  , )
 
 //------------------------------------------------------
 //          Some magical game variables...
