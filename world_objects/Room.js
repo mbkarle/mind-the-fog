@@ -22,13 +22,13 @@ class Room {
         //must be in bounds.
         this.room_entry = [-1,-1]
 
-        this.room_map = this.buildRoom(room_type, this.locations)
+        this.room_map = this.buildRoom(room_type, this.locations, this.itemList)
 
         this.room_width = this.room_map[0].length;
         this.room_height = this.room_map.length;
     }
 
-    buildRoom(type, locations){
+    buildRoom(type, locations, itemList){
         var map;
         var width;
         var height;
@@ -68,7 +68,8 @@ class Room {
                 for(var i = 0; i < locations.length; i++){
                     switch (locations[i]) {
                         case 'chest':
-                            map[locs[i][0]][locs[i][1]] = new Chest(locs[i][0],locs[i][1])
+                            map[locs[i][0]][locs[i][1]] = new Chest(locs[i][0],locs[i][1], itemList)
+                            map[locs[i][0]][locs[i][1]].fillChest();
                             break;
 
                         case 'trapdoor':
