@@ -1,5 +1,5 @@
 class Item {
-    constructor(name, type, strength, dexterity, vitality, buffArray, toList, objid, items) {
+    constructor(name, type, strength, dexterity, vitality, toList, objid, items) {
         this.name = name;
         this.type = type;
         this.strength = strength;
@@ -10,21 +10,51 @@ class Item {
         this.objid = objid;
         this.items = items;
         this.equipped = false;
-        this.buffArray = buffArray;
 
         if(toList){
             for(i = 0; i < items.length; i++){
             items[i].push(this);
         }
         }
+
+    }
+}
+
+class effectItem extends Item {
+    constructor(name, type, strength, dexterity, vitality, buffArray, buffChance, debuffArray, debuffChance, toList, objid, items){
+        super(name, type, strength, dexterity, vitality, toList, objid, items);
+        this.buffArray = buffArray;
+        this.buffChance = buffChance; //pass array to match buffArray
+        this.debuffArray = debuffArray;
+        this.debuffChance = debuffChance;
+
         this.buffUp = function(target){
             for(var i = 0; i < this.buffArray.length; i++){
-                console.log(this.buffArray[i].chance);
-                if(Math.random() <= this.buffArray[i].chance){
-                    console.log("applying")
+                if(Math.random() <= this.buffChance[i]){
+                    console.log("applying " + this.buffArray[i].name)
                     this.buffArray[i].applyBuff(target);
                 }
             }
+        }
+        this.debuffUp = function(target){
+            for(var i = 0; i < this.debuffArray.length; i++){
+                if(Math.random() <= this.debuffChance[i]){
+                    console.log("applying " + this.debuffArray[i].name);
+                    this.debuffArray[i].applyDebuff(target);
+                }
+            }
+        }
+    }
+}
+
+class Currency extends Item {
+    constructor(name, value, amount){
+        super(name);
+        this.value = value;
+        this.amount = amount;
+        this.wallet;
+        this.walletCheck = function(){ // adds directly to hero.wallet
+            return this.wallet = this.amount * this.value;
         }
     }
 }

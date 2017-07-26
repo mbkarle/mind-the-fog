@@ -19,6 +19,16 @@ class Chest extends Location {
         super(rowID, colID,'Treasure Chest', 'treasure', 'v', "A wooden chest. It's locked, but no wood can withstand your blade.",true);
         this.emptied_chest = false; //has the chest been emptied?
         this.treasureIDs = []; //id of treasure Item inside in itemList
+        this.size = Math.ceil(Math.random() * 3)
+        this.fillChest = function() {
+            this.size = Math.ceil(Math.random() * 3)
+            for(var i = 0; i < this.size; i++){
+                this.treasureIDs.push(Math.floor(itemList.length * Math.random()));
+            }
+            if(Math.random() > 0.3){
+                this.treasureIDs.push(gold);
+            }
+        }
     }
 }
 
