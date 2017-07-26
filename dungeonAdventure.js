@@ -3,36 +3,6 @@
 // ./world_objects/ folder,although this script can have helper methods and global variables.
 //------------------------------------------------------------------------------------------------
 
-//------------------------------------------------------
-//              Spinning up your world...
-//------------------------------------------------------
-//world dimensions
-// var floorCleared = true;
-// var world_width = 40;
-// var world_height = 30;
-var num_floors = 3;
-// var num_rooms = 3;
-
-//the game board itself!
-// var world_map = new Array(world_height)
-//
-// for (var i = 0; i < world_height; i++) {
-//   world_map[i] = new Array(world_width);
-//   for(var j = 0; j < world_width; j++){
-//       //populate it with Tile locations
-//       world_map[i][j] = new Array(world_depth)
-//       for(var f = 0; f < world_depth; f++){
-//           //boundaries should be walls... aesthetic thing
-//           if(i === 0 || j === 0 || i === world_height-1 || j === world_width - 1){
-//               world_map[i][j][f] = new Wall(i,j);
-//           }
-//           else{
-//               world_map[i][j][f] = new Tile(i,j);
-//           }
-//       }
-//   }
-// }
-
 
 //------------------------------------------------------
 //          Some magical game variables...
@@ -104,8 +74,6 @@ var Golem = new Boss("Golem", 7, 3, 50, "enemy", GreatSword.items[0]);
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
 //------------------------------------------------------
-// build_floor(curr_floor, null) //this will initialize the treasures and other locations
-
 //inventory!!!!
 var inventory = {
     weapon: startWeapon,
@@ -116,8 +84,9 @@ var inventory = {
 
 startWeapon.equipped = true;
 //------------------------------------------------------
-//                  And we're off!!
+//              Spinning up your world...
 //------------------------------------------------------
+var num_floors = 3;
 
 var room_list = []
 
@@ -152,91 +121,6 @@ combat(hero, "default");
 //================================================================
 //                      HELPER FUNCTIONS
 //================================================================
-
-/*
-function build_floor(floor_num, roomId){
-    if(floor_num == 0){ //special first floor...
-        //special locations
-        //dungeon entrance!!
-
-        //code for room switches
-        // if(typeof roomId != "object"){
-        //     if(roomId == "hall"){
-        //         console.log('in the hall');
-        //     }
-        //     else if(roomId == "roomA"){
-        //         console.log("in room A")
-        //     }
-        // }
-        entranceLoc = [Math.floor(world_height/2), Math.floor(world_width*(7/8))]//rollLocation([[avatarY,avatarX]])
-
-        var entrance = new DungeonEntrance(entranceLoc[0],entranceLoc[1])
-        world_map[entrance.rowID][entrance.colID][floor_num] = entrance;
-
-        gateKeepLoc = [Math.floor(world_height/2) + 3, Math.floor(world_width * (3/4))]
-
-        var gateKeeper = new CharDialogue(gateKeepLoc[0], gateKeepLoc[1], "the gatekeeper");
-        world_map[gateKeeper.rowID][gateKeeper.colID][floor_num] = gateKeeper;
-
-        //after creating all special locations, turn fog off!
-        //insert empty tiles and walls
-        for(var i = 0; i < world_height; i++){
-            for(var j = 0; j < world_width; j++){
-
-                if(i === Math.floor(world_height/3) || i === Math.floor(world_height*(2/3))){
-                    world_map[i][j][0] = new Wall(i,j);
-                }
-
-                else if(i <= Math.floor(world_height/3) || i >= Math.floor(world_height*(2/3))){
-                    world_map[i][j][0] = new EmptyTile(i,j);
-                }
-
-                world_map[i][j][0].fog = false;
-
-            }
-        }
-
-        //Doors
-        // roomAdoorLoc = [Math.floor(world_height/3), Math.floor(world_width/4)];
-        // var roomAdoor = new Door(roomAdoorLoc[0], roomAdoorLoc[1], "hall", "roomA");
-        // world_map[roomAdoor.rowID][roomAdoor.colID][floor_num] = roomAdoor;
-        // world_map[roomAdoor.rowID][roomAdoor.colID][floor_num].fog = false;
-
-    }
-    else{
-        //treasures must go after the Items because we need to set an ID for the treasure inside!
-        tChest1Loc = rollLocation([[avatarY,avatarX]])
-        tChest2Loc = rollLocation([[avatarY,avatarX],tChest1Loc]);
-        tChest3Loc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc]);
-        trapdoorLoc = rollLocation([[avatarY,avatarX],tChest1Loc, tChest2Loc, tChest3Loc]);
-        StatueLoc = rollLocation([[avatarY,avatarX], tChest1Loc, tChest2Loc, tChest3Loc]);
-
-        var TreasureChest = new Chest(tChest1Loc[0], tChest1Loc[1]);
-        var TreasureChest2 = new Chest(tChest2Loc[0], tChest2Loc[1]);
-        var TreasureChest3 = new Chest(tChest3Loc[0], tChest3Loc[1]);
-        var treasures = [TreasureChest, TreasureChest2, TreasureChest3];
-
-        TreasureChest.fillChest();
-        TreasureChest2.fillChest();
-        TreasureChest3.fillChest();
-
-
-        //add your treasures!
-        for(var i = 0; i < treasures.length; i++){
-            world_map[treasures[i].rowID][treasures[i].colID][floor_num] = treasures[i];
-        }
-
-        //trapdoor!!
-        var trapdoor = new Trapdoor(trapdoorLoc[0],trapdoorLoc[1])
-        world_map[trapdoor.rowID][trapdoor.colID][floor_num] = trapdoor;
-
-        //Golem Statue!!!
-        var GolemStatue = new Statue(StatueLoc[0],StatueLoc[1]);
-        world_map[GolemStatue.rowID][GolemStatue.colID][floor_num] = GolemStatue;
-
-    }
-}
-*/
 
 function combat(hero, opponents) { //opponents is either string "default" or enemy object
     if(typeof opponents != "string"){ //combat call is custom combat outside of default list
@@ -279,28 +163,6 @@ function combat(hero, opponents) { //opponents is either string "default" or ene
 
     };
 }
-
-/*
-function rollLocation(locs){
-    //locs is a 2D array of locations not to be placed on...
-    //locs[0] is a 2 element array (row / col)
-    var loc = [-1,-1];
-    found = false;
-    while(!found){
-        loc = [Math.floor((world_height-2)*Math.random())+1, Math.floor((world_width-2)*Math.random())+1] //new random location
-        passed = true;
-        for(var i = 0; i < locs.length; i++){ //check it really is unique as per 8 rooks problem
-            if(locs[i].indexOf(loc[0]) >= 0 || locs[i].indexOf(loc[1]) >= 0){ //if row or col not unique...
-                passed = false;
-                break;
-            }
-        }
-        if(passed){
-            found = true;
-        }
-    }
-    return loc;
-} */
 
 function removeFog(avX, avY, map){
     neigh = getValidNeighbors(avX,avY,map,1);
@@ -576,7 +438,6 @@ function descend(descend){
         //rebuild the floor and make the new map!
         if(curr_floor < num_floors - 1){
             curr_floor++; //TODO can leave the last floor....
-            // curr_room++;
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
             buildMap(room_list[curr_floor][curr_room].room_map);
             combat(hero, "default");
@@ -728,8 +589,8 @@ function Damage(source_character, target_character) {
 
 function Shield() {
     if(hero.vitality + heroShield.healthBoost <= hero.maxVitality){
-    hero.vitality += heroShield.healthBoost;
-}
+        hero.vitality += heroShield.healthBoost;
+    }
     else if(hero.vitality + heroShield.healthBoost > hero.maxVitality && hero.vitality < hero.maxVitality){
       hero.vitality = hero.maxVitality;
     }
@@ -764,8 +625,6 @@ function openChest(stage) {
                 stage = !stage;
 
             } else {
-                // $("#equip").hide();
-                // $("#equip").off("click");
                 for(var i = 0; i < treasureIDs.length; i++){
                     takeID = "#take"+i
                     $(takeID).hide();
@@ -790,8 +649,8 @@ function take_item(item){
         item.wallet = null;
     }
     else{
-    inventory.carried.push(item)
-}
+        inventory.carried.push(item)
+    }
     refreshInfo();
     if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === "treasure"){ //not applicable for mobdrops
         var indexToRemove = room_list[curr_floor][curr_room].room_map[avatarY][avatarX].treasureIDs.indexOf(item);
@@ -936,8 +795,8 @@ function equip(target, equipment) {
         Unequip(hero, temp_item);
     }
     if(equipment.constructor.name != "Currency"){
-    inventory[equipment.type] = equipment;
-}
+        inventory[equipment.type] = equipment;
+    }
 
     //go through and update stats
     var attribute;
@@ -951,6 +810,7 @@ function equip(target, equipment) {
     }
     refreshInfo();
 }
+
 function Unequip(target, equipment) {
     // console.log(target.name + " unequipped " + equipment.name) // finish inventory
 
@@ -964,18 +824,15 @@ function Unequip(target, equipment) {
     }
 }
 
-
-
 function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIABLES
     var enemyAttack; //not used outside this function = NOT GLOBAL, SIR!
-    //heroShield.vitality = heroShield.maxVitality;
     if (hero.vitality <= 0) {
         return;
     }
     if(customCombat == false){
-    print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")
-    enemyList[idx].lootId = Math.floor(Math.random() * mobDrops.length);
-}
+        print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")
+        enemyList[idx].lootId = Math.floor(Math.random() * mobDrops.length);
+    }
     document.getElementById("enter").onclick = function() {
         $("#text-module").animate({
             top: '300px'
