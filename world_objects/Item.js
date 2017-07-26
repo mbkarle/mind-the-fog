@@ -12,7 +12,7 @@ class Item {
         this.equipped = false;
 
         if(toList){
-            for(i = 0; i < items.length; i++){
+            for(var i = 0; i < items.length; i++){
             items[i].push(this);
         }
         }
