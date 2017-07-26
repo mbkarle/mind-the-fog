@@ -32,28 +32,41 @@ var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2]);
 //------------------------------------------------------
 //              Initialize Items
 //------------------------------------------------------
-itemList = [];
+itemList1 = [];
+itemList2 = [];
+itemList3 = [];
 mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var heroShield = new Shields("the shield", "shield", null, null, 50, 2, false, "defendText", [itemList]);
-var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList]);
-var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null,[itemList]);
-var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList]);
-var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList, mobDrops]);
-var ritDagger = new effectItem("ritual dagger", "weapon", -2, 2, 5, [indestructible], [.2], [], [], true, null, [itemList]);
-var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList]);
-var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList, mobDrops]);
+var heroShield = new Shields("the shield", "shield", null, null, 50, 2, false, "defendText", [itemList1]);
+var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList1]);
+var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null,[itemList1]);
+var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList1]);
+var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList1, mobDrops]);
+var ritDagger = new effectItem("ritual dagger", "weapon", -2, 2, 5, [indestructible], [.2], [], [], true, null, [itemList1]);
+var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList1]);
+var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList1, mobDrops]);
 var GreatSword = new Item("greatsword", "weapon", 3, null, null, true, null, [[]]);
-var vikHelm = new effectItem("viking helmet", "headgear", 1, -1, null, [adrenaline], [.3], [], [], true, null, [itemList, mobDrops]);
-var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, true, null, [mobDrops]);
+var vikHelm = new effectItem("viking helmet", "headgear", 1, -1, null, [adrenaline], [.3], [], [], true, null, [itemList1, mobDrops]);
+var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, true, null, [itemList2, mobDrops]);
 var WarAxe =  new effectItem("war axe", "weapon", 1, 1, -5, [adrenaline], [.4], [], [], true, null, [mobDrops]);
-var fireSword = new effectItem("blazing sword", "weapon", 2, 1, null, [], [], [fire], [.4], true, null, [[]]);
-var hoodofOmar = new Item("leather hood", "headgear", null, 1, 3, true, null, [itemList, mobDrops]);
-var ironMail = new Item("iron chainmail", "armor", null, -1, 15, true, null, [mobDrops]);
-var enchantedSword = new effectItem("enchanted sword", "weapon", null, null, null, [adrenaline, indestructible], [.1, .1], [fire, ice], [.1, .1], true, null, [itemList, mobDrops]);
-var mace = new Item("mace", "weapon", 2, -1, null, true, null, [itemList]);
+var fireSword = new effectItem("blazing sword", "weapon", 2, 1, null, [], [], [fire], [.4], true, null, [[], itemList2]);
+var hoodofOmar = new Item("leather hood", "headgear", null, 1, 3, true, null, [itemList1, mobDrops]);
+var ironMail = new Item("iron chainmail", "armor", null, -1, 15, true, null, [itemList2, mobDrops]);
+var enchantedSword = new effectItem("enchanted sword", "weapon", null, null, null, [adrenaline, indestructible], [.1, .1], [fire, ice], [.1, .1], true, null, [itemList1, itemList2, mobDrops]);
+var mace = new Item("mace", "weapon", 2, -1, null, true, null, [itemList1]);
 var iceStaff = new effectItem("ice staff", "weapon", 1, null, null, [indestructible], [.1], [ice], [.3], true, null, [mobDrops]);
+var assBlade = new Item("assassin's blade", "weapon", -1, 3, 5, true, null, [itemList2]);
+var machete = new Item("machete", "weapon", 3, 1, null, true, null, [itemList2]);
+var cutlass = new Item("cutlass", "weapon", 2, 2, 5, true, null, [itemList2, itemList3]);
+var fireStaff = new effectItem("fire staff", "weapon", 3, 1, null, [], [], [fire], [.4], true, null, [itemList2, itemList3]);
+var hellPlate = new effectItem("Hell Knights' breastplate", "armor", null, 1, 10, [], [], [fire], [.3], true, null, [itemList2]);
+var icyShell = new effectItem("icy shell", "armor", 2, -1, 10, [indestructible], [.3], [ice], [.3], true, null, [itemList2]);
+var shadowCloak = new Item("shadow cloak", "armor", 1, 3, 5, true, null, [itemList2]);
+var steelHelm = new Item("steel helm", "headgear", 1, 1, 10, true, null, [itemList2]);
+var enchantedCrown = new effectItem("enchanted crown", "headgear", null, null, 20, [indestructible], [.3], [], [], true, null, [itemList2]);
+var cultMask = new effectItem("cultist's mask", "headgear", 1, 1, 10, [adrenaline], [.2], [fire], [.2], true, null, [itemList2]);
+
 
 var gold = new Currency("gold", 1, null);
 
@@ -66,9 +79,11 @@ var DireRat = new Enemy("Dire Rat", 1, 15, 20, "enemy");
 var DireRat2 = new Enemy("Dire Rat", 1.5, 15, 20, "enemy");
 var Ogre = new Enemy("Ogre", 9, 1, 60, "enemy");
 var Sorcerer = new Enemy("Sorcerer", 6, 4, 20, "enemy");
-var Vagrant = new Enemy("Wandering Vagrant", 4, 4, 35, "enemy");
-var HellHound = new Boss("Hell Hound", 4, 6, 45, "enemy", fireSword.items[0]);
+var Vagrant = new Enemy("Wandering Vagrant", 5, 4, 35, "enemy");
+var HellHound = new Boss("Hell Hound", 5, 6, 50, "enemy", fireSword.items[0]);
 var Golem = new Boss("Golem", 7, 3, 50, "enemy", GreatSword.items[0]);
+var Werewolf = new Enemy("werewolf", 6, 4, 40, "enemy");
+var slime = new Enemy("slime", 8, 2, 50, "enemy");
 
 
 //------------------------------------------------------
@@ -143,10 +158,12 @@ function combat(hero, opponents) { //opponents is either string "default" or ene
         }
     }
     if(opponents == "default" && curr_floor > 1){
-        for(i = 0; i < enemies.length; i++){ //scale enemies
+        for(i = 0; i < enemies.length; i++){ //scale recurring enemies
+            if(enemies[i].vitality < enemies[i].maxVitality){
             enemies[i].maxVitality += 5;
             enemies[i].vitality = enemies[i].maxVitality;
             enemies[i].strength += 1;
+            }
         }
         combat_helper(hero, enemies, 0, false);
     }
@@ -614,7 +631,7 @@ function openChest(stage) {
                 items_in_chest = []
                 for(var i = 0; i < treasureIDs.length; i++){
                     if(typeof treasureIDs[i] == 'number'){
-                    items_in_chest.push(itemList[treasureIDs[i]])
+                    items_in_chest.push(room_list[curr_floor][curr_room].itemList[treasureIDs[i]])
                 } else {
                     items_in_chest.push(treasureIDs[i]);
                 }

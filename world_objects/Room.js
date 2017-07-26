@@ -170,7 +170,15 @@ function tier_to_num_enemies(tier){
 
 function tier_to_items(tier){
     //TODO: create mapping
-    return [IronHelm, katana, chainMail]
+    if(tier == 1){
+        return itemList1;
+    }
+    else if(tier == 2){
+        return itemList2;
+    }
+    else if(tier == 3){
+        return itemList3;
+    }
 }
 
 function tier_to_enemies(tier){
