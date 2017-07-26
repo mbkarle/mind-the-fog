@@ -6,7 +6,7 @@
 * The boss, if applicable
 */
 class Room {
-    constructor(name, room_type, tier, roomCleared, boss, fightChance) {
+    constructor(name, room_type, tier, floor, roomCleared, boss, fightChance) {
         this.name = name;
         this.locations = tier_to_locations(tier);
         this.itemList = tier_to_items(tier);
@@ -16,6 +16,7 @@ class Room {
         this.num_enemies = tier_to_num_enemies(tier);
         this.boss = boss;
         this.fightChance = fightChance;
+        this.floor = floor;
 
         //must set before entering the room--position for avatar to spawn on,
         //must be in bounds.
@@ -25,8 +26,6 @@ class Room {
 
         this.room_width = this.room_map[0].length;
         this.room_height = this.room_map.length;
-
-
     }
 
     buildRoom(type, locations){
@@ -90,14 +89,14 @@ class Room {
 }
 
 class SafeRoom extends Room {
-    constructor(name, room_type, tier) {
-        super(name, room_type, tier, true, null, 0)
+    constructor(name, room_type, tier, floor) {
+        super(name, room_type, tier, floor, true, null, 0)
     }
 }
 
 class FightRoom extends Room {
-    constructor(name, room_type, tier, boss) {
-        super(name, room_type, tier, false, boss, tier_to_fightChance(tier))
+    constructor(name, room_type, tier, floor) {
+        super(name, room_type, tier, floor, false, tier_to_boss(tier), tier_to_fightChance(tier))
     }
 
 }
@@ -140,7 +139,6 @@ function rollLocations(num_locs, height, width){
         var loc = [-1,-1];
         found = false;
         while(!found){
-            console.log('loop')
             loc = [Math.floor((height-2)*Math.random())+1, Math.floor((width-2)*Math.random())+1] //new random location
             passed = true;
             for(var i = 0; i < locs.length; i++){ //check it really is unique as per 8 rooks problem
@@ -189,4 +187,9 @@ function tier_to_locations(tier){
 function tier_to_fightChance(tier){
     //TODO: create mapping
     return .05;
+}
+
+function tier_to_boss(tier){
+    //TODO: create mapping
+    return HellHound;
 }

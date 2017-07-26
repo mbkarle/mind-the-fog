@@ -7,46 +7,36 @@
 //              Spinning up your world...
 //------------------------------------------------------
 //world dimensions
-var floorCleared = true;
-var world_width = 40;
-var world_height = 30;
-var world_depth = 3;
-var num_rooms = 3;
+// var floorCleared = true;
+// var world_width = 40;
+// var world_height = 30;
+var num_floors = 3;
+// var num_rooms = 3;
 
 //the game board itself!
-var world_map = new Array(world_height)
+// var world_map = new Array(world_height)
+//
+// for (var i = 0; i < world_height; i++) {
+//   world_map[i] = new Array(world_width);
+//   for(var j = 0; j < world_width; j++){
+//       //populate it with Tile locations
+//       world_map[i][j] = new Array(world_depth)
+//       for(var f = 0; f < world_depth; f++){
+//           //boundaries should be walls... aesthetic thing
+//           if(i === 0 || j === 0 || i === world_height-1 || j === world_width - 1){
+//               world_map[i][j][f] = new Wall(i,j);
+//           }
+//           else{
+//               world_map[i][j][f] = new Tile(i,j);
+//           }
+//       }
+//   }
+// }
 
-for (var i = 0; i < world_height; i++) {
-  world_map[i] = new Array(world_width);
-  for(var j = 0; j < world_width; j++){
-      //populate it with Tile locations
-      world_map[i][j] = new Array(world_depth)
-      for(var f = 0; f < world_depth; f++){
-          //boundaries should be walls... aesthetic thing
-          if(i === 0 || j === 0 || i === world_height-1 || j === world_width - 1){
-              world_map[i][j][f] = new Wall(i,j);
-          }
-          else{
-              world_map[i][j][f] = new Tile(i,j);
-          }
-      }
-  }
-}
-
-
-//Build room 1
-var room_list = new Array(num_rooms)
-
-// room_list[0] = new SafeRoom('Great Hall',  , )
 
 //------------------------------------------------------
 //          Some magical game variables...
 //------------------------------------------------------
-//variables to track the current position of hero
-var avatarX = Math.floor(world_width/8);
-var avatarY = Math.floor(world_height/2);
-var curr_floor = 0;
-
 //variables to track printed messages
 var messageArray = [];
 var messageCount = 0;
@@ -114,7 +104,7 @@ var Golem = new Boss("Golem", 7, 3, 50, "enemy", GreatSword.items[0]);
 //------------------------------------------------------
 //        Initialize Treasures + other Locations
 //------------------------------------------------------
-build_floor(curr_floor, null) //this will initialize the treasures and other locations
+// build_floor(curr_floor, null) //this will initialize the treasures and other locations
 
 //inventory!!!!
 var inventory = {
@@ -128,9 +118,30 @@ startWeapon.equipped = true;
 //------------------------------------------------------
 //                  And we're off!!
 //------------------------------------------------------
+
+var room_list = []
+
+//have an array of rooms per floor
+for(var i = 0; i < num_floors; i++){
+    room_list.push([])
+}
+
+room_list[0][0] = new SafeRoom('Great Hall', 'GreatHall', 0, 0)
+room_list[1][0] = new FightRoom('First Floor', 'norm', 1, 1)
+room_list[2][0] = new FightRoom('Second Floor', 'norm', 2, 2)
+
+var curr_room = 0;
+var curr_floor = 0;
+
+//MOAR magic game variables
+//variables to track the current position of hero
+var avatarX = Math.floor(room_list[curr_floor][curr_room].room_width/8);
+var avatarY = Math.floor(room_list[curr_floor][curr_room].room_height/2);
+
+
 //get ready to start...
-world_map[avatarY][avatarX][curr_floor].hero_present = true; //place the hero in his starting position
-removeFog(avatarX,avatarY, world_map); //remove the fog around the hero
+room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
+// removeFog(avatarX,avatarY, world_map); //remove the fog around the hero
 
 //LetsiGO!
 window.addEventListener("keydown", move, false);
@@ -142,6 +153,7 @@ combat(hero, "default");
 //                      HELPER FUNCTIONS
 //================================================================
 
+/*
 function build_floor(floor_num, roomId){
     if(floor_num == 0){ //special first floor...
         //special locations
@@ -224,6 +236,7 @@ function build_floor(floor_num, roomId){
 
     }
 }
+*/
 
 function combat(hero, opponents) { //opponents is either string "default" or enemy object
     if(typeof opponents != "string"){ //combat call is custom combat outside of default list
@@ -255,7 +268,7 @@ function combat(hero, opponents) { //opponents is either string "default" or ene
     }
     window.onload = function() {
         combat_helper(hero, enemies, 0, false);
-        buildMap(world_map);
+        buildMap(room_list[curr_floor][curr_room].room_map);
 
         //Inventory can now be opened either by clicking InvOpen button or pressing I
         //not sure where else to initialize this
@@ -267,6 +280,7 @@ function combat(hero, opponents) { //opponents is either string "default" or ene
     };
 }
 
+/*
 function rollLocation(locs){
     //locs is a 2D array of locations not to be placed on...
     //locs[0] is a 2 element array (row / col)
@@ -286,26 +300,25 @@ function rollLocation(locs){
         }
     }
     return loc;
-}
+} */
 
 function removeFog(avX, avY, map){
     neigh = getValidNeighbors(avX,avY,map,1);
     for(var i = 0; i < neigh.length; i++){
         neigh[i].fog = false;
-    };
-
+    }
 }
 
 function getValidNeighbors(avX, avY, map, flashlight){
     neigh = [];
-    if(avX > 0){neigh.push(map[avY][avX-1][curr_floor]);} //left
-    if(avX < world_width-1){neigh.push(map[avY][avX+1][curr_floor]);} //right
-    if(avY > 0){neigh.push(map[avY-1][avX][curr_floor]);} //up
-    if(avY < world_height-1){neigh.push(map[avY+1][avX][curr_floor]);} //down
-    if(avX > 0 && avY > 0){neigh.push(map[avY-1][avX-1][curr_floor]);} //top left corner
-    if(avX > 0 && avY < world_height-1){neigh.push(map[avY+1][avX-1][curr_floor]);} //bot left corner
-    if(avX < world_width-1 && avY > 0){neigh.push(map[avY-1][avX+1][curr_floor]);} //top right corner
-    if(avX < world_width-1 && avY < world_height-1){neigh.push(map[avY+1][avX+1][curr_floor]);} //bot right corner
+    if(avX > 0){neigh.push(map[avY][avX-1]);} //left
+    if(avX < room_list[curr_floor][curr_room].room_width-1){neigh.push(map[avY][avX+1]);} //right
+    if(avY > 0){neigh.push(map[avY-1][avX]);} //up
+    if(avY < room_list[curr_floor][curr_room].room_height-1){neigh.push(map[avY+1][avX]);} //down
+    if(avX > 0 && avY > 0){neigh.push(map[avY-1][avX-1]);} //top left corner
+    if(avX > 0 && avY < room_list[curr_floor][curr_room].room_height-1){neigh.push(map[avY+1][avX-1]);} //bot left corner
+    if(avX < room_list[curr_floor][curr_room].room_width-1 && avY > 0){neigh.push(map[avY-1][avX+1]);} //top right corner
+    if(avX < room_list[curr_floor][curr_room].room_width-1 && avY < room_list[curr_floor][curr_room].room_height-1){neigh.push(map[avY+1][avX+1]);} //bot right corner
 
     if(flashlight > 0){ //radius increases...
         possCoords = []
@@ -366,7 +379,7 @@ function getValidNeighbors(avX, avY, map, flashlight){
             cx = possCoords[i][0];
             cy = possCoords[i][1];
             if(isValidCoord(cx,cy)){
-                neigh.push(map[cy][cx][curr_floor]);
+                neigh.push(map[cy][cx]);
             }
         }
     }
@@ -374,7 +387,7 @@ function getValidNeighbors(avX, avY, map, flashlight){
 }
 
 function isValidCoord(avX, avY){
-    return (avX >= 0 && avY >= 0 && avX < world_width && avY < world_height);
+    return (avX >= 0 && avY >= 0 && avX < room_list[curr_floor][curr_room].room_width && avY < room_list[curr_floor][curr_room].room_height);
 }
 
 // function Dex(Character){
@@ -384,34 +397,33 @@ function isValidCoord(avX, avY){
 function move(e) {
     if (canMove == true) {
         var didMove = false;
-        var fightChance = Math.random();
         if (e.keyCode == "87" && avatarY > 0) { //up
-            if(world_map[avatarY-1][avatarX][curr_floor].passable){
-                world_map[avatarY][avatarX][curr_floor].hero_present = false;
+            if(room_list[curr_floor][curr_room].room_map[avatarY-1][avatarX].passable){
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarY --;
-                world_map[avatarY][avatarX][curr_floor].hero_present = true;
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                 didMove = true;
             }
 
-        } else if (e.keyCode == "83" && avatarY < world_height-1) { //down
-            if(world_map[avatarY+1][avatarX][curr_floor].passable){
-                world_map[avatarY][avatarX][curr_floor].hero_present = false;
+        } else if (e.keyCode == "83" && avatarY < room_list[curr_floor][curr_room].room_height-1) { //down
+            if(room_list[curr_floor][curr_room].room_map[avatarY+1][avatarX].passable){
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarY ++;
-                world_map[avatarY][avatarX][curr_floor].hero_present = true;
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                 didMove = true;
             }
         } else if (e.keyCode == "65" && avatarX > 0) { //left
-            if(world_map[avatarY][avatarX-1][curr_floor].passable){
-                world_map[avatarY][avatarX][curr_floor].hero_present = false;
+            if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX-1].passable){
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarX --;
-                world_map[avatarY][avatarX][curr_floor].hero_present = true;
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                 didMove = true;
             }
-        } else if (e.keyCode == "68" && avatarX < world_width-1) { //right
-            if(world_map[avatarY][avatarX+1][curr_floor].passable){
-                world_map[avatarY][avatarX][curr_floor].hero_present = false;
+        } else if (e.keyCode == "68" && avatarX < room_list[curr_floor][curr_room].room_width-1) { //right
+            if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX+1].passable){
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarX ++;
-                world_map[avatarY][avatarX][curr_floor].hero_present = true;
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                 didMove = true;
             }
         } else if (e.keyCode == "66") {
@@ -423,17 +435,17 @@ function move(e) {
             hero.maxVitality = 100000;
 
             //remove fog
-            for(var i = 0; i < world_height; i ++){
-                for(var j = 0; j < world_width; j++){
-                    world_map[i][j][curr_floor].fog = false;
+            for(var i = 0; i < room_list[curr_floor][curr_room].room_height; i ++){
+                for(var j = 0; j < room_list[curr_floor][curr_room].room_width; j++){
+                    room_list[curr_floor][curr_room].room_map[i][j].fog = false;
                 }
             }
         }
-        buildMap(world_map);
+        buildMap(room_list[curr_floor][curr_room].room_map);
 
 
         //chance to enter combat
-        if (fightChance > .95 && !floorCleared && didMove) {
+        if (Math.random() < room_list[curr_floor][curr_room].fightChance  && !room_list[curr_floor][curr_room].roomCleared && didMove) {
             $("#text-module").show();
             canMove = false;
         } else {
@@ -449,26 +461,26 @@ function move(e) {
         }
 
         //check if on a chest
-        if(world_map[avatarY][avatarX][curr_floor].objid === "treasure" && !world_map[avatarY][avatarX][curr_floor].emptied_chest){ //if both coords of same chest and its a match
+        if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === "treasure" && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].emptied_chest){ //if both coords of same chest and its a match
             $("#text-module").show();
             $("#enter").hide();
             $("#open").show();
             canMove = false;
-            msg = print("message", world_map[avatarY][avatarX][curr_floor].message);
-            world_map[avatarY][avatarX][curr_floor].message = "the chest lays smashed by your blade, its treasures still there."
+            msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
+            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message = "the chest lays smashed by your blade, its treasures still there."
             openChest(true);
         };
 
         //check if on the trapdoor
-        if(world_map[avatarY][avatarX][curr_floor].objid === 'trapdoor' || world_map[avatarY][avatarX][curr_floor].objid === 'entrance'){
+        if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'trapdoor' || room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'entrance'){
             $("#text-module").show();
             $("#enter").hide();
             $("#stay").show();
 
             canMove = false;
-            msg = print("message", world_map[avatarY][avatarX][curr_floor].message);
+            msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
 
-            if(floorCleared){
+            if(room_list[curr_floor][curr_room].roomCleared){
                 $("#descend").show();
                 $("#descend").click(
                     function() {
@@ -487,7 +499,7 @@ function move(e) {
         }
 
         //check if on statue
-        if(world_map[avatarY][avatarX][curr_floor].objid === 'statue' && !world_map[avatarY][avatarX][curr_floor].destroyed_statue){
+        if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'statue' && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].destroyed_statue){
             $("#text-module").show();
             $("#enter").hide();
             //using descend buttons for position and convenience
@@ -495,7 +507,7 @@ function move(e) {
             $("#stay").show();
 
             canMove = false;
-            msg = print("message", world_map[avatarY][avatarX][curr_floor].message);
+            msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
             document.getElementById("descend").innerHTML = "Take Sword";
             document.getElementById("stay").innerHTML = "Leave";
 
@@ -506,7 +518,7 @@ function move(e) {
                     print("message", "The statue springs to life and raises its sword. There's no escape!");
                     $("#text-module").show();
                     combat(hero, Golem);
-                    world_map[avatarY][avatarX][curr_floor].destroyed_statue = true;
+                    room_list[curr_floor][curr_room].room_map[avatarY][avatarX].destroyed_statue = true;
                 }
             )
             $("#stay").click(
@@ -515,7 +527,7 @@ function move(e) {
                 }
             )
         }
-        if(world_map[avatarY][avatarX][curr_floor].objid === 'charDialogue'){
+        if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'charDialogue'){
             if(didMove){
             canMove = false}
             //character dialogue arrays
@@ -525,15 +537,15 @@ function move(e) {
             "it may be necessary to take shelter behind your shield to recover when you suffer their reprisals.",
             "Good fortune to you, adventurer."
         ]
-            if(world_map[avatarY][avatarX][curr_floor].charId === "the gatekeeper" && didMove){
-                world_map[avatarY][avatarX][curr_floor].dialogue(gateKeeperDialogue, 0);
+            if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].charId === "the gatekeeper" && didMove){
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].dialogue(gateKeeperDialogue, 0);
             }
 
         }
-        if(world_map[avatarY][avatarX][curr_floor].objid === 'door'){
+        if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'door'){
             if(didMove){
                 canMove = false;
-                world_map[avatarY][avatarX][curr_floor].nextRoom();
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].nextRoom();
             }
 
         }
@@ -551,10 +563,6 @@ function move(e) {
 
 function descend(descend){
     if(descend){
-        if(curr_floor === 0){
-            world_width = 40;
-            world_height = 30;
-        }
         $("#descend").off("click")
         $("#stay").off("click")
         $("#stay").hide();
@@ -566,16 +574,15 @@ function descend(descend){
         print("lastMessage", "enemy-message");
 
         //rebuild the floor and make the new map!
-        if(curr_floor < world_depth - 1){
-        curr_floor++; //TODO can leave the last floor....
-        build_floor(curr_floor, null);
-        world_map[avatarY][avatarX][curr_floor].hero_present = true;
-        floorCleared = false;
-        buildMap(world_map);
-        combat(hero, "default");
-        heroShield.vitality = heroShield.maxVitality;
-        refreshInfo();
-    }
+        if(curr_floor < num_floors - 1){
+            curr_floor++; //TODO can leave the last floor....
+            // curr_room++;
+            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
+            buildMap(room_list[curr_floor][curr_room].room_map);
+            combat(hero, "default");
+            heroShield.vitality = heroShield.maxVitality;
+            refreshInfo();
+        }
     }
     else{
         $("#descend").off("click")
@@ -739,7 +746,7 @@ function readyUp() {
 function openChest(stage) {
     $("#open").click(
         function() {
-            treasureIDs = world_map[avatarY][avatarX][curr_floor].treasureIDs;
+            treasureIDs = room_list[curr_floor][curr_room].room_map[avatarY][avatarX].treasureIDs;
             gold.amount = Math.floor(Math.random() * 50) * 10;
             // console.log(treasureIDs)
             if (stage) {
@@ -786,9 +793,9 @@ function take_item(item){
     inventory.carried.push(item)
 }
     refreshInfo();
-    if(world_map[avatarY][avatarX][curr_floor].objid === "treasure"){ //not applicable for mobdrops
-        var indexToRemove = world_map[avatarY][avatarX][curr_floor].treasureIDs.indexOf(item);
-        world_map[avatarY][avatarX][curr_floor].treasureIDs.splice(indexToRemove, 1); //removes item from treasureIDs so that it will not appear on next visit of chest
+    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === "treasure"){ //not applicable for mobdrops
+        var indexToRemove = room_list[curr_floor][curr_room].room_map[avatarY][avatarX].treasureIDs.indexOf(item);
+        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].treasureIDs.splice(indexToRemove, 1); //removes item from treasureIDs so that it will not appear on next visit of chest
     }
 }
 
@@ -806,7 +813,7 @@ function drop_items(items){
                 if(inventory['carried'].length < 10){
                 itemsTaken ++;
                 if(itemsTaken == items.length){
-                world_map[avatarY][avatarX][curr_floor].emptied_chest = true;
+                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].emptied_chest = true;
             }
                 item_to_take = items[$(this).attr('item_id')];
                 // equip(hero, item_to_take);
@@ -904,17 +911,17 @@ function print(messageType, message) { //TODO: change so that multiple items can
 
 function buildMap(array) {
     var worldContents = "";
-    removeFog(avatarX,avatarY,world_map);
+    removeFog(avatarX,avatarY,room_list[curr_floor][curr_room].room_map);
     for (var i = 0; i < array.length; i++) {
         for(var j = 0; j < array[0].length; j++){
-            symbol = array[i][j][curr_floor].symbol;
-            if(array[i][j][curr_floor].fog){
+            symbol = array[i][j].symbol;
+            if(array[i][j].fog){
                 symbol = '';
             }
-            if(array[i][j][curr_floor].hero_present){
+            if(array[i][j].hero_present){
                 symbol = 'x';
             }
-            worldContents += "<div id='" + array[i][j][curr_floor].objid + "' style='top:" + array[i][j][curr_floor].yCoord + "px; left:" + array[i][j][curr_floor].xCoord + "px; position: absolute;'>" + symbol + "</div>";
+            worldContents += "<div id='" + array[i][j].objid + "' style='top:" + array[i][j].yCoord + "px; left:" + array[i][j].xCoord + "px; position: absolute;'>" + symbol + "</div>";
 
         }
     }
@@ -1162,7 +1169,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                     console.log("floor cleared!")
                     refreshInfo();
                     print("message", "The fog clears, and looking around there seemed to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
-                    floorCleared = true;
+                    room_list[curr_floor][curr_room].roomCleared = true;
                     $("#open").show()
                     $("#open").click(
                         function(){
@@ -1173,12 +1180,12 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                             $("#worldMap").show();
                             $("#open").off("click");
                         })
-                        for(var i = 0; i < world_height; i ++){
-                            for(var j = 0; j < world_width; j++){
-                                world_map[i][j][curr_floor].fog = false;
+                        for(var i = 0; i < room_list[curr_floor][curr_room].room_height; i ++){
+                            for(var j = 0; j < room_list[curr_floor][curr_room].room_width; j++){
+                                room_list[curr_floor][curr_room].room_map[i][j].fog = false;
                             }
                         }
-                        buildMap(world_map);
+                        buildMap(room_list[curr_floor][curr_room].room_map);
                 }
             }
         }
