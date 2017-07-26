@@ -11,6 +11,11 @@ class Location {
         this.colID = colID; //col index in world_map
         this.fog = true; //whether or not fog is present
         this.passable = passable;
+
+        this.computeCoordsWithOffset = function(yoff,xoff){
+            this.xCoord = (this.colID * 15) + xoff * 15;
+            this.yCoord = (this.rowID * 15) + yoff * 15;
+        }
     }
 };
 

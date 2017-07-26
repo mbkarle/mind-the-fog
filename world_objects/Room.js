@@ -26,6 +26,10 @@ class Room {
 
         this.room_width = this.room_map[0].length;
         this.room_height = this.room_map.length;
+        this.yoff = Math.floor((30 - this.room_height)/2)
+        this.xoff = Math.floor((40 - this.room_width)/2)
+
+        center_map(this.room_map, this.yoff, this.xoff)
     }
 
     buildRoom(type, locations, itemList){
@@ -193,4 +197,12 @@ function tier_to_fightChance(tier){
 function tier_to_boss(tier){
     //TODO: create mapping
     return HellHound;
+}
+
+function center_map(map, yoff, xoff){
+    for(var i = 0; i < map.length; i++){
+        for(var j = 0; j < map[0].length; j++){
+            map[i][j].computeCoordsWithOffset(yoff,xoff)
+        }
+    }
 }
