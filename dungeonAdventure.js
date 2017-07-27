@@ -74,6 +74,7 @@ var gold = new Currency("gold", 1, null);
 //              Initialize Characters
 //------------------------------------------------------
 var hero = new Hero("The Hero", 5, 3, 20, "hero");
+var tutorial = new Enemy("tutorial", 1, 5, 15, 'enemy');
 var Troglodyte = new Enemy("Troglodyte", 3, 2, 30, "enemy");
 var DireRat = new Enemy("Dire Rat", 1, 15, 20, "enemy");
 var DireRat2 = new Enemy("Dire Rat", 1.5, 15, 20, "enemy");

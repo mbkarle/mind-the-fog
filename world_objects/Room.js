@@ -57,6 +57,9 @@ class Room {
                 var gateKeeper = new CharDialogue(9, 30, "gatekeeper");
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
+                var tutorialDialogue = new CharDialogue(3, 5, "instructor");
+                map[tutorialDialogue.rowID][tutorialDialogue.colID] = tutorialDialogue;
+
                 //after creating all special locations, turn fog off!
                 clearAllFog(map);
                 break;
@@ -194,16 +197,19 @@ function tier_to_items(tier){
 
 function tier_to_enemies(tier){
     //TODO: randomize using larger lists and num_enemies
-    var enemies;
-    if( tier == 1 ){
+    var enemies = [];
+    if( tier == 1 || tier == 0){ //combat_helper actually runs floor 0 list on 1... #31 !!!!!
      enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre];
 
     }
     else if(tier == 2) {
      enemies = [Sorcerer, DireRat2, Ogre, Vagrant, HellHound, Werewolf, slime];
     }
-    else {
-        enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre]
+    else { //this format is the future; needs more content first
+        possEnemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre, Vagrant, HellHound, Werewolf, slime, frostGiant, ferBeast, smallWyrm, pillager];
+        for(i = 0; i < tier_to_num_enemies(tier); i++){
+            enemies.push(possEnemies[Math.floor(Math.random() * possEnemies.length)]);
+        }
     }
 
 
