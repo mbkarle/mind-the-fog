@@ -54,8 +54,11 @@ class Room {
                 var entrance = new DungeonEntrance(6,35)
                 map[entrance.rowID][entrance.colID] = entrance;
 
-                var gateKeeper = new CharDialogue(9, 30, "the gatekeeper");
+                var gateKeeper = new CharDialogue(9, 30, "gatekeeper");
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
+
+                var tutorialDialogue = new CharDialogue(3, 5, "instructor");
+                map[tutorialDialogue.rowID][tutorialDialogue.colID] = tutorialDialogue;
 
                 //after creating all special locations, turn fog off!
                 clearAllFog(map);
@@ -79,8 +82,21 @@ class Room {
                         case 'trapdoor':
                             map[locs[i][0]][locs[i][1]] = new Trapdoor(locs[i][0],locs[i][1])
                             break;
+
                         case 'statue':
                             map[locs[i][0]][locs[i][1]] = new Statue(locs[i][0],locs[i][1])
+                            break;
+
+                        case 'fountain':
+                            map[locs[i][0]][locs[i][1]] = new Fountain(locs[i][0],locs[i][1])
+                            break;
+
+                        case 'altar':
+                            map[locs[i][0]][locs[i][1]] = new Altar(locs[i][0],locs[i][1]);
+                            break;
+
+                        case 'cave':
+                            map[locs[i][0]][locs[i][1]] = new Cave(locs[i][0],locs[i][1]);
                             break;
 
                         default:
@@ -164,12 +180,10 @@ function rollLocations(num_locs, height, width){
 
 
 function tier_to_num_enemies(tier){
-    //TODO: create mapping
     return 3+2*tier;
 }
 
 function tier_to_items(tier){
-    //TODO: create mapping
     if(tier == 1){
         return itemList1;
     }
@@ -182,24 +196,67 @@ function tier_to_items(tier){
 }
 
 function tier_to_enemies(tier){
-    //TODO: create mapping
-    if( tier == 1 ){
-        return [Troglodyte];
+    //TODO: randomize using larger lists and num_enemies
+    var enemies = [];
+    if( tier == 1 || tier == 0){ //combat_helper actually runs floor 0 list on 1... #31 !!!!!
+     enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre];
+
     }
-    else {
-        return [DireRat];
+    else if(tier == 2) {
+     enemies = [Sorcerer, DireRat2, Ogre, Vagrant, HellHound, Werewolf, slime];
+    }
+    else { //this format is the future; needs more content first
+        possEnemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre, Vagrant, HellHound, Werewolf, slime, frostGiant, ferBeast, smallWyrm, pillager];
+        for(i = 0; i < tier_to_num_enemies(tier); i++){
+            enemies.push(possEnemies[Math.floor(Math.random() * possEnemies.length)]);
+        }
     }
 
+
+    return enemies;
 }
 
 function tier_to_locations(tier){
-    //TODO: create mapping
-    return ['chest', 'statue', 'chest', 'trapdoor']
+    // TODO: more locations!!! this code sets the framework for full randomization but it's meaningless with such small poss_addedLocs lists
+    var poss_addedLocs;
+    var added_locs = [];
+    var locationList = ['chest', 'trapdoor', 'chest'];
+    if(tier == 1){
+        poss_addedLocs = ['chest', 'statue', 'fountain'];
+    }
+    else if(tier == 2){
+        poss_addedLocs = ['chest', 'cave', 'fountain', 'altar'];
+    }
+    else {
+        poss_addedLocs = [];
+    }
+
+    if(tier > 0){
+    var num_added_locs = Math.ceil(Math.random() * 3); // 1 - 3 added locations
+    console.log("# of additional locations: " + num_added_locs);
+    for(var i = 0; i < num_added_locs; i++){
+        locToAdd = Math.floor(Math.random() * poss_addedLocs.length);
+        added_locs.push(poss_addedLocs[locToAdd]);
+
+        for(var j = 0; j < i; j++){ //no repeats in added_locs !
+            if(added_locs[i] == added_locs[j]){
+                added_locs.splice(i, 1);
+                i--;
+            }
+        }
+    }
+//    if(added_locs.length == num_added_locs){
+        for(var n = 0; n < added_locs.length; n++){
+            locationList.push(added_locs[n]);
+        }
+        return locationList;
+   }
+ //  }
+
 }
 
 function tier_to_fightChance(tier){
-    //TODO: create mapping
-    return .05;
+    return .04 + tier / 100;
 }
 
 function tier_to_boss(tier){

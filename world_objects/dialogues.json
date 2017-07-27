@@ -1,0 +1,19 @@
+
+var dialogues = {
+    "gatekeeper": ["Greetings, wanderer.",
+    "Before you lies the dungeon. It is rife with danger but filled with opportunity.",
+    "You may find great fortune within, but be careful. While your blade will provide the means to smite your enemies, " +
+    "it may be necessary to take shelter behind your shield to recover when you suffer their reprisals.",
+    "Good fortune to you, adventurer."
+    ],
+
+    "instructor": ["Hello there. You must be a newcomer.",
+        "You have many adventures ahead of you, but you must know some things first.",
+        "Combat will be unavoidable in the dungeon. I see you have a weapon already, and you'll need to be prepared to use it." +
+        "With your shield, you'll be able to block enemy attacks, and over time regain some health.",
+        "Be warned, however, your shield is heavy, and you won't always be able to raise it immediately in time to block an attack.",
+        "You'll have some time to get the hang of it, as the shallow parts of the dungeon contain weaker creatures. However, it gets much more " +
+        "dangerous further down, and you'll need to find better gear to face the enemy.",
+        "You'll need to learn to manage your inventory, which can be toggled by pressing 'i'."
+    ]
+}
