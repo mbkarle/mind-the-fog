@@ -56,6 +56,27 @@ class Statue extends Location {
     }
 }
 
+class Cave extends Location {
+    constructor(rowID, colID){
+        super(rowID, colID, 'Cave', 'cave', 'o', "A small hole in the ground. It's dark inside but it's clear that danger lurks within.", true);
+        this.empty = false;
+    }
+}
+
+class Fountain extends Location {
+    constructor(rowID, colID){
+        super(rowID, colID, "Fountain", 'fountain', 'f', "A beautiful fountain, flowing with divine grace.", true);
+        this.used = false;
+    }
+}
+
+class Altar extends Location {
+    constructor(rowID, colID){
+        super(rowID, colID, "Altar", 'altar', 'a', "A blood-stained altar. Sacrifice here might make the gods of death smile upon you.", true);
+        this.used = false;
+    }
+}
+
 class DungeonEntrance extends Location{
     constructor(rowID,colID){
         super(rowID, colID, 'Dungeon Entrance', 'entrance', 'D', 'The entrance to the dungeon stands, forboding and dark.',true);
@@ -137,3 +158,12 @@ class Door extends Location{ //highly experimental content at hand here
         }
     }
 }
+
+/* in order to improve replayability we need more locations! see list below for ideas:
+    merchants/vendors
+    wanderers with specific trades (armor for a weapon)
+    encampment (chance of combat, chance of recovery and trades)
+    loot hoard (lots of loot + chance of combat)
+    upgrade station (improve stats on one item)
+    etc.
+*/
