@@ -159,8 +159,33 @@ class Door extends Location{ //highly experimental content at hand here
     }
 }
 
+class Merchant extends Location{
+    constructor(rowID, colID, itemList){
+        super(rowID, colID, "Merchant", "merchant", "m", "Another wanderer has set up shop here, vending his wares – for a price.", true);
+        this.itemList = itemList;
+        this.onSale = [];
+        this.pickItems = function(){
+            this.num_items = 3 + Math.floor(Math.random() * 6);
+            for(var i = 0; i < this.num_items; i++){
+                thisItem = Math.floor(Math.random() * this.itemList.length);
+                this.itemList[thisItem].value = Math.floor(Math.random() * 50) * 10;
+                this.onSale.push(this.itemList[thisItem])
+            }
+        }
+        this.openModule = function(){
+            $("#worldMap").hide();
+            $("#vendor-module").show();
+            var itemMessage;
+            var itemInfos = []
+            for(var i = 0; i < this.onSale.length; i++){
+                itemMessage += "<div class='itemInfo' id='onSale" + i + "'>" + this.onSale[i].name + "<div id='buy" + i + "' class='interact'>" + this.onSale[i].value + "gold </div></div>";
+            }
+            document.getElementById("vendor-contents").innerHTML = itemMessage;
+        }
+    }
+}
 /* in order to improve replayability we need more locations! see list below for ideas:
-    merchants/vendors
+    various merchants/vendors
     wanderers with specific trades (armor for a weapon)
     encampment (chance of combat, chance of recovery and trades)
     loot hoard (lots of loot + chance of combat)

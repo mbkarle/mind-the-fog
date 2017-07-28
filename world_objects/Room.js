@@ -183,6 +183,7 @@ function tier_to_num_enemies(tier){
     return 3+2*tier;
 }
 
+//copy me down
 function tier_to_items(tier){
     if(tier == 1){
         return itemList1;
