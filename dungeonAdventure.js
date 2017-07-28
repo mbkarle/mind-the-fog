@@ -18,6 +18,7 @@ var ready = true;
 var shielded;
 var shieldReadyup;
 var magicReady = true;
+var enemyAttack;
 
 //------------------------------------------------------
 //              Initialize Buffs and Debuffs
@@ -134,7 +135,14 @@ room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 
 //LetsiGO!
 window.addEventListener("keydown", move, false);
-combat(hero, "default");
+window.onload = function(){
+    buildMap(room_list[curr_floor][curr_room].room_map);
+    document.getElementById("InvOpen").onclick = function() {
+            $("#info-module").toggle(100);
+            refreshInfo();
+        }
+}
+// combat(hero, "default");
 
 
 
@@ -142,38 +150,163 @@ combat(hero, "default");
 //                      HELPER FUNCTIONS
 //================================================================
 
-function combat(hero, opponents) { //opponents is either string "default" or enemy object
-    if(typeof opponents != "string"){ //combat call is custom combat outside of default list
-        enemy = [opponents]
-        combat_helper(hero, enemy, 0, true);
-    }
-    var enemies = room_list[curr_floor][curr_room].enemy_list;
+//Takes in @room, which has a number of enemies left, and a list of enemies to fight
+function enter_combat(room, custom_enemy) {
+    console.log('entered combat')
+    $("#text-module").show();
+    canMove = false;
 
-    if(opponents == "return"){
-        for(i = 0; i < enemies.length; i++){
-        if(!enemies[i].vitality <= 0){
-            console.log(i);
-        combat_helper(hero, enemies, i, false);
-        break;
+    if (typeof custom_enemy === "undefined") {
+        customCombat = false;
+        //Its a normal combat, choose randomly from the en_list of the room
+        enemy = Troglodyte; //TODO: make random from floor list
+        print("enemy-message", "A fearsome " + enemy.name + " emerges from the shadows!")
+        enemy.lootId = Math.floor(Math.random() * mobDrops.length);
+        room.num_enemies--;
+    } else {
+        //its a custom combat, fight @custom_enemy
+        enemy = custom_enemy;
+        customCombat = true;
+    }
+
+    enemy.vitality = enemy.maxVitality; //bc we use same objects across mult. fights
+
+    document.getElementById("enter").onclick = function() {
+        $("#text-module").animate({
+            top: '300px'
+        }, 500);
+        $("#combat-module").show(500);
+        $("#enter").hide();
+        $("#worldMap").hide();
+        enemyAttack = setInterval(function() {
+            if (hero_protected == true) {
+                Damage(enemy, heroShield)
+            } else {
+                Damage(enemy, hero)
+                print("combat start", "The enemy strikes!");
+            }
+            if (hero.vitality <= 0) {
+                print("message", "You died!");
+                hero.vitality = 0;
+                refreshInfo();
+                $("#combat-module").hide(1000);
+                window.clearInterval(enemyAttack);
+            }
+            if (heroShield.vitality <= 0) {
+                window.clearInterval(shielded);
+                hero_protected = false;
+                heroShield.shieldReady();
+                //jquery animation:
+                $("#defendSlider").hide('fast');
+            }
+        }, 10000 / enemy.dexterity);
+    }
+
+    document.getElementById("hero").innerHTML = hero.vitality;
+    document.getElementById("enemy").innerHTML = enemy.vitality;
+    document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
+    refreshInfo();
+
+    document.getElementById("attack").onclick = function() {
+        if (ready) {
+            ready = false;
+            window.setTimeout(readyUp, 10000 / hero.dexterity);
+            if (inventory.weapon.constructor.name == 'effectItem') {
+                console.log("buffing up")
+                inventory.weapon.buffUp(hero);
+                inventory.weapon.debuffUp(enemy);
+            }
+            if (inventory.armor != null) {
+                if (inventory.armor.constructor.name == 'effectItem') {
+                    inventory.armor.buffUp(hero);
+                    inventory.armor.debuffUp(enemy);
+                }
+            }
+            if (inventory.headgear != null) {
+                if (inventory.headgear.constructor.name == 'effectItem') {
+                    inventory.headgear.buffUp(hero);
+                    inventory.headgear.debuffUp(enemy);
+                }
+            }
+            hitprint = Damage(hero, enemy);
+            print("damageDealt", hitprint);
+            //jquery animations:
+            $("#attackSlider").show();
+            $("#attackSlider").animate({
+                width: '0px'
+            }, 8000 / hero.dexterity, function() {
+                $("#attackSlider").hide();
+                $("#attackSlider").animate({
+                    width: '110px'
+                }, 1);
+            });
+        }
+    };
+    document.getElementById("defend").onclick = function() {
+        if (hero_protected == false && heroShield.vitality > 0) {
+            //  $("#defend").off('click');
+            $("#defendSlider").show(4000);
+            shieldReadyup = setTimeout(function() {
+                heroShield.shield_ready = false;
+            }, 4000);
+            //    console.log("shield clicked")
+            if (heroShield.shield_ready) {
+                heroShield.shield_ready = false;
+                shielded = setInterval(function() {
+                    // console.log("shielding");
+                    Shield()
+                }, 4000);
             }
         }
     }
-    if(opponents == "default" && curr_floor > 1){
 
-        combat_helper(hero, enemies, 0, false);
-    }
-    window.onload = function() {
-        combat_helper(hero, enemies, 0, false);
-        buildMap(room_list[curr_floor][curr_room].room_map);
-
-        //Inventory can now be opened either by clicking InvOpen button or pressing I
-        //not sure where else to initialize this
-        document.getElementById("InvOpen").onclick = function() {
-            $("#info-module").toggle(100);
-            refreshInfo();
+    document.getElementById('combat-module').onclick = function() {
+        console.log('combat-module clicked')
+        if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
+            window.clearInterval(shielded);
+            heroShield.shieldReady();
+            hero_protected = false;
+            //jquery animation:
+            $("#defendSlider").hide('fast');
         }
+    }
+}
 
-    };
+function exit_combat(room, customCombat) {
+    console.log('exiting combat')
+    if (room.num_enemies > 0 || customCombat == true ) {
+        // $("#open").show()
+        // $("#open").click(function() {
+            canMove = true;
+            $("#open").hide();
+            $("#enter").show();
+            $("#text-module").hide();
+            $("#worldMap").show();
+            $("#open").off("click");
+        // })
+    } else {
+        console.log("floor cleared!")
+        refreshInfo();
+        print("message", "The fog clears, and looking around there seemed to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
+        room.roomCleared = true;
+        $("#open").show()
+        $("#open").click(
+            function() {
+                canMove = true;
+                document.getElementById("enter").innerHTML = "Engage";
+                $("#open").hide();
+                $("#enter").show();
+                $("#text-module").hide();
+                $("#worldMap").show();
+                $("#open").off("click");
+            })
+        for (var i = 0; i < room.room_height; i++) {
+            for (var j = 0; j < room.room_width; j++) {
+                room.room_map[i][j].fog = false;
+            }
+        }
+        buildMap(room.room_map);
+    }
 }
 
 function removeFog(avX, avY, map){
@@ -320,11 +453,10 @@ function move(e) {
 
         //chance to enter combat
         if (Math.random() < room_list[curr_floor][curr_room].fightChance  && !room_list[curr_floor][curr_room].roomCleared && didMove) {
-            $("#text-module").show();
-            canMove = false;
-        } else {
-            canMove = true;
+            enter_combat(room_list[curr_floor][curr_room])
+
         }
+
         if(hero.vitality + 2 <= hero.maxVitality && didMove) {
             hero.vitality += 2;
             document.getElementById("hero").innerHTML = hero.vitality;
@@ -370,15 +502,13 @@ function checkLocation(){
         canMove = false;
         msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
 
-    //    if(room_list[curr_floor][curr_room].roomCleared){
-            $("#descend").show();
-            $("#descend").click(
-                function() {
-                    console.log("Enter new floor")
-                    descend(true)
-                }
-            )
-    //    }
+        $("#descend").show();
+        $("#descend").click(
+            function() {
+                console.log("Enter new floor")
+                descend(true)
+            }
+        );
 
         $("#stay").click(
             function() {
@@ -407,7 +537,7 @@ function checkLocation(){
                 canMove = false;
                 print("message", "The statue springs to life and raises its sword. There's no escape!");
                 $("#text-module").show();
-                combat(hero, Golem);
+                enter_combat(room_list[curr_floor][curr_room], Golem);
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].destroyed_statue = true;
             }
         )
@@ -434,7 +564,7 @@ function checkLocation(){
                 canMove = false;
                 print("message", "The occupant of the cave awakes. A massive frost giant looms before you!");
                 $("#text-module").show();
-                combat(hero, frostGiant);
+                enter_combat(room_list[curr_floor][curr_room], frostGiant);
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].empty = true;
             }
         )
@@ -578,7 +708,7 @@ function descend(descend){
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
             buildMap(room_list[curr_floor][curr_room].room_map);
 
-            combat(hero, "default");
+            // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;
             refreshInfo();
         }
@@ -711,17 +841,76 @@ function refreshInfo() {
     document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
 }
 
-function Damage(source_character, target_character) {
-    hit = Math.floor(Math.random() * source_character.strength + source_character.strength);
-    target_character.vitality -= hit;
-    //document.getElementById(source_character.objid).innerHTML = source_character.vitality;
-    document.getElementById(target_character.objid).innerHTML = target_character.vitality /*+ target_character.name */ ;
+function Damage(source, target) {
+    customCombat = false;
+    if(target.constructor.name == 'Boss'){
+        customCombat = true;
+    }
+    room = room_list[curr_floor][curr_room];
+    hit = Math.floor(Math.random() * source.strength + source.strength);
+    target.vitality -= hit;
+
+    document.getElementById(target.objid).innerHTML = target.vitality /*+ target.name */ ;
     document.getElementById("hero").innerHTML = hero.vitality;
     document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
     refreshInfo();
-    if(target_character.vitality <= 0){
-    $("#combat-module").trigger('click');
-}
+
+    //if the source was a hero (check based on if target is enemy or boss), and target dead
+    if ((target.constructor.name == 'Enemy' || customCombat) && target.vitality <= 0) {
+        target.vitality = 0;
+        hero.xp += 100; //TODO: scale
+        window.clearInterval(enemyAttack);
+
+        window.clearInterval(shielded);
+        hero_protected = false;
+        heroShield.shieldReady();
+
+        $("#defendSlider").hide('fast');
+        $("#combat-module").hide(1000);
+        $("#text-module").animate({
+            top: "100px"
+        }, 1000);
+        print("message", "You've defeated the beast!");
+        $("#combat-module").off('click');
+        var dropChance = Math.random();
+        if (!customCombat && dropChance > .75) {
+            console.log(dropChance);
+            $("#open").show();
+            $("#open").click(
+                function(e) {
+                    e.stopPropagation();
+                    print("item", [mobDrops[target.lootId]]);
+                    drop_items([mobDrops[target.lootId]])
+                    // $("#open").off('click');
+                    $("#open").click(function(){exit_combat(room, customCombat)})
+                }
+            );
+        } else if (customCombat) {
+            console.log("cc")
+            hero.xp += 100; //TODO: scale
+            $("#open").show();
+            $("#open").click(
+                function(e) {
+                    console.log(enemy);
+                    e.stopPropagation();
+                    print("item", [target.loot]);
+                    drop_items([target.loot])
+                    // $("#open").off('click');
+                    $("#open").click(function(){exit_combat(room, customCombat)})
+                }
+            )
+        }
+        else {
+            console.log('case 3--no drops, and random monster')
+            $("#open").show();
+            $("#open").click(
+                function() {
+                    $("#open").off('click');
+                    exit_combat(room, customCombat);
+                }
+            )
+        }
+    }
     return hit;
 }
 
@@ -960,230 +1149,4 @@ function Unequip(target, equipment) {
             target[attribute] -= equipment[attribute];
         }
     }
-}
-
-function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIABLES
-    var enemyAttack; //not used outside this function = NOT GLOBAL, SIR!
-    if (hero.vitality <= 0) {
-        return;
-    }
-    enemyList[idx].vitality = enemyList[idx].maxVitality; //just in case
-    if(customCombat == false){
-        print("enemy-message", "A fearsome " + enemyList[idx].name + " emerges from the shadows!")
-        enemyList[idx].lootId = Math.floor(Math.random() * mobDrops.length);
-    }
-    document.getElementById("enter").onclick = function() {
-        $("#text-module").animate({
-            top: '300px'
-        }, 500);
-        $("#combat-module").show(500);
-        $("#enter").hide();
-        $("#worldMap").hide();
-        enemyAttack = setInterval(function() {
-            if (hero_protected == true) {
-                Damage(enemyList[idx], heroShield)
-            } else {
-                Damage(enemyList[idx], hero)
-                print("combat start", "The enemy strikes!");
-            }
-            if (hero.vitality <= 0) {
-                print("message", "You died!");
-                hero.vitality = 0;
-                refreshInfo();
-                $("#combat-module").hide(1000);
-                window.clearInterval(enemyAttack);
-            }
-            if (heroShield.vitality <= 0) {
-                window.clearInterval(shielded);
-                hero_protected = false;
-                heroShield.shieldReady();
-                //jquery animation:
-                $("#defendSlider").hide('fast');
-            }
-        }, 10000 / enemyList[idx].dexterity);
-    }
-
-    document.getElementById("hero").innerHTML = hero.vitality;
-    document.getElementById("enemy").innerHTML = enemyList[idx].vitality;
-    document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
-    refreshInfo();
-
-    document.getElementById("attack").onclick = function() {
-        if (ready) {
-            ready = false;
-            window.setTimeout(readyUp, 10000 / hero.dexterity);
-            if(inventory.weapon.constructor.name == 'effectItem'){
-                console.log("buffing up")
-                inventory.weapon.buffUp(hero);
-                inventory.weapon.debuffUp(enemyList[idx]);
-            }
-            if(inventory.armor != null){
-                if(inventory.armor.constructor.name == 'effectItem'){
-                inventory.armor.buffUp(hero);
-                inventory.armor.debuffUp(enemyList[idx]);
-            }}
-            if(inventory.headgear != null){
-            if(inventory.headgear.constructor.name == 'effectItem'){
-                inventory.headgear.buffUp(hero);
-                inventory.headgear.debuffUp(enemyList[idx]);
-            }}
-            hitprint = Damage(hero, enemyList[idx]);
-            print("damageDealt", hitprint);
-            //jquery animations:
-            $("#attackSlider").show();
-            $("#attackSlider").animate({
-                width: '0px'
-            }, 8000 / hero.dexterity, function() {
-                $("#attackSlider").hide();
-                $("#attackSlider").animate({
-                    width: '110px'
-                }, 1);
-            });
-        }
-    };
-
-
-        document.getElementById("defend").onclick = function() {
-          if (hero_protected == false && heroShield.vitality > 0) {
-        //  $("#defend").off('click');
-          $("#defendSlider").show(4000);
-            shieldReadyup = setTimeout(function(){
-              heroShield.shield_ready = false;}, 4000);
-            //    console.log("shield clicked")
-                if(heroShield.shield_ready){
-                  heroShield.shield_ready = false;
-            shielded = setInterval(function() {
-             // console.log("shielding");
-                Shield()
-            }, 4000);}
-
-
-        }
-    }
-
-
-    // var enemyAttack = setInterval(function() {print("combat start", "The enemy strikes!"); if(protected == true){Damage(enemyList[idx], heroShield)} else{Damage(enemyList[idx], hero)}}, 10000 / enemyList[idx].dexterity);
-    document.getElementById('combat-module').onclick = function() {
-    //    console.log("hero_protected: " + hero_protected);
-    //    console.log("heroShield.shield_ready: " + heroShield.shield_ready);
-        if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
-        //    console.log("turning off shield");
-            window.clearInterval(shielded);
-            heroShield.shieldReady();
-            hero_protected = false;
-            //jquery animation:
-            $("#defendSlider").hide('fast');
-        }
-        if (enemyList[idx].vitality <= 0) {
-            enemyList[idx].vitality = 0;
-            hero.xp += 100;
-            window.clearInterval(enemyAttack);
-
-            // issue 5 stated that shield was giving health after combat. I am having a hard time encountering this problem but this redundancy will hopefully guarantee that it will not occur
-            window.clearInterval(shielded);
-            hero_protected = false;
-            heroShield.shieldReady();
-        //    console.log("hero_protected should now be false and heroShield.shield_ready true");
-    //        console.log("hero_protected: " + hero_protected);
-        //    console.log("heroShield.shield_ready: " + heroShield.shield_ready);
-                        $("#defendSlider").hide('fast');
-
-            $("#combat-module").hide(1000);
-            $("#text-module").animate({
-                top: "100px"
-                // left: "20px"
-            }, 1000);
-            print("message", "You've defeated the beast!");
-            $("#combat-module").off('click');
-            var dropChance = Math.random();
-            if(!customCombat && dropChance > 0.75){
-                console.log(dropChance);
-                $("#open").show();
-                $("#open").click(
-                    function() {
-                        // console.log("clicked open")
-                        print("item", [mobDrops[enemyList[idx].lootId]]);
-                        drop_items([mobDrops[enemyList[idx].lootId]])
-                        // console.log(mobDrops[enemyList[idx].lootId]);
-                        $("#open").hide();
-                        // $("#equip").show();
-                        // $("#equip").click(
-                        //     function(){
-                        //         equip(hero, mobDrops[enemyList[idx].lootId]);
-                        //         $("#equip").hide().off('click');
-                        //     })
-                        $("#open").off('click');
-                    }
-            );}
-            else if(customCombat || enemyList[idx].constructor.name == "Boss"){
-            hero.xp += 100;
-              $("#open").show();
-              $("#open").click(
-                function(){
-                  console.log(enemyList[idx]);
-                  print("item", [enemyList[idx].loot]);
-                  $("#open").hide();
-                //   $("#equip").show();
-                //   $("#equip").click(
-                //     function(){
-                //       equip(hero, enemyList[idx].loot);
-                //       $("#equip").hide().off('click');
-                //     }
-                //   )
-                drop_items([enemyList[idx].loot])
-                $("#open").off('click');
-              }
-              )
-            }
-            if (idx < enemyList.length - 1 || customCombat == true) {
-                console.log("moving on");
-                document.getElementById("enter").innerHTML = "––>";
-                $("#enter").show();
-                document.getElementById("enter").onclick = function() {
-            //        console.log("hero_protected: " + hero_protected);
-            //        console.log("heroShield.shield_ready: " + heroShield.shield_ready);
-                    canMove = true;
-                    // $("#combat-module").hide(500);
-                    // $("#text-module").animate({
-                    //   top: "100px",
-                    //   left: "20px"
-                    // }, 500).hide();
-                    $("#equip").hide();
-                    $("#text-module").hide();
-                    $("#worldMap").show();
-                    document.getElementById("enter").innerHTML = "Engage";
-                    if(customCombat == false){
-                    idx++;
-                    combat_helper(hero, enemyList, idx, false);}
-                    else{
-                        combat(hero, "return");
-                        return;
-                    }
-                }}
-
-                else {
-                    console.log("floor cleared!")
-                    refreshInfo();
-                    print("message", "The fog clears, and looking around there seemed to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
-                    room_list[curr_floor][curr_room].roomCleared = true;
-                    $("#open").show()
-                    $("#open").click(
-                        function(){
-                            canMove = true;
-                            document.getElementById("enter").innerHTML = "Engage";
-                            $("#open").hide();
-                            $("#text-module").hide();
-                            $("#worldMap").show();
-                            $("#open").off("click");
-                        })
-                        for(var i = 0; i < room_list[curr_floor][curr_room].room_height; i ++){
-                            for(var j = 0; j < room_list[curr_floor][curr_room].room_width; j++){
-                                room_list[curr_floor][curr_room].room_map[i][j].fog = false;
-                            }
-                        }
-                        buildMap(room_list[curr_floor][curr_room].room_map);
-                }
-            }
-        }
-
 }
