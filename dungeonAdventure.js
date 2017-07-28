@@ -93,7 +93,7 @@ var pillager = new Enemy("pillager", 6, 6, 80, "enemy");
 
 
 //------------------------------------------------------
-//        Initialize Treasures + other Locations
+//        Initialize Inventory
 //------------------------------------------------------
 //inventory!!!!
 var inventory = {
@@ -104,6 +104,7 @@ var inventory = {
 }
 
 startWeapon.equipped = true;
+
 //------------------------------------------------------
 //              Spinning up your world...
 //------------------------------------------------------
@@ -131,19 +132,16 @@ var avatarY = Math.floor(room_list[curr_floor][curr_room].room_height/2);
 
 //get ready to start...
 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
-// removeFog(avatarX,avatarY, world_map); //remove the fog around the hero
 
 //LetsiGO!
 window.addEventListener("keydown", move, false);
 window.onload = function(){
-    buildMap(room_list[curr_floor][curr_room].room_map);
+    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
             refreshInfo();
         }
 }
-// combat(hero, "default");
-
 
 
 //================================================================
@@ -300,101 +298,10 @@ function exit_combat(room, customCombat) {
                 $("#worldMap").show();
                 $("#open").off("click");
             })
-        for (var i = 0; i < room.room_height; i++) {
-            for (var j = 0; j < room.room_width; j++) {
-                room.room_map[i][j].fog = false;
-            }
-        }
-        buildMap(room.room_map);
+
+        clearAllFog(room_list[curr_floor][curr_room].room_map);
+        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
     }
-}
-
-function removeFog(avX, avY, map){
-    neigh = getValidNeighbors(avX,avY,map,1);
-    for(var i = 0; i < neigh.length; i++){
-        neigh[i].fog = false;
-    }
-}
-
-function getValidNeighbors(avX, avY, map, flashlight){
-    neigh = [];
-    if(avX > 0){neigh.push(map[avY][avX-1]);} //left
-    if(avX < room_list[curr_floor][curr_room].room_width-1){neigh.push(map[avY][avX+1]);} //right
-    if(avY > 0){neigh.push(map[avY-1][avX]);} //up
-    if(avY < room_list[curr_floor][curr_room].room_height-1){neigh.push(map[avY+1][avX]);} //down
-    if(avX > 0 && avY > 0){neigh.push(map[avY-1][avX-1]);} //top left corner
-    if(avX > 0 && avY < room_list[curr_floor][curr_room].room_height-1){neigh.push(map[avY+1][avX-1]);} //bot left corner
-    if(avX < room_list[curr_floor][curr_room].room_width-1 && avY > 0){neigh.push(map[avY-1][avX+1]);} //top right corner
-    if(avX < room_list[curr_floor][curr_room].room_width-1 && avY < room_list[curr_floor][curr_room].room_height-1){neigh.push(map[avY+1][avX+1]);} //bot right corner
-
-    if(flashlight > 0){ //radius increases...
-        possCoords = []
-        //5 on right
-        possCoords.push([avX+2,avY+2]);
-        possCoords.push([avX+2,avY+1]);
-        possCoords.push([avX+2,avY]);
-        possCoords.push([avX+2,avY-1]);
-        possCoords.push([avX+2,avY-2]);
-
-        //5 on left
-        possCoords.push([avX-2,avY+2]);
-        possCoords.push([avX-2,avY+1]);
-        possCoords.push([avX-2,avY]);
-        possCoords.push([avX-2,avY-1]);
-        possCoords.push([avX-2,avY-2]);
-
-        //missing 3 up top
-        possCoords.push([avX-1,avY+2]);
-        possCoords.push([avX,avY+2]);
-        possCoords.push([avX+1,avY+2]);
-
-        //missing 3 on bottom
-        possCoords.push([avX-1,avY-2]);
-        possCoords.push([avX,avY-2]);
-        possCoords.push([avX+1,avY-2]);
-
-        //5x5 square complete... fill to be 6x6 with corners missing
-        //5 on right
-        // possCoords.push([avX+3,avY+2]);
-        possCoords.push([avX+3,avY+1]);
-        possCoords.push([avX+3,avY]);
-        possCoords.push([avX+3,avY-1]);
-        // possCoords.push([avX+3,avY-2]);
-
-        //5 on left
-        // possCoords.push([avX-3,avY+2]);
-        possCoords.push([avX-3,avY+1]);
-        possCoords.push([avX-3,avY]);
-        possCoords.push([avX-3,avY-1]);
-        // possCoords.push([avX-3,avY-2]);
-
-        //5 on top
-        // possCoords.push([avX-2,avY+3]);
-        possCoords.push([avX-1,avY+3]);
-        possCoords.push([avX,avY+3]);
-        possCoords.push([avX+1,avY+3]);
-        // possCoords.push([avX+2,avY+3]);
-
-        //5 on bottom
-        // possCoords.push([avX-2,avY-3]);
-        possCoords.push([avX-1,avY-3]);
-        possCoords.push([avX,avY-3]);
-        possCoords.push([avX+1,avY-3]);
-        // possCoords.push([avX+2,avY-3]);
-
-        for(var i = 0; i < possCoords.length; i++){
-            cx = possCoords[i][0];
-            cy = possCoords[i][1];
-            if(isValidCoord(cx,cy)){
-                neigh.push(map[cy][cx]);
-            }
-        }
-    }
-    return neigh;
-}
-
-function isValidCoord(avX, avY){
-    return (avX >= 0 && avY >= 0 && avX < room_list[curr_floor][curr_room].room_width && avY < room_list[curr_floor][curr_room].room_height);
 }
 
 // function Dex(Character){
@@ -441,14 +348,9 @@ function move(e) {
             hero.vitality = 100000; //set absurd health stats
             hero.maxVitality = 100000;
 
-            //remove fog
-            for(var i = 0; i < room_list[curr_floor][curr_room].room_height; i ++){
-                for(var j = 0; j < room_list[curr_floor][curr_room].room_width; j++){
-                    room_list[curr_floor][curr_room].room_map[i][j].fog = false;
-                }
-            }
+            clearAllFog(room_list[curr_floor][curr_room].room_map)
         }
-        buildMap(room_list[curr_floor][curr_room].room_map);
+        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
 
 
         //chance to enter combat
@@ -706,7 +608,7 @@ function descend(descend){
 
             curr_floor++; //TODO can leave the last floor....
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-            buildMap(room_list[curr_floor][curr_room].room_map);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
 
             // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;
@@ -968,7 +870,6 @@ function openChest(stage) {
         });
 }
 
-
 function take_item(item){
     if(item.constructor.name == 'Currency'){
         item.walletCheck();
@@ -984,7 +885,6 @@ function take_item(item){
         room_list[curr_floor][curr_room].room_map[avatarY][avatarX].treasureIDs.splice(indexToRemove, 1); //removes item from treasureIDs so that it will not appear on next visit of chest
     }
 }
-
 
 function drop_items(items){
     console.log(items)
@@ -1093,25 +993,6 @@ function print(messageType, message) { //TODO: change so that multiple items can
     messageCount++
     //console.log(messageArray.toString());
     return messageArray[messageCount-1][1];
-}
-
-function buildMap(array) {
-    var worldContents = "";
-    removeFog(avatarX,avatarY,room_list[curr_floor][curr_room].room_map);
-    for (var i = 0; i < array.length; i++) {
-        for(var j = 0; j < array[0].length; j++){
-            symbol = array[i][j].symbol;
-            if(array[i][j].fog){
-                symbol = '';
-            }
-            if(array[i][j].hero_present){
-                symbol = 'x';
-            }
-            worldContents += "<div id='" + array[i][j].objid + "' style='top:" + array[i][j].yCoord + "px; left:" + array[i][j].xCoord + "px; position: absolute;'>" + symbol + "</div>";
-
-        }
-    }
-    document.getElementById("worldContent").innerHTML = worldContents;
 }
 
 function equip(target, equipment) {
