@@ -10,6 +10,7 @@ class Item {
         this.objid = objid;
         this.items = items;
         this.equipped = false;
+        this.value = null;
 
         if(toList){
             for(var i = 0; i < items.length; i++){

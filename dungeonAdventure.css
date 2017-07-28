@@ -231,3 +231,25 @@ background-color: white;
   width: 12px;
   height: 12px;
 }
+
+#vendor-module {
+    height: 400px;
+    width: 600px;
+    font-size: 12px;
+    font-family: cursive;
+    border-style: solid;
+    border-color: #a6a6a6;
+    position: relative;
+    top: 150px;
+    background-color: white;
+    display: none;
+}
+#tab{
+    height: 20px;
+    width: 40px;
+    border-style: solid;
+    border-color: inherit;
+    position: absolute;
+    right: 0;
+    top: -30px;
+}
