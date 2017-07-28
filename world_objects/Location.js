@@ -167,20 +167,111 @@ class Merchant extends Location{
         this.pickItems = function(){
             this.num_items = 3 + Math.floor(Math.random() * 6);
             for(var i = 0; i < this.num_items; i++){
-                thisItem = Math.floor(Math.random() * this.itemList.length);
+                var thisItem = Math.floor(Math.random() * this.itemList.length);
                 this.itemList[thisItem].value = Math.floor(Math.random() * 50) * 10;
                 this.onSale.push(this.itemList[thisItem])
             }
         }
-        this.openModule = function(){
+        this.openModule = function(buying){
+            canMove = false;
+            var self = this;
             $("#worldMap").hide();
             $("#vendor-module").show();
-            var itemMessage;
-            var itemInfos = []
-            for(var i = 0; i < this.onSale.length; i++){
-                itemMessage += "<div class='itemInfo' id='onSale" + i + "'>" + this.onSale[i].name + "<div id='buy" + i + "' class='interact'>" + this.onSale[i].value + "gold </div></div>";
+
+            if(buying){
+                var itemMessage = "On sale: <br>"
+                var itemInfos = []
+                for(var i = 0; i < this.onSale.length; i++){
+                    itemMessage += "<div class='itemInfo' id='onSale" + i + "' style='border-width:2px;'>" + this.onSale[i].name + "<div id='buy" + i + "' class='interact'>" + this.onSale[i].value + "gold </div></div>";
+                }
+                document.getElementById("vendor-contents").innerHTML = itemMessage;
+                document.getElementById("tab").innerHTML = "Sell";
+                this.drop_onSale(self);
+                $("#tab").click(function(){
+                    $("#tab").off('click');
+                    self.openModule(false);
+                })
             }
-            document.getElementById("vendor-contents").innerHTML = itemMessage;
+            else{
+                var itemMessage = "";
+                self.getValueForList(inventory['carried']);
+            //    var items_to_print = [];
+                for(var i = 0; i < inventory['carried'].length; i++){
+                    if(!inventory['carried'][i].equipped){
+                        itemMessage += "<div class='itemInfo' id='forSale" + i + "' style='border-width:2px;'>" + inventory['carried'][i].name + "<div id = 'sell" + i + "' class='interact'>" + inventory['carried'][i].value + "gold </div></div>";
+                    }
+                }
+                document.getElementById('vendor-contents').innerHTML = itemMessage;
+                document.getElementById('tab').innerHTML = "Buy";
+                this.drop_forSale(self);
+                $("#tab").click(function(){
+                    $("#tab").off('click');
+                    self.openModule(true);
+                })
+            }
+            $("#close").click(function(){
+                self.closeModule();
+            })
+        }
+
+    }
+    buyItem(item){
+        var successful_transaction = false;
+        if(inventory['carried'].length < 10 && hero.wallet >= item.value){
+            take_item(item);
+            hero.wallet -= item.value;
+            successful_transaction = true;
+            refreshInfo();
+        }
+        else if(inventory['carried'].length >= 10){
+            alert("Your inventory is full");
+        }
+        else if(hero.wallet < item.value){
+            alert("You can't afford this item");
+        }
+        return successful_transaction;
+    }
+    drop_onSale(self){
+        for(var i = 0; i < self.onSale.length; i++){
+            var buyID = "#buy" + i;
+            $(buyID).attr("buy_id", i)
+            $(buyID).click(function(){
+                console.log('buying item');
+                if(self.buyItem(self.onSale[$(this).attr('buy_id')])){
+                $(this).hide().off('click');
+                self.onSale.splice($(this).attr('buy_id'), 1);
+                self.openModule(true); //updates window
+            }
+            })
+        }
+    }
+    drop_forSale(self){
+        for(var i = 0; i < inventory['carried'].length; i++){
+            var sellID = "#sell" + i;
+            $(sellID).attr("sell_id", i);
+            $(sellID).click(function(){
+                console.log('selling item');
+                hero.wallet += inventory['carried'][$(this).attr('sell_id')].value;
+                inventory['carried'].splice($(this).attr('sell_id'), 1);
+                $(this).hide().off('click');
+                refreshInfo();
+                self.openModule(false); //updates window
+            })
+        }
+    }
+    closeModule(){
+        canMove = true;
+        $("#worldMap").show();
+        $("#vendor-module").hide();
+        revertTextModule();
+        refreshInfo();
+        $("#close").off('click');
+    }
+    getValueForList(itemList){
+        for(var i = 0; i < itemList.length; i++){
+            if(itemList[i].value == null){
+                itemList[i].value = Math.floor(Math.random() * 50) * 10;
+            }
         }
     }
 }
