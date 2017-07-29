@@ -233,46 +233,49 @@ class Merchant extends Location{
             else{
                 var itemMessage = "";
                 var itemInfos = [];
-                var id = 0;
+                var inventoryForSale = [];
+
                 self.getValueForList(inventory['carried']);
             //    var items_to_print = [];
                 for(var i = 0; i < inventory['carried'].length; i++){
                     if(!inventory['carried'][i].equipped){
-
+                        inventoryForSale.push(inventory['carried'][i]);
+                    }}
+                for(var n = 0; n < inventoryForSale.length; n++){
                         //store all the item infos to be displayed upon hover...
-                        itemInfos.push((inventory['carried'][i].name + "<br>"))
-                        for (attribute in inventory['carried'][i]) {
-                            if (typeof inventory['carried'][i][attribute] == "number") {
+                        itemInfos.push((inventoryForSale[n].name + "<br>"))
+                        for (attribute in inventoryForSale[n]) {
+                            if (typeof inventoryForSale[n][attribute] == "number") {
                                 console.log(attribute);
-                                if(inventory['carried'][i][attribute] >= 0){
-                                    itemInfos[id] += attribute + ": +" + inventory['carried'][i][attribute] + "<br>";
+                                if(inventoryForSale[n][attribute] >= 0){
+                                    itemInfos[n] += attribute + ": +" + inventoryForSale[n][attribute] + "<br>";
                                 }
                                 else{ // issue #49
-                                    itemInfos[id] += attribute + ": " + inventory['carried'][i][attribute] + "<br>";
+                                    itemInfos[n] += attribute + ": " + inventoryForSale[n][attribute] + "<br>";
                                 }
                             }
                         }
-                        if(inventory['carried'][i].constructor.name == 'effectItem'){
+                        if(inventoryForSale[n].constructor.name == 'effectItem'){
 
-                            for(var j = 0; j < inventory['carried'][i].buffArray.length; j++){
+                            for(var j = 0; j < inventoryForSale[n].buffArray.length; j++){
 
-                                itemInfos[i] += "buffs: " + inventory['carried'][i].buffArray[j].name + "<br>";
+                                itemInfos[n] += "buffs: " + inventoryForSale[n].buffArray[j].name + "<br>";
                             }
-                            for(var k = 0; k < inventory['carried'][i].debuffArray.length; k++){
-                                itemInfos[i] += "debuffs: " + inventory['carried'][i].debuffArray[k].name + "<br>";
+                            for(var k = 0; k < inventoryForSale[n].debuffArray.length; k++){
+                                itemInfos[n] += "debuffs: " + inventoryForSale[n].debuffArray[k].name + "<br>";
                             }
                         }
 
 
-                        itemMessage += "<div class='itemInfo' id='forSale" + i + "' style='border-width:2px;'>" + inventory['carried'][i].name + "<div id = 'sell" + i + "' class='interact'>" + inventory['carried'][i].value + "gold </div></div>";
-                        id++;
+                        itemMessage += "<div class='itemInfo' id='forSale" + n + "' style='border-width:2px;'>" + inventoryForSale[n].name + "<div id = 'sell" + n + "' class='interact'>" + inventoryForSale[n].value + "gold </div></div>";
+
                     }
-                }
+
                 document.getElementById('vendor-contents').innerHTML = itemMessage;
                 document.getElementById('tab').innerHTML = "Buy";
                 this.drop_forSale(self);
 
-                for(var i = 0; i < inventory['carried'].length; i++){
+                for(var i = 0; i < inventoryForSale.length; i++){
                     var item_to_print =  (' ' + itemInfos[i]).slice(1)
                     var id = '#forSale'+i;
                     $(id).attr('item_to_print', item_to_print)
