@@ -159,8 +159,209 @@ class Door extends Location{ //highly experimental content at hand here
     }
 }
 
+class Merchant extends Location{
+    constructor(rowID, colID, itemList){
+        super(rowID, colID, "Merchant", "merchant", "m", "Another wanderer has set up shop here, vending his wares – for a price.", true);
+        this.itemList = itemList;
+        this.onSale = [];
+        this.pickItems = function(){
+            this.num_items = 3 + Math.floor(Math.random() * 6);
+            for(var i = 0; i < this.num_items; i++){
+                var thisItem = Math.floor(Math.random() * this.itemList.length);
+                this.itemList[thisItem].value = Math.floor(Math.random() * 50) * 10;
+                this.onSale.push(this.itemList[thisItem])
+            }
+        }
+        this.openModule = function(buying){
+            canMove = false;
+            var self = this;
+            $("#worldMap").hide();
+            $("#vendor-module").show();
+
+            if(buying){
+                var itemMessage = "On sale: <br>"
+                var itemInfos = []
+                for(var i = 0; i < this.onSale.length; i++){
+                    itemInfos.push((this.onSale[i].name + "<br>"))
+                    for (attribute in this.onSale[i]) {
+                        if (typeof this.onSale[i][attribute] == "number") {
+                            if(this.onSale[i][attribute] >= 0){
+                                itemInfos[i] += attribute + ": +" + this.onSale[i][attribute] + "<br>";
+                            }
+                            else{ //issue #49
+                                itemInfos[i] += attribute + ": " + this.onSale[i][attribute] + "<br>";
+                            }
+                        }
+                    }
+                    if(this.onSale[i].constructor.name == 'effectItem'){
+
+                        for(var j = 0; j < this.onSale[i].buffArray.length; j++){
+
+                            itemInfos[i] += "buffs: " + this.onSale[i].buffArray[j].name + "<br>";
+                        }
+                        for(var k = 0; k < this.onSale[i].debuffArray.length; k++){
+                            itemInfos[i] += "debuffs: " + this.onSale[i].debuffArray[k].name + "<br>";
+                        }
+                    }
+                    //build the html to print to the textBox
+
+                    itemMessage += "<div class='itemInfo' id='onSale" + i + "' style='border-width:2px;'>" + this.onSale[i].name + "<div id='buy" + i + "' class='interact'>" + this.onSale[i].value + "gold </div></div>";
+                }
+                document.getElementById("vendor-contents").innerHTML = itemMessage;
+                document.getElementById("tab").innerHTML = "Sell";
+                this.drop_onSale(self);
+
+                for(var i = 0; i < this.onSale.length; i++){
+                    var item_to_print =  (' ' + itemInfos[i]).slice(1)
+                    var id = '#onSale'+i;
+                    $(id).attr('item_to_print', item_to_print)
+                    $(id).mouseenter(function(){
+                        document.getElementById("vendor-hover").innerHTML = $(this).attr('item_to_print');
+                        $("#vendor-hover").show();
+                    })
+                    $(id).mouseleave(function(){
+                        $("#vendor-hover").hide();
+                    })
+
+                }
+
+                $("#tab").click(function(){
+                    $("#tab").off('click');
+                    self.openModule(false);
+                })
+            }
+            else{
+                var itemMessage = "";
+                var itemInfos = [];
+                var inventoryForSale = [];
+
+                self.getValueForList(inventory['carried']);
+            //    var items_to_print = [];
+                for(var i = 0; i < inventory['carried'].length; i++){
+                    if(!inventory['carried'][i].equipped){
+                        inventoryForSale.push(inventory['carried'][i]);
+                    }}
+                for(var n = 0; n < inventoryForSale.length; n++){
+                        //store all the item infos to be displayed upon hover...
+                        itemInfos.push((inventoryForSale[n].name + "<br>"))
+                        for (attribute in inventoryForSale[n]) {
+                            if (typeof inventoryForSale[n][attribute] == "number") {
+                                console.log(attribute);
+                                if(inventoryForSale[n][attribute] >= 0){
+                                    itemInfos[n] += attribute + ": +" + inventoryForSale[n][attribute] + "<br>";
+                                }
+                                else{ // issue #49
+                                    itemInfos[n] += attribute + ": " + inventoryForSale[n][attribute] + "<br>";
+                                }
+                            }
+                        }
+                        if(inventoryForSale[n].constructor.name == 'effectItem'){
+
+                            for(var j = 0; j < inventoryForSale[n].buffArray.length; j++){
+
+                                itemInfos[n] += "buffs: " + inventoryForSale[n].buffArray[j].name + "<br>";
+                            }
+                            for(var k = 0; k < inventoryForSale[n].debuffArray.length; k++){
+                                itemInfos[n] += "debuffs: " + inventoryForSale[n].debuffArray[k].name + "<br>";
+                            }
+                        }
+
+
+                        itemMessage += "<div class='itemInfo' id='forSale" + n + "' style='border-width:2px;'>" + inventoryForSale[n].name + "<div id = 'sell" + n + "' class='interact'>" + inventoryForSale[n].value + "gold </div></div>";
+
+                    }
+
+                document.getElementById('vendor-contents').innerHTML = itemMessage;
+                document.getElementById('tab').innerHTML = "Buy";
+                this.drop_forSale(self);
+
+                for(var i = 0; i < inventoryForSale.length; i++){
+                    var item_to_print =  (' ' + itemInfos[i]).slice(1)
+                    var id = '#forSale'+i;
+                    $(id).attr('item_to_print', item_to_print)
+                    $(id).mouseenter(function(){
+                        document.getElementById("vendor-hover").innerHTML = $(this).attr('item_to_print');
+                        $("#vendor-hover").show();
+                    })
+                    $(id).mouseleave(function(){
+                        $("#vendor-hover").hide();
+                    })
+
+                }
+
+                $("#tab").click(function(){
+                    $("#tab").off('click');
+                    self.openModule(true);
+                })
+            }
+            $("#close").click(function(){
+                self.closeModule();
+            })
+        }
+
+    }
+    buyItem(item){
+        var successful_transaction = false;
+        if(inventory['carried'].length < 10 && hero.wallet >= item.value){
+            take_item(item);
+            hero.wallet -= item.value;
+            successful_transaction = true;
+            refreshInfo();
+        }
+        else if(inventory['carried'].length >= 10){
+            alert("Your inventory is full");
+        }
+        else if(hero.wallet < item.value){
+            alert("You can't afford this item");
+        }
+        return successful_transaction;
+    }
+    drop_onSale(self){
+        for(var i = 0; i < self.onSale.length; i++){
+            var buyID = "#buy" + i;
+            $(buyID).attr("buy_id", i)
+            $(buyID).click(function(){
+                console.log('buying item');
+                if(self.buyItem(self.onSale[$(this).attr('buy_id')])){
+                $(this).hide().off('click');
+                self.onSale.splice($(this).attr('buy_id'), 1);
+                self.openModule(true); //updates window
+            }
+            })
+        }
+    }
+    drop_forSale(self){
+        for(var i = 0; i < inventory['carried'].length; i++){
+            var sellID = "#sell" + i;
+            $(sellID).attr("sell_id", i);
+            $(sellID).click(function(){
+                console.log('selling item');
+                hero.wallet += inventory['carried'][$(this).attr('sell_id')].value;
+                inventory['carried'].splice($(this).attr('sell_id'), 1);
+                $(this).hide().off('click');
+                refreshInfo();
+                self.openModule(false); //updates window
+            })
+        }
+    }
+    closeModule(){
+        canMove = true;
+        $("#worldMap").show();
+        $("#vendor-module").hide();
+        revertTextModule();
+        refreshInfo();
+        $("#close").off('click');
+    }
+    getValueForList(itemList){
+        for(var i = 0; i < itemList.length; i++){
+            if(itemList[i].value == null){
+                itemList[i].value = Math.floor(Math.random() * 50) * 10;
+            }
+        }
+    }
+}
 /* in order to improve replayability we need more locations! see list below for ideas:
-    merchants/vendors
+    various merchants/vendors
     wanderers with specific trades (armor for a weapon)
     encampment (chance of combat, chance of recovery and trades)
     loot hoard (lots of loot + chance of combat)

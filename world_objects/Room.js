@@ -97,6 +97,11 @@ class Room {
                             map[locs[i][0]][locs[i][1]] = new Cave(locs[i][0],locs[i][1]);
                             break;
 
+                        case 'merchant':
+                            map[locs[i][0]][locs[i][1]] = new Merchant(locs[i][0], locs[i][1], itemList);
+                            map[locs[i][0]][locs[i][1]].pickItems();
+                            break;
+
 
                         default:
                             alert('UNKNOWN LOCATION TYPE!')
@@ -291,6 +296,7 @@ function tier_to_num_enemies(tier){
     return 3+2*tier;
 }
 
+//copy me down
 function tier_to_items(tier){
     if(tier == 1){
         return itemList1;
@@ -330,10 +336,10 @@ function tier_to_locations(tier){
     var added_locs = [];
     var locationList = ['chest', 'trapdoor', 'chest'];
     if(tier == 1){
-        poss_addedLocs = ['chest', 'statue', 'fountain'];
+        poss_addedLocs = ['chest', 'statue', 'fountain', 'merchant'];
     }
     else if(tier == 2){
-        poss_addedLocs = ['chest', 'cave', 'fountain', 'altar'];
+        poss_addedLocs = ['chest', 'cave', 'fountain', 'altar', 'merchant'];
     }
     else {
         poss_addedLocs = [];
@@ -364,7 +370,9 @@ function tier_to_locations(tier){
 }
 
 function tier_to_fightChance(tier){
+
     return .04 + tier / 100;
+
 }
 
 function tier_to_boss(tier){

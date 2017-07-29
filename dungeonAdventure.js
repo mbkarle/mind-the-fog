@@ -581,6 +581,25 @@ function checkLocation(){
 
 
     }
+    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'merchant'){
+        canMove = false;
+        $("#text-module").show();
+        $("#enter").hide();
+        $("#descend").show();
+        $("#stay").show();
+
+        msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
+        document.getElementById("descend").innerHTML = "Shop";
+        document.getElementById("stay").innerHTML = "Leave";
+
+        $("#descend").click(function(){
+            revertTextModule();
+            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].openModule(true);
+        })
+        $("#stay").click(function(){
+            revertTextModule();
+        })
+    }
 }
 
 function descend(descend){
@@ -692,7 +711,12 @@ function refreshInfo() {
         itemInfos.push((items_carried[i].name + "<br>"))
         for (attribute in items_carried[i]) {
             if (typeof items_carried[i][attribute] == "number") {
-                itemInfos[i] += attribute + ": +" + items_carried[i][attribute] + "<br>";
+                if(items_carried[i][attribute] >= 0){
+                    itemInfos[i] += attribute + ": +" + items_carried[i][attribute] + "<br>";
+                }
+                else{ // issue #49
+                    itemInfos[i] += attribute + ": " + items_carried[i][attribute] + "<br>";
+                }
             }
         }
         if(items_carried[i].constructor.name == 'effectItem'){
@@ -949,7 +973,12 @@ function print(messageType, message) { //TODO: change so that multiple items can
             itemInfos.push((items[i].name + "<br>"))
             for (attribute in items[i]) {
                 if (typeof items[i][attribute] == "number") {
-                    itemInfos[i] += attribute + ": +" + items[i][attribute] + "<br>";
+                    if(items[i][attribute] >= 0){
+                        itemInfos[i] += attribute + ": +" + items[i][attribute] + "<br>";
+                    }
+                    else{ //issue #49
+                        itemInfos[i] += attribute + ": " + items[i][attribute] + "<br>";
+                    }
                 }
             }
             if(items[i].constructor.name == 'effectItem'){
