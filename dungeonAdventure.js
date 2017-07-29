@@ -1193,7 +1193,7 @@ function combat_helper(hero, enemyList, idx, customCombat) { //TODO GLOBAL VARIA
                 else {
                     console.log("floor cleared!")
                     refreshInfo();
-                    print("message", "The fog clears, and looking around there seemed to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
+                    print("message", "The fog clears, and looking around there seems to be no more monsters... A hole in the floor seems to be the only way out of this hellish place.");
                     room_list[curr_floor][curr_room].roomCleared = true;
                     $("#open").show()
                     $("#open").click(
