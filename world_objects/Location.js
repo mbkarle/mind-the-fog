@@ -159,11 +159,12 @@ class Door extends Location{ //highly experimental content at hand here
     }
 }
 
-class Merchant extends Location{
+class Merchant extends Location{ // problems with selling: page needs to refresh when items are equipped in the inventory (equipped items shouldn't be sold)
     constructor(rowID, colID, itemList){
         super(rowID, colID, "Merchant", "merchant", "m", "Another wanderer has set up shop here, vending his wares – for a price.", true);
         this.itemList = itemList;
         this.onSale = [];
+        this.excludedItems = 0;
         this.pickItems = function(){
             this.num_items = 3 + Math.floor(Math.random() * 6);
             for(var i = 0; i < this.num_items; i++){
@@ -179,6 +180,7 @@ class Merchant extends Location{
             $("#vendor-module").show();
 
             if(buying){
+                self.excludedItems = 0;
                 var itemMessage = "On sale: <br>"
                 var itemInfos = []
                 for(var i = 0; i < this.onSale.length; i++){
@@ -231,6 +233,7 @@ class Merchant extends Location{
                 })
             }
             else{
+                self.excludedItems = 0;
                 var itemMessage = "";
                 var itemInfos = [];
                 var inventoryForSale = [];
@@ -240,13 +243,19 @@ class Merchant extends Location{
                 for(var i = 0; i < inventory['carried'].length; i++){
                     if(!inventory['carried'][i].equipped){
                         inventoryForSale.push(inventory['carried'][i]);
-                    }}
+                    }
+                    else{
+                        console.log(inventory['carried'][i]);
+                        self.excludedItems ++;
+                        console.log(self.excludedItems);
+                    }
+                }
                 for(var n = 0; n < inventoryForSale.length; n++){
                         //store all the item infos to be displayed upon hover...
                         itemInfos.push((inventoryForSale[n].name + "<br>"))
                         for (attribute in inventoryForSale[n]) {
                             if (typeof inventoryForSale[n][attribute] == "number") {
-                                console.log(attribute);
+
                                 if(inventoryForSale[n][attribute] >= 0){
                                     itemInfos[n] += attribute + ": +" + inventoryForSale[n][attribute] + "<br>";
                                 }
@@ -333,7 +342,8 @@ class Merchant extends Location{
     drop_forSale(self){
         for(var i = 0; i < inventory['carried'].length; i++){
             var sellID = "#sell" + i;
-            $(sellID).attr("sell_id", i);
+
+            $(sellID).attr("sell_id", (i + self.excludedItems));
             $(sellID).click(function(){
                 console.log('selling item');
                 hero.wallet += inventory['carried'][$(this).attr('sell_id')].value;

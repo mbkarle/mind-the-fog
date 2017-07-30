@@ -75,21 +75,26 @@ var gold = new Currency("gold", 1, null);
 //              Initialize Characters
 //------------------------------------------------------
 var hero = new Hero("The Hero", 5, 3, 20, "hero");
-var tutorial = new Enemy("tutorial", 1, 5, 15, 'enemy');
-var Troglodyte = new Enemy("Troglodyte", 3, 2, 30, "enemy");
-var DireRat = new Enemy("Dire Rat", 1, 15, 20, "enemy");
-var DireRat2 = new Enemy("Dire Rat", 1.5, 15, 20, "enemy");
-var Ogre = new Enemy("Ogre", 9, 1, 60, "enemy");
-var Sorcerer = new Enemy("Sorcerer", 6, 4, 20, "enemy");
-var Vagrant = new Enemy("Wandering Vagrant", 5, 4, 35, "enemy");
-var HellHound = new Boss("Hell Hound", 5, 6, 50, "enemy", fireSword.items[0]);
-var Golem = new Boss("Golem", 7, 3, 50, "enemy", GreatSword.items[0]);
-var Werewolf = new Enemy("werewolf", 6, 4, 40, "enemy");
-var slime = new Enemy("slime", 8, 2, 50, "enemy");
-var frostGiant = new Boss("frost giant", 8, 5, 100, "enemy", icyShell.items[0]);
-var ferBeast = new Enemy("feral beast", 9, 3, 20, "enemy");
-var smallWyrm = new Enemy("young wyrm", 10, 4, 300, "enemy");
-var pillager = new Enemy("pillager", 6, 6, 80, "enemy");
+var tutorial = new Enemy("tutorial", 1, 5, 15);
+var Troglodyte = new Enemy("Troglodyte", 3, 2, 30);
+var DireRat = new Enemy("Dire Rat", 1, 15, 20);
+var DireRat2 = new Enemy("Dire Rat", 1.5, 15, 20);
+var Ogre = new Enemy("Ogre", 9, 1, 60);
+var Sorcerer = new Enemy("Sorcerer", 6, 4, 20);
+var Vagrant = new Enemy("Wandering Vagrant", 5, 4, 35);
+var HellHound = new Boss("Hell Hound", 5, 6, 50, fireSword.items[0]);
+var Golem = new Boss("Golem", 7, 3, 50, GreatSword.items[0]);
+var Werewolf = new Enemy("werewolf", 6, 4, 40);
+var slime = new Enemy("slime", 8, 2, 50);
+var frostGiant = new Boss("frost giant", 8, 5, 100, icyShell.items[0]);
+var ferBeast = new Enemy("feral beast", 9, 3, 20);
+var smallWyrm = new Enemy("young wyrm", 10, 4, 300);
+var pillager = new Enemy("pillager", 6, 6, 80);
+var Bandit = new Enemy("Bandit", 3, 5, 40);
+var DarkSquire = new Enemy("Dark Squire", 5, 3, 35);
+var Cultist = new Enemy("Cultist", 2, 5, 30);
+var CultMaster = new Enemy("Cult Master", 4, 5, 40);
+
 
 
 //------------------------------------------------------
@@ -157,12 +162,13 @@ function enter_combat(room, custom_enemy) {
     if (typeof custom_enemy === "undefined") {
         customCombat = false;
         //Its a normal combat, choose randomly from the en_list of the room
-        enemy = Troglodyte; //TODO: make random from floor list
+        enemy = room.enemy_list[Math.floor(Math.random() * room.enemy_list.length)]; //TODO: make random from floor list
         print("enemy-message", "A fearsome " + enemy.name + " emerges from the shadows!")
         enemy.lootId = Math.floor(Math.random() * mobDrops.length);
         room.num_enemies--;
     } else {
         //its a custom combat, fight @custom_enemy
+        console.log("custom")
         enemy = custom_enemy;
         customCombat = true;
     }
@@ -799,7 +805,7 @@ function Damage(source, target) {
         print("message", "You've defeated the beast!");
         $("#combat-module").off('click');
         var dropChance = Math.random();
-        if (!customCombat && dropChance > .75) {
+        if (!customCombat && dropChance > 0.75) {
             console.log(dropChance);
             $("#open").show();
             $("#open").click(
@@ -808,7 +814,7 @@ function Damage(source, target) {
                     print("item", [mobDrops[target.lootId]]);
                     drop_items([mobDrops[target.lootId]])
                     // $("#open").off('click');
-                    $("#open").click(function(){exit_combat(room, customCombat)})
+                    $("#open").click(function(){exit_combat(room, customCombat); $("#open").off('click')})
                 }
             );
         } else if (customCombat) {
@@ -938,6 +944,17 @@ function drop_items(items){
     }
 }
 
+Array.prototype.move = function(old_index, new_index){
+    if (new_index >= this.length) {
+        var k = new_index - this.length;
+        while ((k--) + 1) {
+            this.push(undefined);
+        }
+    }
+    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+    return this;
+}
+
 /*message is either:
 * a number for damage
 * a key for messageArray
@@ -1025,6 +1042,7 @@ function print(messageType, message) { //TODO: change so that multiple items can
 }
 
 function equip(target, equipment) {
+
     // console.log(target.name + " equipped " + equipment.name);
     equipment.equipped = true;
     if(inventory[equipment.type] != null && equipment.constructor.name != "Currency"){
@@ -1033,6 +1051,20 @@ function equip(target, equipment) {
     }
     if(equipment.constructor.name != "Currency"){
         inventory[equipment.type] = equipment;
+    }
+
+    //move around within array
+    for(var i = 0; i < inventory['carried'].length; i++){
+        if(!inventory['carried'][i].equipped){
+            console.log(inventory['carried'].indexOf(equipment) + " to " + i);
+            inventory['carried'].move(inventory['carried'].indexOf(equipment), i);
+            break;
+        }
+    }
+    for(var i = 1; i < inventory['carried'].length; i++){
+        if(inventory['carried'][i].equipped && !inventory['carried'][i - 1].equipped){
+            inventory['carried'].move(i, (i-1));
+        }
     }
 
     //go through and update stats
