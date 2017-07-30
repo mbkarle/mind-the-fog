@@ -93,12 +93,18 @@ class damageDebuff extends Debuff {
             if(!self.active){
                 self.active = true;
             var damageInterval = setInterval(function(){
+                if(self.target.vitality > 0){
                 Damage(self.source, self.target);
+            }
             }, self.interval);
+            if(self.target.vitality <= 0){
+                window.clearInterval(damageInterval);
+            }
+            else{
             window.setTimeout(function(){
                 window.clearInterval(damageInterval);
                 self.active = false;
-            }, duration);
+            }, duration);}
         }}
     }
 }
