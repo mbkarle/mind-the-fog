@@ -265,3 +265,13 @@ background-color: white;
     top: -30px;
     text-align: center;
 }
+.effect{
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    color: #a6a6a6;
+    border-style: solid;
+    border-color: #a6a6a6;
+    border-width: thin;
+    text-align: center;
+}

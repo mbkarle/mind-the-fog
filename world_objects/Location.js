@@ -132,7 +132,7 @@ class CharDialogue extends Location{
 
 class Door extends Location{ //highly experimental content at hand here
     constructor(rowID, colID, roomID, nextRoomID){
-        super(rowID, colID, 'Door', 'door', '–', 'Leave room? Door system is a work in progress', true);
+        super(rowID, colID, 'Door', 'door', '□', 'Leave room?', true);
         this.roomID = roomID;
         this.nextRoomID = nextRoomID;
         var self = this;
@@ -141,20 +141,35 @@ class Door extends Location{ //highly experimental content at hand here
             print("message", self.message);
             $("#text-module").show();
             $("#enter").hide();
-            $("#open").show();
-            $("#open").click(
+            $("#descend").show();
+            $("#stay").show();
+            document.getElementById('descend').innerHTML = "Leave";
+            $("#descend").click(
                 function(){
-                    $("#open").off('click');
-                    $("#open").hide();
-                    $("#enter").show();
-                    $("#text-module").hide();
-                    print("lastMessage", "enemy-message");
+                    revertTextModule();
+                    room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
+                    curr_room = self.nextRoomID;
+                    // var oldRoomID = self.roomID;
+                    // self.roomID = self.nextRoomID;
+                    // self.nextRoomID = oldRoomID;
+                    if(avatarX == 0){
+                        avatarX = room_list[curr_floor][curr_room].room_width - 1;
+                        avatarY = room_list[curr_floor][curr_room].room_exit[0];
+                    }
+                    else{
+                        avatarX = 1;
+                        avatarY = room_list[curr_floor][curr_room].room_entry[0];
+                    }
 
-                    self.oldRoomID = self.roomID;
-                    self.roomID = self.nextRoomID;
-                    self.nextRoomID = self.oldRoomID;
-                    build_floor(curr_floor, self.roomID);
+                    console.log(room_list[curr_floor][curr_room].room_map[avatarY][avatarX]);
+                    room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
+                    room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY);
                     canMove = true;
+                }
+            )
+            $("#stay").click(
+                function(){
+                    revertTextModule();
                 }
             )
 

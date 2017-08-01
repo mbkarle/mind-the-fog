@@ -6,9 +6,17 @@
 * The boss, if applicable
 */
 class Room {
-    constructor(name, room_type, tier, floor, roomCleared, boss, fightChance) {
+    constructor(name, room_type, tier, floor, roomCleared, boss, fightChance, maxLocs) {
         this.name = name;
-        this.locations = tier_to_locations(tier);
+        this.maxLocs = maxLocs;
+        if(typeof this.maxLocs === "undefined"){
+            this.locations = tier_to_locations(tier);
+
+        }
+        else{
+            this.locations = tier_to_locations(tier, this.maxLocs);
+
+        }
         this.itemList = tier_to_items(tier);
         this.room_type = room_type;
         this.roomCleared = roomCleared;
@@ -18,21 +26,20 @@ class Room {
         this.fightChance = fightChance;
         this.floor = floor;
 
-        //must set before entering the room--position for avatar to spawn on,
-        //must be in bounds.
-        this.room_entry = [-1,-1]
 
-        this.room_map = this.buildRoom(room_type, this.locations, this.itemList)
+        this.room_map = this.buildRoom(room_type, this.locations, this.itemList, this.tier)
 
         this.room_width = this.room_map[0].length;
         this.room_height = this.room_map.length;
+        this.room_entry = [Math.floor(this.room_height/ (1 + Math.ceil(Math.random() * 7))), Math.floor(this.room_width/(1 + Math.ceil(Math.random()* 7)))];
+        this.room_exit = [Math.floor(this.room_height/ (1 + Math.ceil(Math.random() * 7))), this.room_width - 1]
         this.yoff = Math.floor((30 - this.room_height)/2)
         this.xoff = Math.floor((40 - this.room_width)/2)
 
         center_map(this.room_map, this.yoff, this.xoff)
     }
 
-    buildRoom(type, locations, itemList){
+    buildRoom(type, locations, itemList, tier){
         var map;
         var width;
         var height;
@@ -44,6 +51,50 @@ class Room {
             // case 'HorizHall':
             //
             //     break;
+            case 'tutRoom':
+                width = 30;
+                height = 20;
+
+                map = buildRoomOfSize(height, width);
+
+                var tutorialDialogue = new CharDialogue(3, 5, "instructor");
+                map[tutorialDialogue.rowID][tutorialDialogue.colID] = tutorialDialogue;
+
+                clearAllFog(map);
+                break;
+
+            case 'MidNorm':
+                width = 30;
+                height = 30;
+                map = makeNormalRoom(height, width, map, locations, itemList, tier);
+                break;
+
+            case 'HorizHallNorm':
+                width = 40;
+                height = 12;
+                map = makeNormalRoom(height, width, map, locations, itemList, tier);
+                break;
+
+            case 'VertHallNorm':
+                width = 12;
+                height = 40;
+                map = makeNormalRoom(height, width, map, locations, itemList, tier);
+                break;
+
+            case 'SmallNorm':
+                width = 20;
+                height = 20;
+                map = makeNormalRoom(height, width, map, locations, itemList, tier);
+                break;
+
+            case 'Exit':
+                width = 20;
+                height = 20;
+                map = buildRoomOfSize(height, width);
+                var exit = new Trapdoor(5, 5);
+                map[exit.rowID][exit.colID] = exit;
+                clearAllFog(map);
+                break;
 
             case 'GreatHall':
                 width = 40;
@@ -57,8 +108,7 @@ class Room {
                 var gateKeeper = new CharDialogue(9, 30, "gatekeeper");
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
-                var tutorialDialogue = new CharDialogue(3, 5, "instructor");
-                map[tutorialDialogue.rowID][tutorialDialogue.colID] = tutorialDialogue;
+
 
                 //after creating all special locations, turn fog off!
                 clearAllFog(map);
@@ -68,45 +118,7 @@ class Room {
             default:
                 width = 40;
                 height = 30;
-                map = buildRoomOfSize(height,width);
-
-                locs = rollLocations(locations.length, height, width) //locs of locations
-
-                for(var i = 0; i < locations.length; i++){
-                    switch (locations[i]) {
-                        case 'chest':
-                            map[locs[i][0]][locs[i][1]] = new Chest(locs[i][0],locs[i][1], itemList)
-                            map[locs[i][0]][locs[i][1]].fillChest();
-                            break;
-
-                        case 'trapdoor':
-                            map[locs[i][0]][locs[i][1]] = new Trapdoor(locs[i][0],locs[i][1])
-                            break;
-                        case 'statue':
-                            map[locs[i][0]][locs[i][1]] = new Statue(locs[i][0],locs[i][1])
-                            break;
-                        case 'fountain':
-                            map[locs[i][0]][locs[i][1]] = new Fountain(locs[i][0],locs[i][1])
-                            break;
-
-                        case 'altar':
-                            map[locs[i][0]][locs[i][1]] = new Altar(locs[i][0],locs[i][1]);
-                            break;
-
-                        case 'cave':
-                            map[locs[i][0]][locs[i][1]] = new Cave(locs[i][0],locs[i][1]);
-                            break;
-
-                        case 'merchant':
-                            map[locs[i][0]][locs[i][1]] = new Merchant(locs[i][0], locs[i][1], itemList);
-                            map[locs[i][0]][locs[i][1]].pickItems();
-                            break;
-
-
-                        default:
-                            alert('UNKNOWN LOCATION TYPE!')
-                    }
-                }
+            map = makeNormalRoom(height, width, map, locations, itemList, tier);
                 //end switch on room type
         }
         return map;
@@ -246,15 +258,59 @@ class Room {
     }
 }
 
+function makeNormalRoom(height, width, map, locations, itemList, tier){
+    map = buildRoomOfSize(height,width);
+
+
+    var locs = rollLocations(locations.length, height, width) //locs of locations
+
+    for(var i = 0; i < locations.length; i++){
+        switch (locations[i]) {
+            case 'chest':
+                map[locs[i][0]][locs[i][1]] = new Chest(locs[i][0],locs[i][1], itemList)
+                map[locs[i][0]][locs[i][1]].fillChest();
+                break;
+
+            case 'trapdoor':
+                map[locs[i][0]][locs[i][1]] = new Trapdoor(locs[i][0],locs[i][1])
+                break;
+            case 'statue':
+                map[locs[i][0]][locs[i][1]] = new Statue(locs[i][0],locs[i][1])
+                break;
+            case 'fountain':
+                map[locs[i][0]][locs[i][1]] = new Fountain(locs[i][0],locs[i][1])
+                break;
+
+            case 'altar':
+                map[locs[i][0]][locs[i][1]] = new Altar(locs[i][0],locs[i][1]);
+                break;
+
+            case 'cave':
+                map[locs[i][0]][locs[i][1]] = new Cave(locs[i][0],locs[i][1]);
+                break;
+
+            case 'merchant':
+                map[locs[i][0]][locs[i][1]] = new Merchant(locs[i][0], locs[i][1], itemList);
+                map[locs[i][0]][locs[i][1]].pickItems();
+                break;
+
+
+            default:
+                alert('UNKNOWN LOCATION TYPE!')
+        }
+    }
+    return map;
+}
+
 class SafeRoom extends Room {
-    constructor(name, room_type, tier, floor) {
-        super(name, room_type, tier, floor, true, null, 0)
+    constructor(name, room_type, tier, floor, maxLocs) {
+        super(name, room_type, tier, floor, true, null, 0, maxLocs)
     }
 }
 
 class FightRoom extends Room {
-    constructor(name, room_type, tier, floor) {
-        super(name, room_type, tier, floor, false, tier_to_boss(tier), tier_to_fightChance(tier))
+    constructor(name, room_type, tier, floor, maxLocs) {
+        super(name, room_type, tier, floor, false, tier_to_boss(tier), tier_to_fightChance(tier), maxLocs)
     }
 
 }
@@ -344,6 +400,9 @@ function tier_to_enemies(tier){
     else if(tier == 2) {
      enemies = [Sorcerer, DireRat2, Ogre, Vagrant, HellHound, Werewolf, slime, ferBeast, pillager];
     }
+    else if(tier == 3){
+        enemies = [HellHound, Werewolf, frostGiant, smallWyrm, DisOfMoranos, DarkKnight, CrimsonRider]
+    }
     else {
         enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre, Vagrant, HellHound, Werewolf, slime, frostGiant, ferBeast, smallWyrm, pillager];
 
@@ -353,23 +412,44 @@ function tier_to_enemies(tier){
     return enemies;
 }
 
-function tier_to_locations(tier){
+function tier_to_locations(tier, maxLocs){
     // TODO: more locations!!! this code sets the framework for full randomization but it's meaningless with such small poss_addedLocs lists
     var poss_addedLocs;
     var added_locs = [];
+    if(typeof maxLocs == "undefined"){
     var locationList = ['chest', 'trapdoor', 'chest'];
+
+}
+    else if(maxLocs == 1){
+        var locationList = ['trapdoor'];
+        console.log(locationList);
+
+    }
+    else if(maxLocs == 2 || maxLocs == 3){
+        var locationList = ['chest'];
+        console.log(locationList);
+    }
+
     if(tier == 1){
         poss_addedLocs = ['chest', 'statue', 'fountain', 'merchant' ];
     }
     else if(tier == 2){
         poss_addedLocs = ['chest', 'cave', 'fountain', 'altar', 'merchant'];
     }
+    else if(tier == 3){
+        poss_addedLocs = ['chest', 'cave', 'altar', 'merchant'];
+    }
     else {
         poss_addedLocs = [];
     }
-
+    if(typeof maxLocs == 'undefined'){
+        var num_added_locs = Math.ceil(Math.random() * 3);
+    }
+    else{
+    var num_added_locs = Math.floor(Math.random() * maxLocs);
+}
     if(tier > 0){
-    var num_added_locs = Math.ceil(Math.random() * 3); // 1 - 3 added locations
+
     console.log("# of additional locations: " + num_added_locs);
     for(var i = 0; i < num_added_locs; i++){
         locToAdd = Math.floor(Math.random() * poss_addedLocs.length);
@@ -386,15 +466,15 @@ function tier_to_locations(tier){
         for(var n = 0; n < added_locs.length; n++){
             locationList.push(added_locs[n]);
         }
-        return locationList;
+        //return locationList;
    }
  //  }
-
+return locationList
 }
 
 function tier_to_fightChance(tier){
 
-    return .04 + tier / 100;
+    return .02 + tier / 100;
 
 }
 

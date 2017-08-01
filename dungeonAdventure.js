@@ -3,7 +3,16 @@
 // ./world_objects/ folder,although this script can have helper methods and global variables.
 //------------------------------------------------------------------------------------------------
 
-
+Array.prototype.move = function(old_index, new_index){
+    if (new_index >= this.length) {
+        var k = new_index - this.length;
+        while ((k--) + 1) {
+            this.push(undefined);
+        }
+    }
+    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+    return this;
+}
 //------------------------------------------------------
 //          Some magical game variables...
 //------------------------------------------------------
@@ -68,6 +77,13 @@ var shadowCloak = new Item("shadow cloak", "armor", 1, 3, 5, true, null, [itemLi
 var steelHelm = new Item("steel helm", "headgear", 1, 1, 10, true, null, [itemList2]);
 var enchantedCrown = new effectItem("enchanted crown", "headgear", null, null, 20, [indestructible], [.3], [], [], true, null, [itemList2]);
 var cultMask = new effectItem("cultist's mask", "headgear", 1, 1, 10, [adrenaline], [.2], [fire], [.2], true, null, [itemList2]);
+var goldChakram = new effectItem("golden chakram", 'weapon', 4, 2, 5, [],[],[fire],[.3], true, null, [itemList3]);
+var steelBlade = new Item("steel sword", 'weapon', 5, 2, null, true, null, [itemList3]);
+var hoodMor = new Item("hood of Moranos", 'headgear', 2, 5, -10, true, null, [itemList3]);
+var execAxe = new Item("executioner's axe", 'weapon', 9, 1, 10, true, null, [itemList3]);
+var unbreakMail = new effectItem("unbreakable chainmail", 'armor', 5, 2, 30, [indestructible], [.3], [],[], true, null, [itemList3]);
+var legionHelm = new Item("legionairre's helmet", 'headgear', 4, 3, 20, true, null, [itemList3]);
+
 
 
 var gold = new Currency("gold", 1, null);
@@ -97,6 +113,9 @@ var Bandit = new Enemy("Bandit", 3, 5, 40);
 var DarkSquire = new Enemy("Dark Squire", 5, 3, 35);
 var Cultist = new Enemy("Cultist", 2, 5, 30);
 var CultMaster = new Enemy("Cult Master", 4, 5, 40);
+var DarkKnight = new Enemy("Dark Knight", 7, 7, 100);
+var CrimsonRider = new Enemy("Crimson Rider", 9, 5, 250);
+var DisOfMoranos = new Enemy("Disciple of Moranos", 11, 3, 200);
 
 
 
@@ -116,7 +135,7 @@ startWeapon.equipped = true;
 //------------------------------------------------------
 //              Spinning up your world...
 //------------------------------------------------------
-var num_floors = 3;
+var num_floors = 7;
 
 var room_list = []
 
@@ -124,10 +143,31 @@ var room_list = []
 for(var i = 0; i < num_floors; i++){
     room_list.push([])
 }
+var GreatHall = new SafeRoom('Great Hall', 'GreatHall', 0, 0);
+var TutRoom = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
 
-room_list[0][0] = new SafeRoom('Great Hall', 'GreatHall', 0, 0)
-room_list[1][0] = new FightRoom('First Floor', 'norm', 1, 1)
-room_list[2][0] = new FightRoom('Second Floor', 'norm', 2, 2)
+var Floor0 = new Floor(0, 2, [0], [GreatHall, TutRoom]);
+var Floor1 = new Floor(1,4,[1], null);
+var Floor2 = new Floor(2, 4, [2], null);
+
+room_list[0] = Floor0.build_floor();
+room_list[1] = Floor1.build_floor();
+room_list[2] = Floor2.build_floor();
+// room_list[1][0] = new SafeRoom('Great Hall', 'GreatHall', 0, 0)
+// room_list[1][1] = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
+// room_list[2][0] = new FightRoom('First Floor', 'norm', 1, 1)
+// room_list[3][0] = new FightRoom('Second Floor', 'norm', 2, 2);
+// room_list[4][0] = new FightRoom('Third Floor', 'norm', 2, 3);
+// room_list[5][0] = new FightRoom('Fourth Floor', 'norm', 3, 4);
+// room_list[6][0] = new FightRoom('Fifth Floor', 'norm', 3, 5);
+
+// room_list[0][0] = new SafeRoom('Great Hall', 'GreatHall', 0, 0)
+// room_list[0][1] = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
+// room_list[1][0] = new FightRoom('First Floor', 'norm', 1, 1)
+// room_list[2][0] = new FightRoom('Second Floor', 'norm', 2, 2);
+// room_list[3][0] = new FightRoom('Third Floor', 'norm', 2, 3);
+// room_list[4][0] = new FightRoom('Fourth Floor', 'norm', 3, 4);
+// room_list[5][0] = new FightRoom('Fifth Floor', 'norm', 3, 5);
 
 var curr_room = 0;
 var curr_floor = 0;
@@ -657,7 +697,10 @@ function descend(descend){
 
             }}
 
-            curr_floor++; //TODO can leave the last floor....
+            curr_floor++;
+            curr_room = 0;
+            avatarY = room_list[curr_floor][curr_room].room_entry[0];
+            avatarX = room_list[curr_floor][curr_room].room_entry[1];
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
             room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
 
@@ -806,6 +849,7 @@ function refreshInfo() {
     //refresh for combat-module:
     document.getElementById("hero").innerHTML = hero.vitality;
     document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
+
 }
 
 function Damage(source, target) {
@@ -986,16 +1030,6 @@ function drop_items(items){
     }
 }
 
-Array.prototype.move = function(old_index, new_index){
-    if (new_index >= this.length) {
-        var k = new_index - this.length;
-        while ((k--) + 1) {
-            this.push(undefined);
-        }
-    }
-    this.splice(new_index, 0, this.splice(old_index, 1)[0]);
-    return this;
-}
 
 /*message is either:
 * a number for damage
