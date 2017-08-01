@@ -141,7 +141,7 @@ room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 //LetsiGO!
 window.addEventListener("keydown", move, false);
 window.onload = function(){
-    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
+    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,true);
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
             refreshInfo();
@@ -306,7 +306,7 @@ function exit_combat(room, customCombat) {
             })
 
         clearAllFog(room_list[curr_floor][curr_room].room_map);
-        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
+        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,true);
     }
 }
 
@@ -355,8 +355,9 @@ function move(e) {
             hero.maxVitality = 100000;
 
             clearAllFog(room_list[curr_floor][curr_room].room_map)
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,true);
         }
-        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
+        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,false);
 
 
         //chance to enter combat
@@ -633,7 +634,7 @@ function descend(descend){
 
             curr_floor++; //TODO can leave the last floor....
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,true);
 
             // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;
