@@ -181,6 +181,16 @@ background-color: white;
     bottom: 15px;
 
 }
+#torch_hr{
+    position: absolute;
+    width: 100%;
+    left:0;
+    bottom: 40px;
+}
+#torchcount{
+    white-space: pre;
+}
+
 .statusBar, .statusSlider, .invCarry {
   position: absolute;
   height: 16px;
@@ -207,6 +217,7 @@ background-color: white;
 
 #inventory {
     line-height: 95%;
+    height: 300px;
 }
 
 #inv_hoverInfo {

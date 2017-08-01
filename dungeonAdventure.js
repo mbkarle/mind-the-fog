@@ -693,6 +693,15 @@ function refreshInfo() {
 
     document.getElementById('gold').innerHTML = hero.wallet + " gold"
 
+    var torchtext = '';
+    if(hero.num_torches > 0){
+        torchtext = 't'
+        for(var i = 0; i < hero.num_torches-1; i++){
+            torchtext += "    t"
+        }
+    }
+    $('#torchcount').html(torchtext)
+
     document.getElementById("healthSlider").style.width = 180 * healthFraction + "px";
     document.getElementById("shieldHealthSlider").style.width = 180 * shieldHealthFraction + "px";
     document.getElementById("xpSlider").style.width = 60 * xpFraction + "px";

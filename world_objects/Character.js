@@ -25,6 +25,7 @@ class Hero extends Character{
         return this.level = Math.floor(this.xp / 1000);
     }
     this.wallet = 0;
+    this.num_torches = 3;
   }
 }
 
