@@ -141,7 +141,7 @@ room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 //LetsiGO!
 window.addEventListener("keydown", move, false);
 window.onload = function(){
-    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,true);
+    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
             refreshInfo();
@@ -306,7 +306,7 @@ function exit_combat(room, customCombat) {
             })
 
         clearAllFog(room_list[curr_floor][curr_room].room_map);
-        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,true);
+        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
     }
 }
 
@@ -317,6 +317,7 @@ function exit_combat(room, customCombat) {
 function move(e) {
     if (canMove == true) {
         var didMove = false;
+        var oldPos = [avatarX,avatarY]
         if (e.keyCode == "87" && avatarY > 0) { //up
             if(room_list[curr_floor][curr_room].room_map[avatarY-1][avatarX].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
@@ -355,10 +356,13 @@ function move(e) {
             hero.maxVitality = 100000;
 
             clearAllFog(room_list[curr_floor][curr_room].room_map)
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,true);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
         }
-        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,false);
 
+        if(didMove){
+            var newPos = [avatarX,avatarY];
+            room_list[curr_floor][curr_room].updateRoomHTML(oldPos,newPos);
+        }
 
         //chance to enter combat
         if (Math.random() < room_list[curr_floor][curr_room].fightChance  && !room_list[curr_floor][curr_room].roomCleared && didMove) {
@@ -634,7 +638,7 @@ function descend(descend){
 
             curr_floor++; //TODO can leave the last floor....
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY,true);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
 
             // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;
