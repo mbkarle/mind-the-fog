@@ -72,6 +72,8 @@ var cultMask = new effectItem("cultist's mask", "headgear", 1, 1, 10, [adrenalin
 
 var gold = new Currency("gold", 1, null);
 
+var torch = new Torch(1)
+
 //------------------------------------------------------
 //              Initialize Characters
 //------------------------------------------------------
@@ -901,6 +903,7 @@ function openChest(stage) {
         function() {
             treasureIDs = room_list[curr_floor][curr_room].room_map[avatarY][avatarX].treasureIDs;
             gold.amount = Math.floor(Math.random() * 50) * 10;
+            torch.torch_count = Math.ceil(Math.random() * 3);
             // console.log(treasureIDs)
             if (stage) {
                 items_in_chest = []
@@ -939,6 +942,12 @@ function take_item(item){
         equip(hero, item);
         item.wallet = null;
     }
+    else if(item.constructorName == "Torch"){
+        hero.num_torches += item.torch_count;
+        if(hero.num_torches > 10){
+            hero.num_torches = 10;
+        }
+    }
     else{
         inventory.carried.push(item)
     }
@@ -960,19 +969,19 @@ function drop_items(items){
         $(takeID).click(
             function() {
                 if(inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency"){
-                itemsTaken ++;
-                if(itemsTaken == items.length){
-                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].emptied_chest = true;
+                    itemsTaken ++;
+                    if(itemsTaken == items.length){
+                        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].emptied_chest = true;
+                    }
+                    item_to_take = items[$(this).attr('item_id')];
+                    // equip(hero, item_to_take);
+                    take_item($().extend({},item_to_take))
+                    $(this).hide();
+                }
+                else {
+                    alert("Your inventory is full");
+                }
             }
-                item_to_take = items[$(this).attr('item_id')];
-                // equip(hero, item_to_take);
-                take_item($().extend({},item_to_take))
-                $(this).hide();
-            } else {
-                alert("Your inventory is full");
-            }
-
-          }
         )
     }
 }

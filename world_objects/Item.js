@@ -76,3 +76,12 @@ class Shields extends Item {
     return this.shield_ready;
   }
 }
+
+class Torch extends Item {
+    constructor(num_torches){
+        super('torch')
+        this.torch_count = num_torches;
+        this.constructorName = "Torch";
+    }
+
+}

@@ -33,6 +33,9 @@ class Chest extends Location {
             if(Math.random() > 0.3){
                 this.treasureIDs.push(gold);
             }
+            if(Math.random() > .2){
+                this.treasureIDs.push(torch)
+            }
         }
     }
 }
