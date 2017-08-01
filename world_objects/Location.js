@@ -195,7 +195,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
                             }
                         }
                     }
-                    if(this.onSale[i].constructor.name == 'effectItem'){
+                    if(this.onSale[i].constructorName == 'effectItem'){
 
                         for(var j = 0; j < this.onSale[i].buffArray.length; j++){
 
@@ -264,7 +264,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
                                 }
                             }
                         }
-                        if(inventoryForSale[n].constructor.name == 'effectItem'){
+                        if(inventoryForSale[n].constructorName == 'effectItem'){
 
                             for(var j = 0; j < inventoryForSale[n].buffArray.length; j++){
 

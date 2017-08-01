@@ -11,6 +11,7 @@ class Item {
         this.items = items;
         this.equipped = false;
         this.value = null;
+        this.constructorName = "Item";
 
         if(toList){
             for(var i = 0; i < items.length; i++){
@@ -28,6 +29,7 @@ class effectItem extends Item {
         this.buffChance = buffChance; //pass array to match buffArray
         this.debuffArray = debuffArray;
         this.debuffChance = debuffChance;
+        this.constructorName = "effectItem";
 
         this.buffUp = function(target){
             for(var i = 0; i < this.buffArray.length; i++){
@@ -57,6 +59,7 @@ class Currency extends Item {
         this.walletCheck = function(){ // adds directly to hero.wallet
             return this.wallet = this.amount * this.value;
         }
+        this.constructorName = "Currency";
     }
 }
 
@@ -65,6 +68,7 @@ class Shields extends Item {
     super(name, type, strength, dexterity, vitality, toList, objid, items);
     this.shield_ready = true;
     this.healthBoost = healthBoost;
+    this.constructorName = "Shields";
   }
   shieldReady() {
     this.shield_ready = true;

@@ -216,19 +216,19 @@ function enter_combat(room, custom_enemy) {
         if (ready) {
             ready = false;
             window.setTimeout(readyUp, 10000 / hero.dexterity);
-            if (inventory.weapon.constructor.name == 'effectItem') {
+            if (inventory.weapon.constructorName == 'effectItem') {
                 console.log("buffing up")
                 inventory.weapon.buffUp(hero);
                 inventory.weapon.debuffUp(enemy);
             }
             if (inventory.armor != null) {
-                if (inventory.armor.constructor.name == 'effectItem') {
+                if (inventory.armor.constructorName == 'effectItem') {
                     inventory.armor.buffUp(hero);
                     inventory.armor.debuffUp(enemy);
                 }
             }
             if (inventory.headgear != null) {
-                if (inventory.headgear.constructor.name == 'effectItem') {
+                if (inventory.headgear.constructorName == 'effectItem') {
                     inventory.headgear.buffUp(hero);
                     inventory.headgear.debuffUp(enemy);
                 }
@@ -758,7 +758,7 @@ function refreshInfo() {
                 }
             }
         }
-        if(items_carried[i].constructor.name == 'effectItem'){
+        if(items_carried[i].constructorName == 'effectItem'){
 
             for(var j = 0; j < items_carried[i].buffArray.length; j++){
 
@@ -808,7 +808,7 @@ function refreshInfo() {
 
 function Damage(source, target) {
     customCombat = false;
-    if(target.constructor.name == 'Boss'){
+    if(target.constructorName == 'Boss'){
         customCombat = true;
     }
     room = room_list[curr_floor][curr_room];
@@ -821,7 +821,7 @@ function Damage(source, target) {
     refreshInfo();
 
     //if the source was a hero (check based on if target is enemy or boss), and target dead
-    if ((target.constructor.name == 'Enemy' || customCombat) && target.vitality <= 0) {
+    if ((target.constructorName == 'Enemy' || customCombat) && target.vitality <= 0) {
         target.vitality = 0;
         hero.xp += 100; //TODO: scale
         window.clearInterval(enemyAttack);
@@ -934,7 +934,7 @@ function openChest(stage) {
 }
 
 function take_item(item){
-    if(item.constructor.name == 'Currency'){
+    if(item.constructorName == 'Currency'){
         item.walletCheck();
         equip(hero, item);
         item.wallet = null;
@@ -959,7 +959,7 @@ function drop_items(items){
         $(takeID).attr('item_id', i)
         $(takeID).click(
             function() {
-                if(inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructor.name == "Currency"){
+                if(inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency"){
                 itemsTaken ++;
                 if(itemsTaken == items.length){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].emptied_chest = true;
@@ -1031,7 +1031,7 @@ function print(messageType, message) { //TODO: change so that multiple items can
                     }
                 }
             }
-            if(items[i].constructor.name == 'effectItem'){
+            if(items[i].constructorName == 'effectItem'){
 
                 for(var j = 0; j < items[i].buffArray.length; j++){
 
@@ -1078,11 +1078,11 @@ function equip(target, equipment) {
 
     // console.log(target.name + " equipped " + equipment.name);
     equipment.equipped = true;
-    if(inventory[equipment.type] != null && equipment.constructor.name != "Currency"){
+    if(inventory[equipment.type] != null && equipment.constructorName != "Currency"){
         temp_item = inventory[equipment.type];
         Unequip(hero, temp_item);
     }
-    if(equipment.constructor.name != "Currency"){
+    if(equipment.constructorName != "Currency"){
         inventory[equipment.type] = equipment;
     }
 

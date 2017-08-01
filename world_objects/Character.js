@@ -12,6 +12,7 @@ class Character{
 class Boss extends Character{
   constructor(name, strength, dexterity, vitality, lootList){
     super(name, strength, dexterity, vitality, 'enemy');
+    this.constructorName = "Boss";
     this.loot = lootList[Math.floor(Math.random() * lootList.length)];
   }
 }
@@ -25,6 +26,7 @@ class Hero extends Character{
         return this.level = Math.floor(this.xp / 1000);
     }
     this.wallet = 0;
+    this.constructorName = "Hero";
     this.num_torches = 3;
   }
 }
@@ -35,5 +37,6 @@ class Enemy extends Character{
   constructor(name, strength, dexterity, vitality){
     super(name, strength, dexterity, vitality, 'enemy');
     this.lootId = -1;
+    this.constructorName = "Enemy";
   }
 }
