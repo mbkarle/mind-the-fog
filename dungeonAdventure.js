@@ -238,6 +238,15 @@ function enter_combat(room, custom_enemy) {
                 Damage(enemy, hero)
                 print("combat start", "The enemy strikes!");
             }
+            $("#enemy").animate({
+                top: '125px',
+                left: '325px'
+            }, 1, function(){
+                $("#enemy").animate({
+                    top: '100px',
+                    left: '350px'
+                }, 10000 / (2 * enemy.dexterity))
+            })
             if (hero.vitality <= 0) {
                 print("message", "You died!");
                 hero.vitality = 0;
@@ -282,12 +291,23 @@ function enter_combat(room, custom_enemy) {
                 }
             }
             hitprint = Damage(hero, enemy);
+            if(enemy.vitality > 0){
             print("damageDealt", hitprint);
+        }
             //jquery animations:
+            $("#hero").animate({
+                top: '175px',
+                left: '225px'
+            }, 1, function(){
+                $("#hero").animate({
+                    top: '200px',
+                    left: '200px'
+                }, 10000 / (2 * hero.dexterity));
+            })
             $("#attackSlider").show();
             $("#attackSlider").animate({
                 width: '0px'
-            }, 8000 / hero.dexterity, function() {
+            }, 10000 / hero.dexterity, function() {
                 $("#attackSlider").hide();
                 $("#attackSlider").animate({
                     width: '110px'
@@ -899,7 +919,7 @@ function Damage(source, target) {
                     print("item", [mobDrops[target.lootId]]);
                     drop_items([mobDrops[target.lootId]])
                     // $("#open").off('click');
-                    $("#open").click(function(){exit_combat(room, customCombat); $("#open").off('click')})
+                    $("#open").click(function(){$("#open").off('click'); exit_combat(room, customCombat); })
                 }
             );
         } else if (customCombat) {
