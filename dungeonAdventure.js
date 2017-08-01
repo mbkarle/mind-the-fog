@@ -135,7 +135,7 @@ startWeapon.equipped = true;
 //------------------------------------------------------
 //              Spinning up your world...
 //------------------------------------------------------
-var num_floors = 7;
+var num_floors = 6;
 
 var room_list = []
 
@@ -147,12 +147,18 @@ var GreatHall = new SafeRoom('Great Hall', 'GreatHall', 0, 0);
 var TutRoom = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
 
 var Floor0 = new Floor(0, 2, [0], [GreatHall, TutRoom]);
-var Floor1 = new Floor(1,4,[1], null);
-var Floor2 = new Floor(2, 4, [2], null);
+var Floor1 = new Floor(1, 4, [1], null);
+var Floor2 = new Floor(2, 4, [1, 2], null);
+var Floor3 = new Floor(3, 6, [2], null);
+var Floor4 = new Floor(4, 5, [2, 3], null);
+var Floor5 = new Floor(5, 4, [3], null);
 
 room_list[0] = Floor0.build_floor();
 room_list[1] = Floor1.build_floor();
 room_list[2] = Floor2.build_floor();
+room_list[3] = Floor3.build_floor();
+room_list[4] = Floor4.build_floor();
+room_list[5] = Floor5.build_floor();
 // room_list[1][0] = new SafeRoom('Great Hall', 'GreatHall', 0, 0)
 // room_list[1][1] = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
 // room_list[2][0] = new FightRoom('First Floor', 'norm', 1, 1)

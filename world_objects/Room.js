@@ -431,13 +431,13 @@ function tier_to_locations(tier, maxLocs){
     }
 
     if(tier == 1){
-        poss_addedLocs = ['chest', 'statue', 'fountain', 'merchant' ];
+        poss_addedLocs = ['chest', 'statue', 'fountain', 'merchant', 'trapdoor' ];
     }
     else if(tier == 2){
-        poss_addedLocs = ['chest', 'cave', 'fountain', 'altar', 'merchant'];
+        poss_addedLocs = ['chest', 'cave', 'fountain', 'altar', 'merchant', 'trapdoor'];
     }
     else if(tier == 3){
-        poss_addedLocs = ['chest', 'cave', 'altar', 'merchant'];
+        poss_addedLocs = ['chest', 'cave', 'altar', 'merchant', 'trapdoor'];
     }
     else {
         poss_addedLocs = [];
@@ -446,7 +446,7 @@ function tier_to_locations(tier, maxLocs){
         var num_added_locs = Math.ceil(Math.random() * 3);
     }
     else{
-    var num_added_locs = Math.floor(Math.random() * maxLocs);
+    var num_added_locs = Math.ceil(Math.random() * maxLocs);
 }
     if(tier > 0){
 
