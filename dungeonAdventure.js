@@ -317,6 +317,7 @@ function exit_combat(room, customCombat) {
 function move(e) {
     if (canMove == true) {
         var didMove = false;
+        var oldPos = [avatarX,avatarY]
         if (e.keyCode == "87" && avatarY > 0) { //up
             if(room_list[curr_floor][curr_room].room_map[avatarY-1][avatarX].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
@@ -355,9 +356,13 @@ function move(e) {
             hero.maxVitality = 100000;
 
             clearAllFog(room_list[curr_floor][curr_room].room_map)
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
         }
-        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
 
+        if(didMove){
+            var newPos = [avatarX,avatarY];
+            room_list[curr_floor][curr_room].updateRoomHTML(oldPos,newPos);
+        }
 
         //chance to enter combat
         if (Math.random() < room_list[curr_floor][curr_room].fightChance  && !room_list[curr_floor][curr_room].roomCleared && didMove) {
