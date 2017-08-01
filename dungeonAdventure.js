@@ -927,7 +927,7 @@ function drop_items(items){
     var itemsTaken = 0;
     for(var i = 0; i < items.length; i++){
         takeID = '#take'+i
-        item = $().extend(true, {}, items[i])
+        item = $().extend({}, items[i])
         $(takeID).attr('item_id', i)
         $(takeID).click(
             function() {
@@ -938,7 +938,7 @@ function drop_items(items){
             }
                 item_to_take = items[$(this).attr('item_id')];
                 // equip(hero, item_to_take);
-                take_item(item_to_take)
+                take_item($().extend({},item_to_take))
                 $(this).hide();
             } else {
                 alert("Your inventory is full");
