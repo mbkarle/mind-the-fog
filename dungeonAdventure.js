@@ -19,6 +19,7 @@ var shielded;
 var shieldReadyup;
 var magicReady = true;
 var enemyAttack;
+var torchlight = false;
 
 //------------------------------------------------------
 //              Initialize Buffs and Debuffs
@@ -141,7 +142,7 @@ room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 //LetsiGO!
 window.addEventListener("keydown", move, false);
 window.onload = function(){
-    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
+    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
             refreshInfo();
@@ -306,7 +307,7 @@ function exit_combat(room, customCombat) {
             })
 
         clearAllFog(room_list[curr_floor][curr_room].room_map);
-        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
+        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
     }
 }
 
@@ -317,6 +318,7 @@ function exit_combat(room, customCombat) {
 function move(e) {
     if (canMove == true) {
         var didMove = false;
+        var activatedTorch = false;
         var oldPos = [avatarX,avatarY]
         if (e.keyCode == "87" && avatarY > 0) { //up
             if(room_list[curr_floor][curr_room].room_map[avatarY-1][avatarX].passable){
@@ -356,12 +358,29 @@ function move(e) {
             hero.maxVitality = 100000;
 
             clearAllFog(room_list[curr_floor][curr_room].room_map)
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+        } else if (e.keyCode == "84"){ //t for torch
+            if(hero.num_torches > 0){
+                if(!torchlight){
+                    console.log("Activating torch")
+                    hero.num_torches--;
+                    activatedTorch = true;
+                    refreshInfo();
+                    torchlight = true;
+                    setTimeout(function(){torchlight = false; console.log("Your torch fades to nothing.")}, 10000)
+                }
+                else{
+                    console.log("You can't turn off a torch, silly!")
+                }
+            }
+            else{
+                console.log("No torches to use!")
+            }
         }
 
-        if(didMove){
+        if(didMove || activatedTorch){
             var newPos = [avatarX,avatarY];
-            room_list[curr_floor][curr_room].updateRoomHTML(oldPos,newPos);
+            room_list[curr_floor][curr_room].updateRoomHTML(oldPos,newPos,torchlight);
         }
 
         //chance to enter combat
@@ -638,7 +657,7 @@ function descend(descend){
 
             curr_floor++; //TODO can leave the last floor....
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
 
             // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;

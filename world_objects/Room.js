@@ -112,9 +112,9 @@ class Room {
         return map;
     }
 
-    buildRoomHTML(avatarX, avatarY) {
+    buildRoomHTML(avatarX, avatarY, torchlight) {
         var worldContents = "";
-        this.removeFog(avatarX, avatarY);
+        this.removeFog(avatarX, avatarY, torchlight);
         for (var i = 0; i < this.room_map.length; i++) {
             for (var j = 0; j < this.room_map[0].length; j++) {
                 var symbol = this.room_map[i][j].symbol;
@@ -130,9 +130,9 @@ class Room {
         document.getElementById("worldContent").innerHTML = worldContents;
     }
 
-    updateRoomHTML(oldPos, newPos) { //in [x,y] format
+    updateRoomHTML(oldPos, newPos, torchlight) { //in [x,y] format
         //these are the only spots that need updating, as their fog is being removed!
-        var coords = this.getValidNeighbors(newPos[0], newPos[1], 1, oldPos)[1]
+        var coords = this.getValidNeighbors(newPos[0], newPos[1], torchlight, oldPos)[1]
         var coordIDs = coords.map(function(coord) {
             return String('#' + coord[0]) + 'x' + String(coord[1])
         })
@@ -151,14 +151,14 @@ class Room {
     }
 
 
-    removeFog(avX, avY){
-        var neigh = this.getValidNeighbors(avX,avY,1,[avX,avY])[0];
+    removeFog(avX, avY, torchlight){
+        var neigh = this.getValidNeighbors(avX,avY,torchlight,[avX,avY])[0];
         for(var i = 0; i < neigh.length; i++){
             neigh[i].fog = false;
         }
     }
 
-    getValidNeighbors(avX, avY, flashlight, oldPos){
+    getValidNeighbors(avX, avY, torchlight, oldPos){
         var map = this.room_map;
         var neigh = [];
         var possCoords = []
@@ -174,7 +174,7 @@ class Room {
         possCoords.push([avX-1,avY]);
         possCoords.push([avX-1,avY-1]);
 
-        if(flashlight > 0){ //radius increases...
+        if(torchlight){ //radius increases...
             //5 on right
             possCoords.push([avX+2,avY+2]);
             possCoords.push([avX+2,avY+1]);
@@ -227,15 +227,14 @@ class Room {
             possCoords.push([avX,avY-3]);
             possCoords.push([avX+1,avY-3]);
             // possCoords.push([avX+2,avY-3]);
-
-            for(var i = 0; i < possCoords.length; i++){
-                var cx = possCoords[i][0];
-                var cy = possCoords[i][1];
-                if(this.isValidCoord(cx,cy)){
-                    neigh.push(map[cy][cx]);
-                    if(map[cy][cx].fog){ //only need to update if fog present
-                        inc_coords.push([cy,cx])
-                    }
+        }
+        for(var i = 0; i < possCoords.length; i++){
+            var cx = possCoords[i][0];
+            var cy = possCoords[i][1];
+            if(this.isValidCoord(cx,cy)){
+                neigh.push(map[cy][cx]);
+                if(map[cy][cx].fog){ //only need to update if fog present
+                    inc_coords.push([cy,cx])
                 }
             }
         }
