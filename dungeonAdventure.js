@@ -1038,7 +1038,7 @@ function drop_items(items){
         $(takeID).attr('item_id', i)
         $(takeID).click(
             function() {
-                if(inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency"){
+                if(inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency" || items[$(this).attr('item_id')].constructorName == "Torch"){
                     itemsTaken ++;
                     if(itemsTaken == items.length){
                         room_list[curr_floor][curr_room].room_map[avatarY][avatarX].emptied_chest = true;

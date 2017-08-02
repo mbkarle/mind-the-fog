@@ -7,6 +7,38 @@ class Effect {
         this.quantity = quantity; //pass an array with quantities that matches the attributes array
 
     }
+    displayEffects(target){
+        var effectBoxes = "";
+        var effectInfos = [];
+        var toShow = false;
+        var objid = target.constructorName + "Effects"
+        for(var i = 0; i < target.effects.length; i++){
+            if(target.effects[i].constructorName == "Buff"){
+                effectBoxes += "<div id='effect" + i + target.objid + "' class='effect' style='left: " + 20 * i + "px'>▲</div>";
+            }
+            else if(target.effects[i].constructorName == "Debuff"){
+                effectBoxes += "<div id='effect" + i + target.objid + "' class = 'effect' style='left: " + 20 * i + "px'>▼</div>";
+            }
+
+        }
+        document.getElementById(objid).innerHTML = effectBoxes;
+
+        $("#" + objid).show();
+        for(var i = 0; i < target.effects.length; i++){
+            effectInfos.push(target.effects[i].name);
+            var effectID = "#effect" + i + target.objid;
+            var effect_to_print = (' ' + effectInfos[i]).slice(1);
+            $(effectID).attr('eff_to_print', effect_to_print);
+            $(effectID).mouseenter(function(){
+                console.log("entered");
+                document.getElementById('effectsHover').innerHTML = $(this).attr('eff_to_print');
+                $("#effectsHover").show();
+            })
+            $(effectID).mouseleave(function(){
+                $("#effectsHover").hide();
+            })
+        }
+    }
 }
 
 class Buff extends Effect {
@@ -14,15 +46,18 @@ class Buff extends Effect {
         super(name, target, duration, attributes, quantity);
         var self = this;
         this.active = false;
+        this.constructorName = "Buff";
         this.applyBuff = function(character){
             console.log("buff applied!")
             this.target = character;
             if(!self.active){
             self.active = true;
+            this.target.effects.push(this);
             for(var i = 0; i < this.attributes.length; i++){
                 this.target[attributes[i]] += this.quantity[i];
                 refreshInfo();
             }
+            this.displayEffects(this.target);
             window.setTimeout(function(){
                 self.active = false;
               for(var i = 0; i < self.attributes.length; i++){
@@ -32,10 +67,14 @@ class Buff extends Effect {
                     character.vitality = 1;
                 }
                 refreshInfo();}
+                var SpliceIdx = self.target.effects.indexOf(self);
+                self.target.effects.splice(SpliceIdx);
+                self.displayEffects(self.target);
             }, self.duration);
         }
         }
     }
+
 }
 
 class Debuff extends Effect {
@@ -43,6 +82,7 @@ class Debuff extends Effect {
         super(name, target, duration, attributes, quantity);
         var self = this;
         this.active = false;
+        this.constructorName = "Debuff";
         this.applyDebuff = function(character) {
             this.target = character;
             if(!self.active){
@@ -55,12 +95,17 @@ class Debuff extends Effect {
                     }
                     refreshInfo();
                 }
+                this.target.effects.push(this);
+                this.displayEffects(this.target);
                 window.setTimeout(function(){
                     self.active = false;
                   for(var i = 0; i < self.attributes.length; i++){
                     console.log(self.target[self.attributes[i]] + "+" + self.quantity[i]);
                     self.target[attributes[i]] += self.quantity[i];
                     refreshInfo();}
+                    var SpliceIdx = self.target.effects.indexOf(self);
+                    self.target.effects.splice(SpliceIdx);
+                    self.displayEffects(self.target);
                 }, self.duration);
             }
         }
@@ -92,6 +137,8 @@ class damageDebuff extends Debuff {
             self.target = character;
             if(!self.active){
                 self.active = true;
+                this.target.effects.push(this);
+                this.displayEffects(this.target);
             var damageInterval = setInterval(function(){
                 if(self.target.vitality > 0){
                 Damage(self.source, self.target);
@@ -104,6 +151,9 @@ class damageDebuff extends Debuff {
             window.setTimeout(function(){
                 window.clearInterval(damageInterval);
                 self.active = false;
+                var SpliceIdx = self.target.effects.indexOf(self);
+                self.target.effects.splice(SpliceIdx);
+                self.displayEffects(self.target);
             }, duration);}
         }}
     }

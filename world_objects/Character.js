@@ -6,6 +6,7 @@ class Character{
         this.vitality = vitality;
         this.maxVitality = vitality;
         this.objid = objid;
+        this.effects = [];
     }
 }
 
