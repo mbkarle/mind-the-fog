@@ -25,6 +25,7 @@ class Room {
         this.boss = boss;
         this.fightChance = fightChance;
         this.floor = floor;
+        this.tier = tier;
 
 
         this.room_map = this.buildRoom(room_type, this.locations, this.itemList, this.tier)
@@ -44,13 +45,6 @@ class Room {
         var width;
         var height;
         switch (type) {
-            // case 'Big':
-            //
-            //     break;
-            //
-            // case 'HorizHall':
-            //
-            //     break;
             case 'tutRoom':
                 width = 30;
                 height = 20;
@@ -142,40 +136,147 @@ class Room {
         document.getElementById("worldContent").innerHTML = worldContents;
     }
 
+    addFogWhenTorchBurnsOut(avX, avY){
+        var torch_coords = this.getValidCoords(avX, avY, true);
+        var no_torch_coords = this.getValidCoords(avX,avY,false);
+
+        var coords_to_update = []
+        var haystack = JSON.stringify(no_torch_coords);
+        for(var i = 0; i < torch_coords.length; i++){
+            var coord = torch_coords[i];
+            if(haystack.indexOf(JSON.stringify(coord)) === -1){
+                coords_to_update.push(coord);
+            }
+
+        }
+
+        var coords_to_updateIDs = coords_to_update.map(function(coord) {
+            return String('#' + coord[1]) + 'x' + String(coord[0])
+        })
+        for(var i = 0; i < coords_to_update.length; i++){
+            $(coords_to_updateIDs[i]).html('');
+            this.room_map[coords_to_update[i][1]][coords_to_update[i][0]].fog = true;
+            // console.log(this.room_map[coords_to_update[i][1]][coords_to_update[i][0]]);
+        }
+
+    }
+
     updateRoomHTML(oldPos, newPos, torchlight) { //in [x,y] format
         //these are the only spots that need updating, as their fog is being removed!
-        var coords = this.getValidNeighbors(newPos[0], newPos[1], torchlight, oldPos)[1]
-        var coordIDs = coords.map(function(coord) {
+        var all_coords = this.getNeighborsToUpdate(oldPos, newPos, torchlight,false)
+        // console.log(all_coords)
+        var coords_to_update = all_coords[0]
+        var out_of_date_coords = all_coords[1]
+        var coords_to_updateIDs = coords_to_update.map(function(coord) {
             return String('#' + coord[0]) + 'x' + String(coord[1])
         })
 
-        for (var i = 0; i < coords.length; i++) {
-            var cy = coords[i][0]
-            var cx = coords[i][1]
+        //So we need to update all coords_to_updateIDs, because they are in view of the character
+        for (var i = 0; i < coords_to_update.length; i++) {
+            var cy = coords_to_update[i][0]
+            var cx = coords_to_update[i][1]
             var symbol = this.room_map[cy][cx].symbol;
             this.room_map[cy][cx].fog = false;
             if (this.room_map[cy][cx].hero_present) {
                 symbol = 'x';
             }
-            $(coordIDs[i]).html(symbol);
+            $(coords_to_updateIDs[i]).html(symbol);
         }
-        console.log('updated ' + coords.length + ' locations')
+        // console.log('updated ' + coords_to_update.length + ' locations')
+
+        //for all out of date coords (from high tier fog regeneration), turn
+        //fog back on and set html to ''
+        //only do if !roomCleared (deals w SafeRoom)
+        if(!this.roomCleared){
+            for(var i = 0; i < out_of_date_coords.length; i++){
+                var coord = out_of_date_coords[i];
+                this.room_map[coord[0]][coord[1]].fog = true;
+                var coordID = String('#' + coord[0]) + 'x' + String(coord[1]);
+                $(coordID).html('')
+            }
+        }
     }
 
-
     removeFog(avX, avY, torchlight){
-        var neigh = this.getValidNeighbors(avX,avY,torchlight,[avX,avY])[0];
+        var neigh = this.getNeighborsToUpdate([avX,avY],[avX,avY],torchlight,true);
         for(var i = 0; i < neigh.length; i++){
             neigh[i].fog = false;
         }
     }
 
-    getValidNeighbors(avX, avY, torchlight, oldPos){
+    getNeighborsToUpdate(oldPos, newPos, torchlight, simpleNeighbors){
         var map = this.room_map;
-        var neigh = [];
-        var possCoords = []
-        var inc_coords = [[oldPos[1],oldPos[0]], [avY,avX]] //coords for inc_update
 
+        //Theres two reasons to call this function, the first is just to remove the
+        //fog around the current position. In this case we just want to return the Location's
+        //around the player, so as to access their fog properties.
+        if(simpleNeighbors){
+            var neigh = [];
+            var possCoords = this.getValidCoords(oldPos[0], oldPos[1], torchlight);
+            for(var i = 0; i < possCoords.length; i++){
+                var cx = possCoords[i][0];
+                var cy = possCoords[i][1];
+                neigh.push(map[cy][cx]);
+            }
+            return neigh;
+        }
+
+        //The second reason to call this is to decide which parts of the html to update.
+        //In this case, we care about the new position, the old position, and the difference
+        //between them.
+        else{
+            var validCoords_newPos = this.getValidCoords(newPos[0], newPos[1], torchlight);
+
+            //coords_needing_update[0] are the positions that need to be updated. We start with the
+            //avatar's start pos and curr pos, because they guaranteed need an update
+            //to move the x.
+            //coords_needing_update[1] are the positions that are no longer visible to character,
+            //which need fog readded on a high tier.
+            var coords_needing_update = new Array(2);
+            coords_needing_update[0] = [[oldPos[1],oldPos[0]], [newPos[1],newPos[0]]]; //coords for inc_update
+            coords_needing_update[1] = [];
+
+            //The smartest solution here is the following:
+            //If you are on a tier which has fog of war (early tiers):
+            // - Don't worry about old coords, they stay as they are
+            // - Only update possCoords around the newPos that have fog!
+            for(var i = 0; i < validCoords_newPos.length; i++){
+                var cx = validCoords_newPos[i][0];
+                var cy = validCoords_newPos[i][1];
+                if(map[cy][cx].fog){ //only need to update if fog present
+                    coords_needing_update[0].push([cy,cx])
+                }
+            }
+
+            //If you are on a higher tier which fog regenerates:
+            //Now, we need to find all old_coords that were NOT in new_coords,
+            //because these are no longer visible to the player...
+            //If we find one, add it to a list to return so that updateRoomHTML can
+            //set its fog to true and html to ''
+            if(this.tier > 1){
+                var possCoords_oldPos = this.getValidCoords(oldPos[0], oldPos[1], torchlight);
+
+                var old_coords = possCoords_oldPos.map(function(x){return x.reverse()}) //put in [y,x] order...
+                var new_coords = validCoords_newPos.map(function(x){return x.reverse()})
+
+                var out_of_date_coords = []
+
+                var haystack = JSON.stringify(new_coords);
+                for(var i = 0; i < old_coords.length; i++){
+                    var coord = old_coords[i];
+                    if(haystack.indexOf(JSON.stringify(coord)) === -1){
+                        out_of_date_coords.push(coord);
+                    }
+
+                }
+                coords_needing_update[1] = out_of_date_coords;
+            }
+            return coords_needing_update;
+        }
+    }
+
+    getValidCoords(avX,avY, torchlight){
+        var possCoords = []
         possCoords.push([avX+1,avY+1]);
         possCoords.push([avX+1,avY]);
         possCoords.push([avX+1,avY-1]);
@@ -212,50 +313,41 @@ class Room {
             possCoords.push([avX+1,avY-2]);
 
             //5x5 square complete... fill to be 6x6 with corners missing
-            //5 on right
-            // possCoords.push([avX+3,avY+2]);
+            //3 on right
             possCoords.push([avX+3,avY+1]);
             possCoords.push([avX+3,avY]);
             possCoords.push([avX+3,avY-1]);
-            // possCoords.push([avX+3,avY-2]);
 
-            //5 on left
-            // possCoords.push([avX-3,avY+2]);
+            //3 on left
             possCoords.push([avX-3,avY+1]);
             possCoords.push([avX-3,avY]);
             possCoords.push([avX-3,avY-1]);
-            // possCoords.push([avX-3,avY-2]);
 
-            //5 on top
-            // possCoords.push([avX-2,avY+3]);
+            //3 on top
             possCoords.push([avX-1,avY+3]);
             possCoords.push([avX,avY+3]);
             possCoords.push([avX+1,avY+3]);
-            // possCoords.push([avX+2,avY+3]);
 
-            //5 on bottom
-            // possCoords.push([avX-2,avY-3]);
+            //3 on bottom
             possCoords.push([avX-1,avY-3]);
             possCoords.push([avX,avY-3]);
             possCoords.push([avX+1,avY-3]);
-            // possCoords.push([avX+2,avY-3]);
         }
+        var realCoords = []
         for(var i = 0; i < possCoords.length; i++){
-            var cx = possCoords[i][0];
-            var cy = possCoords[i][1];
-            if(this.isValidCoord(cx,cy)){
-                neigh.push(map[cy][cx]);
-                if(map[cy][cx].fog){ //only need to update if fog present
-                    inc_coords.push([cy,cx])
-                }
+            if(this.isValidCoord(possCoords[i][0], possCoords[i][1])){
+                realCoords.push(possCoords[i])
             }
         }
-        return [neigh, inc_coords];
+        return realCoords;
+
+
     }
 
     isValidCoord(avX, avY){
         return (avX >= 0 && avY >= 0 && avX < this.room_width && avY < this.room_height);
     }
+
 }
 
 function makeNormalRoom(height, width, map, locations, itemList, tier){

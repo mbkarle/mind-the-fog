@@ -435,7 +435,13 @@ function move(e) {
                     activatedTorch = true;
                     refreshInfo();
                     torchlight = true;
-                    setTimeout(function(){torchlight = false; console.log("Your torch fades to nothing.")}, 10000)
+                    setTimeout(function(){
+                        torchlight = false;
+                        if(!room_list[curr_floor][curr_room].roomCleared && room_list[curr_floor][curr_room].tier > 1){
+                            room_list[curr_floor][curr_room].addFogWhenTorchBurnsOut(avatarX,avatarY);
+                        }
+                        console.log("Your torch fades to nothing."
+                    )}, 10000)
                 }
                 else{
                     console.log("You can't turn off a torch, silly!")
