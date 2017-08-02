@@ -437,8 +437,10 @@ function move(e) {
                     torchlight = true;
                     setTimeout(function(){
                         torchlight = false;
-                        if(!room_list[curr_floor][curr_room].roomCleared && room_list[curr_floor][curr_room].tier > 1){
+                        if(!room_list[curr_floor][curr_room].roomCleared){
                             room_list[curr_floor][curr_room].addFogWhenTorchBurnsOut(avatarX,avatarY);
+                            var newPos = [avatarX,avatarY];
+                            room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight);
                         }
                         console.log("Your torch fades to nothing."
                     )}, 10000)

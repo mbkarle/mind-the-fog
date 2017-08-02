@@ -137,27 +137,31 @@ class Room {
     }
 
     addFogWhenTorchBurnsOut(avX, avY){
-        var torch_coords = this.getValidCoords(avX, avY, true);
-        var no_torch_coords = this.getValidCoords(avX,avY,false);
+        self = this;
+        setTimeout(function(){
+            var torch_coords = self.getValidCoords(avX, avY, true);
+            var no_torch_coords = self.getValidCoords(avX,avY,false);
 
-        var coords_to_update = []
-        var haystack = JSON.stringify(no_torch_coords);
-        for(var i = 0; i < torch_coords.length; i++){
-            var coord = torch_coords[i];
-            if(haystack.indexOf(JSON.stringify(coord)) === -1){
-                coords_to_update.push(coord);
+            var coords_to_update = []
+            var haystack = JSON.stringify(no_torch_coords);
+            for(var i = 0; i < torch_coords.length; i++){
+                var coord = torch_coords[i];
+                if(haystack.indexOf(JSON.stringify(coord)) === -1){
+                    coords_to_update.push(coord);
+                }
+
             }
 
-        }
+            var coords_to_updateIDs = coords_to_update.map(function(coord) {
+                return String('#' + coord[1]) + 'x' + String(coord[0])
+            })
+            for(var i = 0; i < coords_to_update.length; i++){
+                $(coords_to_updateIDs[i]).html('');
+                self.room_map[coords_to_update[i][1]][coords_to_update[i][0]].fog = true;
+                // console.log(this.room_map[coords_to_update[i][1]][coords_to_update[i][0]]);
+            }
+        }, 10000/(this.tier+1))
 
-        var coords_to_updateIDs = coords_to_update.map(function(coord) {
-            return String('#' + coord[1]) + 'x' + String(coord[0])
-        })
-        for(var i = 0; i < coords_to_update.length; i++){
-            $(coords_to_updateIDs[i]).html('');
-            this.room_map[coords_to_update[i][1]][coords_to_update[i][0]].fog = true;
-            // console.log(this.room_map[coords_to_update[i][1]][coords_to_update[i][0]]);
-        }
 
     }
 
@@ -188,14 +192,23 @@ class Room {
         //fog back on and set html to ''
         //only do if !roomCleared (deals w SafeRoom)
         if(!this.roomCleared){
+            self = this;
+            setTimeout(function(){fogTimeout(out_of_date_coords, self.room_map)},10000/(this.tier+1))
+        }
+
+        function fogTimeout(coord, map){
+            console.log('timeout')
             for(var i = 0; i < out_of_date_coords.length; i++){
                 var coord = out_of_date_coords[i];
-                this.room_map[coord[0]][coord[1]].fog = true;
+                map[coord[0]][coord[1]].fog = true;
                 var coordID = String('#' + coord[0]) + 'x' + String(coord[1]);
                 $(coordID).html('')
             }
+
         }
     }
+
+
 
     removeFog(avX, avY, torchlight){
         var neigh = this.getNeighborsToUpdate([avX,avY],[avX,avY],torchlight,true);
@@ -253,7 +266,7 @@ class Room {
             //because these are no longer visible to the player...
             //If we find one, add it to a list to return so that updateRoomHTML can
             //set its fog to true and html to ''
-            if(this.tier > 1){
+            // if(this.tier > 1){
                 var possCoords_oldPos = this.getValidCoords(oldPos[0], oldPos[1], torchlight);
 
                 var old_coords = possCoords_oldPos.map(function(x){return x.reverse()}) //put in [y,x] order...
@@ -270,7 +283,7 @@ class Room {
 
                 }
                 coords_needing_update[1] = out_of_date_coords;
-            }
+            // }
             return coords_needing_update;
         }
     }
