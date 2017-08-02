@@ -124,9 +124,8 @@ adding this class just for world so I can scrap fog.*/
 
 #info-module, #tree-module {
     width: 200px;
-    height: 450px;
+    height: 550px;
     padding-top: 25px;
-    padding-bottom: 50px;
     border-style: solid;
     border-color: #a6a6a6;
     position: absolute;
@@ -188,7 +187,12 @@ background-color: white;
     bottom: 40px;
 }
 #torchcount{
-    white-space: pre;
+    white-space: pre-wrap;
+    width: 200px;
+    padding-bottom: 0;
+    position: absolute;
+    bottom: 30px;
+
 }
 
 .statusBar, .statusSlider, .invCarry {
@@ -265,10 +269,27 @@ background-color: white;
     top: -30px;
     text-align: center;
 }
+
+#HeroEffects, #EnemyEffects, #effectsHover{
+    position: absolute;
+    top: 50px;
+    height: 20px;
+    width: 150px;
+    border-style: solid;
+    border-width: thin;
+    border-color: #a6a6a6;
+    display: none;
+    font-size: 12px;
+    font-family: cursive;
+    text-align: center;
+}
+
 .effect{
     position: absolute;
+    top: 0;
     height: 15px;
     width: 15px;
+    font-size: 10px;
     color: #a6a6a6;
     border-style: solid;
     border-color: #a6a6a6;
