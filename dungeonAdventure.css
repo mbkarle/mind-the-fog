@@ -224,7 +224,7 @@ background-color: white;
     height: 300px;
 }
 
-#inv_hoverInfo {
+#inv_hoverInfo, #hoverCompare {
     padding: 10px 20px 10px 20px;
     position: absolute;
     border-color: #a6a6a6;
