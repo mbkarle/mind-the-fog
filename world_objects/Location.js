@@ -11,11 +11,41 @@ class Location {
         this.colID = colID; //col index in world_map
         this.fog = true; //whether or not fog is present
         this.passable = passable;
+        this.fogTimeout;
+        this.htmlID = '#' + String(this.rowID) + 'x' + String(this.colID)
 
         this.computeCoordsWithOffset = function(yoff,xoff){
             this.xCoord = (this.colID * 15) + xoff * 15;
             this.yCoord = (this.rowID * 15) + yoff * 15;
         }
+    }
+
+    addFogBackAfterTimeout(tier){
+        this.fog = false;
+        var symbol = this.symbol;
+        if(this.hero_present){
+            symbol = 'x';
+        }
+        $(this.htmlID).html(symbol);
+
+        clearTimeout(this.fogTimeout);
+        var self = this;
+        this.fogTimeout = setTimeout(function(){
+            self.fog = true;
+            $(self.htmlID).html('');
+        }, 20000/(2*(tier+1)))
+
+    }
+
+
+    removeFogBecauseHeroPresent(){
+        this.fog = false;
+        var symbol = this.symbol;
+        if(this.hero_present){
+            symbol = 'x';
+        }
+        clearTimeout(this.fogTimeout)
+        $(this.htmlID).html(symbol);
     }
 };
 
