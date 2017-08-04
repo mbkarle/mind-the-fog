@@ -777,7 +777,7 @@ function refreshInfo() {
     var healthFraction = hero.vitality/hero.maxVitality;
     var shieldHealthFraction = heroShield.vitality/heroShield.maxVitality;
     hero.levelCheck();
-    var xpFraction = (hero.xp - hero.level * 1000) / 1000
+    var xpFraction = (hero.xp - hero.level * 1000) / 1000;
 
     document.getElementById("characterInfo").innerHTML = "Health: <br><div id='healthBar' class='statusBar'>" +
     hero.vitality + " / " + hero.maxVitality +
@@ -824,6 +824,7 @@ function refreshInfo() {
     document.getElementById("inventory").innerHTML = inventoryMessage;
 
     itemInfos = []
+    var item_to_compare;
     for(var i = 0; i < items_carried.length; i++){
         //store all the item infos to be displayed upon hover...
         itemInfos.push((items_carried[i].name + "<br>"))
@@ -860,6 +861,7 @@ function refreshInfo() {
         $(carriedID).attr('inv_idx', i)
         $(dropID).attr('drop_idx', i);
         $(invCarID).attr('item_to_print', item_to_print)
+        $(invCarID).attr('inv_idx', i);
         $(carriedID).click(function(){
             equip(hero,items_carried[$(this).attr('inv_idx')])
             refreshInfo()
@@ -872,9 +874,21 @@ function refreshInfo() {
         $(invCarID).mouseenter(function(){
             document.getElementById("inv_hoverInfo").innerHTML = $(this).attr('item_to_print');
             $("#inv_hoverInfo").show();
+            if(inventory[items_carried[$(this).attr('inv_idx')].type] != null && inventory[items_carried[$(this).attr('inv_idx')].type].name != items_carried[$(this).attr('inv_idx')].name){
+
+                for(var m = 0; m < items_carried.length; m++){
+                    if(items_carried[m].name == inventory[items_carried[$(this).attr('inv_idx')].type].name){
+                        item_to_compare = (' ' + itemInfos[m]).slice(1);
+                        break;
+                    }
+                }
+                $("#hoverCompare").html(item_to_compare).show();
+            }
+
         })
         $(invCarID).mouseleave(function(){
             $("#inv_hoverInfo").hide();
+            $("#hoverCompare").hide();
         })
     }
     //magic tree:
