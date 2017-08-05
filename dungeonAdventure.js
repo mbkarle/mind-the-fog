@@ -913,7 +913,56 @@ function refreshInfo() {
         })
     }
     //magic tree:
-    document.getElementById("tree-module").innerHTML = "insert skill tree here"
+    $("#tree-module").html('')
+    for(var spell in Object.getOwnPropertyNames(spellTree)){
+        if(typeof Object.getOwnPropertyNames(spellTree)[spell] != 'function'){
+        var spellBox;
+        var this_spell = Object.getOwnPropertyNames(spellTree)[spell];
+        var objid = '#' + spellTree[this_spell]['objid']
+        var top = 60 * (spellTree[Object.getOwnPropertyNames(spellTree)[spell]]['level'] - 2);
+        var left;
+        if(spellTree[Object.getOwnPropertyNames(spellTree)[spell]]['karma'] == 1){
+            left = 5 + '%';
+        }
+        else if(spellTree[Object.getOwnPropertyNames(spellTree)[spell]]['karma'] == -1){
+            left = 64 + '%';
+        }
+        else{
+            left = 35 + '%';
+        }
+        $("#tree-module").append("<div id='" + spellTree[this_spell]['objid'] + "' class='treeBox' style='left:" + left + ";top:" + top + "px;'>" + Object.getOwnPropertyNames(spellTree)[spell] + "</div>")
+        if(spellTree[this_spell]['learned']){
+            $(objid).css({'background-color': 'white', 'color': 'black'});
+        }
+        $(objid).attr('this_spell', this_spell);
+        $(objid).click(function(){
+            console.log($(this).attr('this_spell'))
+            console.log(spellTree[$(this).attr('this_spell')])
+            $("#tree-module").html("<div style='text-align:center;font-size:12px;font-family:cursive;'>" +
+            $(this).attr('this_spell') + "<br><br>" +
+            spellTree[$(this).attr('this_spell')]['description'] + "<br><br> Required Level: " +
+            spellTree[$(this).attr('this_spell')]['level'] + "<div id='closeWindow' class='interact'>Close</div></div>");
+            $("#tree-module").append("<div id='learn" + spell + "' class='interact' style='left:0; width:40px;display:none;'>Learn</div>");
+
+            var learnID = '#learn' + spell;
+            $(learnID).attr('this_spell', $(this).attr('this_spell'));
+            $("#closeWindow").click(function(){
+                refreshInfo();
+            })
+            if(!spellTree[$(this).attr('this_spell')]['learned'] && hero.level >= spellTree[$(this).attr('this_spell')]['level']){
+                $(learnID).show();
+                $(learnID).click(function(){
+                    spellTree[$(this).attr('this_spell')]['learned'] = true;
+                    if(spellTree[$(this).attr('this_spell')]['active spell'] != undefined){
+                        spellTree[$(this).attr('this_spell')]['active spell'].createButton();
+                    }
+                    refreshInfo();
+
+                })
+            }
+        })
+    }}
+
 
     //refresh for combat-module:
     document.getElementById("hero").innerHTML = hero.vitality;

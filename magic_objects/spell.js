@@ -1,24 +1,79 @@
 class Spell {
     constructor(name, source, target){
         this.name = name;
-        this.description = spellTree[this.name];
+        this.description = spellTree[this.name]['description'];
         this.source = source;
         this.target = target;
     }
 }
 
 var spellTree = {
-    'fireball': "A basic spell. Deals damage but tires the mind.",
-    'learned caster': 'Practice and study has taught you endurance',
-    'power of will': 'Greater mental fortitude grants greater impact',
-    'mind over body': 'You learn to channel your magic to accomplish inhuman physical feats',
-    'stun': 'Your mastery of magic allows you to put your opponent out of action',
-    'forcefield': 'You learn to block kinetic impacts with magic',
-    'dirty magic': 'You discover shortcuts to faster, stronger magic – but it puts you at risk',
-    'mind domination': 'Take control of the mind of your enemy',
-    'blood disciple': 'You redirect your magical energies in order to drain the health of your enemy',
-    'lightning strike': 'Channel your hate to call upon the heavens to smite your enemy',
-    'Blood Magic': 'You can sacrifice your vitality to cast more effectively'
+    'fireball': {   'description': "A basic spell. Deals damage but tires the mind.",
+                    'level': 2,
+                    'karma': 0,
+                    'learned': false,
+                    'objid': 'fireballBox',
+                },
+    'learned caster': { 'description': 'Practice and study has taught you endurance',
+                        'level': 3,
+                        'karma': 1,
+                        'learned': false,
+                        'objid': 'learnedCaster'
+                },
+    'power of will': {  'description': 'Greater mental fortitude grants greater impact',
+                        'level': 4,
+                        'karma': 1,
+                        'learned': false,
+                        'objid': 'powerWill'
+                },
+    'mind over body': { 'description': 'You learn to channel your magic to accomplish inhuman physical feats',
+                        'level': 5,
+                        'karma': 1,
+                        'learned': false,
+                        'objid': 'mindBody'
+                },
+    'stun': {   'description': 'Your mastery of magic allows you to put your opponent out of action',
+                'level': 6,
+                'karma': 1,
+                'learned': false,
+                'objid': 'stunBox'
+                },
+    'forcefield': { 'description': 'You learn to block kinetic impacts with magic',
+                    'level': 7,
+                    'karma': 1,
+                    'learned': false,
+                    'objid': 'forcefieldBox'
+                },
+    'dirty magic': {    'description': 'You discover shortcuts to faster, stronger magic – but it puts you at risk',
+                        'level': 3,
+                        'karma': -1,
+                        'learned': false,
+                        'objid': 'dirtyMagic'
+                },
+    'mind domination': {    'description': 'Take control of the mind of your enemy',
+                            'level': 4,
+                            'karma': -1,
+                            'learned': false,
+                            'objid': 'mindDomBox'
+                },
+    'blood disciple': { 'description': 'You redirect your magical energies in order to drain the health of your enemy',
+                        'level': 5,
+                        'karma': -1,
+                        'learned': false,
+                        'objid': 'bloodDis'
+                },
+    'lightning strike': {   'description': 'Channel your hate to call upon the heavens to smite your enemy',
+                            'level': 6,
+                            'karma': -1,
+                            'learned': false,
+                            'objid': 'lightningBox'
+                },
+    'Blood Magic': {    'description': 'You can sacrifice your vitality to cast more effectively',
+                        'level': 7,
+                        'karma': -1,
+                        'learned': false,
+                        'objid': 'bloodMagic'
+                }
 }
 
 var activeSpellEffects = {
@@ -88,6 +143,7 @@ class ActiveSpell extends Spell {
                 console.log('casting ' + self);
             })
         }
+        spellTree[this.name]['active spell'] = this;
     }
 }
 
