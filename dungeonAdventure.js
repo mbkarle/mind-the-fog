@@ -30,15 +30,8 @@ var magicReady = true;
 var enemyAttack;
 var torchlight = false;
 
-//------------------------------------------------------
-//              Initialize Buffs and Debuffs
-//------------------------------------------------------
-
-var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1]);
-var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20]);
-var fire = new damageDebuff("fire", null, 16000, 4000, 3);
-var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2]);
-
+var stun = new ActiveSpell("stun", 'stun', hero, null, null, 20000);
+var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000);
 
 //------------------------------------------------------
 //              Initialize Items
@@ -208,6 +201,7 @@ function enter_combat(room, custom_enemy) {
     $("#text-module").show();
     canMove = false;
 
+
     if (typeof custom_enemy === "undefined") {
         customCombat = false;
         //Its a normal combat, choose randomly from the en_list of the room
@@ -224,10 +218,37 @@ function enter_combat(room, custom_enemy) {
 
     enemy.vitality = enemy.maxVitality; //bc we use same objects across mult. fights
 
+    //set spell targets:
+    for(var i = 0; i < hero.spells.length; i++){
+        hero.spells[i].target = enemy;
+        for(var n = 0; n < activeSpellEffects[hero.spells[i].name]['buffs'].length; n++){
+            if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target === 'enemy'){
+                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = enemy;
+            }
+        }
+        for(var m = 0; m < activeSpellEffects[hero.spells[i].name]['debuffs'].length; m++){
+            if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target === 'enemy'){
+                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = enemy;
+            }
+        }
+    }
+
     document.getElementById("enter").onclick = function() {
-        $("#text-module").animate({
-            top: '300px'
-        }, 500);
+        if(hero.spells.length % 2 != 0){
+            $("#text-module").animate({
+                top: 300 + 50 * hero.spells.length + 'px'
+            })
+        }
+        else if(hero.spells.length % 2 == 0 && hero.spells.length != 0){
+            $("#text-module").animate({
+                top: 300 + 50 * (hero.spells.length  - 1) + 'px'
+            })
+        }
+        else{
+            $("#text-module").animate({
+                top: '300px'
+            }, 500);
+        }
         $("#combat-module").show(500);
         $("#enter").hide();
         $("#worldMap").hide();

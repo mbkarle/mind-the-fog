@@ -17,7 +17,7 @@
   margin: auto;
 }
 
-#attack, #defend {
+#attack, #defend, .spell {
   position: absolute;
   font-size: 12px;
   text-align: center;

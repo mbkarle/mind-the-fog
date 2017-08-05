@@ -29,6 +29,7 @@ class Hero extends Character{
     this.wallet = 0;
     this.constructorName = "Hero";
     this.num_torches = 3;
+    this.spells = [];
   }
 }
 

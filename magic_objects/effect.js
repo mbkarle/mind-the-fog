@@ -91,7 +91,7 @@ class Debuff extends Effect {
                     this.target[attributes[i]] -= this.quantity[i];
 
                     if(character.dexterity <= 0){ //no dividing by 0!!
-                        character.dexterity = 0.5;
+                        character.dexterity = 0.1;
                     }
                     refreshInfo();
                 }
@@ -117,11 +117,21 @@ class Debuff extends Effect {
 class Exhaustion extends Debuff {
     constructor(name, target, duration){
         super(name, target, duration);
-        this.exhaust = function(){
-            magicReady = false;
-            window.setTimeout(function(){
-                magicReady= true;
-            }, this.duration)
+        var self = this;
+        this.applyDebuff = function(){
+            if(!self.active){
+                self.active = true;
+                magicReady = false;
+                this.target.effects.push(this);
+                this.displayEffects(this.target);
+                window.setTimeout(function(){
+                    magicReady= true;
+                    self.active = false;
+                    var SpliceIdx = self.target.effects.indexOf(self);
+                    self.target.effects.splice(SpliceIdx);
+                    self.displayEffects(self.target);
+                }, this.duration)
+            }
         }
     }
 }
@@ -137,6 +147,7 @@ class damageDebuff extends Debuff {
             self.target = character;
             if(!self.active){
                 self.active = true;
+                console.log(this.target);
                 this.target.effects.push(this);
                 this.displayEffects(this.target);
             var damageInterval = setInterval(function(){
@@ -158,3 +169,13 @@ class damageDebuff extends Debuff {
         }}
     }
 }
+
+//------------------------------------------------------
+//              Initialize Buffs and Debuffs
+//------------------------------------------------------
+var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1]);
+var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20]);
+var fire = new damageDebuff("fire", null, 16000, 4000, 3);
+var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2]);
+var stunned = new Debuff("stunned", null, 10000, ['dexterity'], [200]);
+var exhaust = new Exhaustion('magic exhaust', null, null);
