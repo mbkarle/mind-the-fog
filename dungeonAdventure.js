@@ -30,15 +30,17 @@ var magicReady = true;
 var enemyAttack;
 var torchlight = false;
 
-//------------------------------------------------------
-//              Initialize Buffs and Debuffs
-//------------------------------------------------------
-
-var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1]);
-var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20]);
-var fire = new damageDebuff("fire", null, 16000, 4000, 3);
-var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2]);
-
+var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000);
+var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000);
+var lightningStrike = new ActiveSpell('lightning strike', 'lightningS', hero, null, 15, 15000);
+var mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 18000);
+var forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 12000);
+var learnCast = new Upgrade('learned caster');
+var powerWill = new Upgrade('power of will');
+var mindBody = new Upgrade('mind over body');
+var dirtyMagic = new Upgrade('dirty magic');
+var bloodDisciple = new Upgrade('blood disciple', bloodDisFoo);
+var bloodMag = new Upgrade('blood magic', bloodMagFoo);
 
 //------------------------------------------------------
 //              Initialize Items
@@ -195,6 +197,10 @@ window.onload = function(){
             $("#info-module").toggle(100);
             refreshInfo();
         }
+    $("#TreeOpen").click(function(){
+        $("#tree-module").toggle(100);
+        refreshInfo();
+    })
 }
 
 
@@ -207,6 +213,9 @@ function enter_combat(room, custom_enemy) {
     console.log('entered combat')
     $("#text-module").show();
     canMove = false;
+    for(var i = 0; i < effectList.length; i++){
+        effectList[i].active = false;
+    }
 
     if (typeof custom_enemy === "undefined") {
         customCombat = false;
@@ -223,11 +232,44 @@ function enter_combat(room, custom_enemy) {
     }
 
     enemy.vitality = enemy.maxVitality; //bc we use same objects across mult. fights
+    console.log(enemy);
+    //set spell targets:
+    for(var i = 0; i < hero.spells.length; i++){
+        hero.spells[i].target = enemy;
+        for(var n = 0; n < activeSpellEffects[hero.spells[i].name]['buffs'].length; n++){
+            if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target === 'enemy'){
+                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = enemy;
+            }
+            else if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target === 'hero'){
+                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = hero;
+            }
+        }
+        for(var m = 0; m < activeSpellEffects[hero.spells[i].name]['debuffs'].length; m++){
+            if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target === 'enemy'){
+                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = enemy;
+            }
+            else if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target === 'hero'){
+                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = hero;
+            }
+        }
+    }
 
     document.getElementById("enter").onclick = function() {
-        $("#text-module").animate({
-            top: '300px'
-        }, 500);
+        if(hero.spells.length % 2 != 0){
+            $("#text-module").animate({
+                top: 300 + 50 * hero.spells.length + 'px'
+            })
+        }
+        else if(hero.spells.length % 2 == 0 && hero.spells.length != 0){
+            $("#text-module").animate({
+                top: 300 + 50 * (hero.spells.length  - 1) + 'px'
+            })
+        }
+        else{
+            $("#text-module").animate({
+                top: '300px'
+            }, 500);
+        }
         $("#combat-module").show(500);
         $("#enter").hide();
         $("#worldMap").hide();
@@ -376,6 +418,19 @@ function exit_combat(room, customCombat) {
 
         clearAllFog(room_list[curr_floor][curr_room].room_map);
         room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+    }
+    for(var i = 0; i < hero.spells.length; i++){
+        hero.spells[i].target = enemy;
+        for(var n = 0; n < activeSpellEffects[hero.spells[i].name]['buffs'].length; n++){
+            if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target.constructorName === 'Enemy' || activeSpellEffects[hero.spells[i].name]['buffs'][n].target.constructorName === 'Boss'){
+                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = 'enemy';
+            }
+        }
+        for(var m = 0; m < activeSpellEffects[hero.spells[i].name]['debuffs'].length; m++){
+            if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Enemy' || activeSpellEffects[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Boss'){
+                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = 'enemy';
+            }
+        }
     }
 }
 
@@ -892,7 +947,62 @@ function refreshInfo() {
         })
     }
     //magic tree:
-    document.getElementById("tree-module").innerHTML = "insert skill tree here"
+    $("#tree-module").html('')
+    for(var spell in Object.getOwnPropertyNames(spellTree)){
+        if(typeof Object.getOwnPropertyNames(spellTree)[spell] != 'function'){
+        var spellBox;
+        var this_spell = Object.getOwnPropertyNames(spellTree)[spell];
+        var objid = '#' + spellTree[this_spell]['objid']
+        var top = 60 * (spellTree[Object.getOwnPropertyNames(spellTree)[spell]]['level'] - 2);
+        var left;
+        if(spellTree[Object.getOwnPropertyNames(spellTree)[spell]]['karma'] == 1){
+            left = 5 + '%';
+        }
+        else if(spellTree[Object.getOwnPropertyNames(spellTree)[spell]]['karma'] == -1){
+            left = 64 + '%';
+        }
+        else{
+            left = 35 + '%';
+        }
+        $("#tree-module").append("<div id='" + spellTree[this_spell]['objid'] + "' class='treeBox' style='left:" + left + ";top:" + top + "px;'>" + Object.getOwnPropertyNames(spellTree)[spell] + "</div>")
+        if(spellTree[this_spell]['learned']){
+            $(objid).css({'background-color': 'white', 'color': 'black'});
+        }
+        $(objid).attr('this_spell', this_spell);
+        $(objid).click(function(){
+            console.log($(this).attr('this_spell'))
+            console.log(spellTree[$(this).attr('this_spell')])
+            $("#tree-module").html("<div style='text-align:center;font-size:12px;font-family:cursive;'>" +
+            $(this).attr('this_spell') + "<br><br>" +
+            spellTree[$(this).attr('this_spell')]['description'] + "<br><br> Required Level: " +
+            spellTree[$(this).attr('this_spell')]['level'] + "<div id='closeWindow' class='interact'>Close</div></div>");
+            $("#tree-module").append("<div id='learn" + spell + "' class='interact' style='left:0; width:40px;display:none;'>Learn</div>");
+
+            var learnID = '#learn' + spell;
+            $(learnID).attr('this_spell', $(this).attr('this_spell'));
+            $("#closeWindow").click(function(){
+                refreshInfo();
+            })
+            if(!spellTree[$(this).attr('this_spell')]['learned'] && hero.level >= spellTree[$(this).attr('this_spell')]['level'] &&
+            ((spellTree[$(this).attr('this_spell')]['karma'] >= 0 && hero.karma >= spellTree[$(this).attr('this_spell')]['level'] - 3) ||
+            (spellTree[$(this).attr('this_spell')]['karma'] <= 0 && hero.karma <= spellTree[$(this).attr('this_spell')]['level'] * -1 + 3))){
+                $(learnID).show();
+                $(learnID).click(function(){
+                    spellTree[$(this).attr('this_spell')]['learned'] = true;
+                    hero.karma += spellTree[$(this).attr('this_spell')]['karma'];
+                    if(typeof spellTree[$(this).attr('this_spell')]['active spell'] != 'undefined'){
+                        spellTree[$(this).attr('this_spell')]['active spell'].createButton();
+                    }
+                    else if(typeof spellTree[$(this).attr('this_spell')]['upgrade'] != 'undefined'){
+                        spellTree[$(this).attr('this_spell')]['upgrade'].upgrade();
+                    }
+                    refreshInfo();
+
+                })
+            }
+        })
+    }}
+
 
     //refresh for combat-module:
     document.getElementById("hero").innerHTML = hero.vitality;

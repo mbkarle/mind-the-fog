@@ -17,7 +17,7 @@
   margin: auto;
 }
 
-#attack, #defend {
+#attack, #defend, .spell {
   position: absolute;
   font-size: 12px;
   text-align: center;
@@ -295,4 +295,17 @@ background-color: white;
     border-color: #a6a6a6;
     border-width: thin;
     text-align: center;
+}
+
+.treeBox {
+    position: absolute;
+    height: 40px;
+    width: 60px;
+    text-align: center;
+    border-style: solid;
+    border-color: #a6a6a6;
+    background-color: #cec9c9;
+    color: white;
+    font-size: 12px;
+    font-family: cursive;
 }
