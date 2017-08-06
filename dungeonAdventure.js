@@ -30,8 +30,17 @@ var magicReady = true;
 var enemyAttack;
 var torchlight = false;
 
-var stun = new ActiveSpell("stun", 'stun', hero, null, null, 20000);
+var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000);
 var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000);
+var lightningStrike = new ActiveSpell('lightning strike', 'lightningS', hero, null, 15, 15000);
+var mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 18000);
+var forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 12000);
+var learnCast = new Upgrade('learned caster');
+var powerWill = new Upgrade('power of will');
+var mindBody = new Upgrade('mind over body');
+var dirtyMagic = new Upgrade('dirty magic');
+var bloodDisciple = new Upgrade('blood disciple', bloodDisFoo);
+var bloodMag = new Upgrade('blood magic', bloodMagFoo);
 
 //------------------------------------------------------
 //              Initialize Items
@@ -188,6 +197,10 @@ window.onload = function(){
             $("#info-module").toggle(100);
             refreshInfo();
         }
+    $("#TreeOpen").click(function(){
+        $("#tree-module").toggle(100);
+        refreshInfo();
+    })
 }
 
 
@@ -200,7 +213,9 @@ function enter_combat(room, custom_enemy) {
     console.log('entered combat')
     $("#text-module").show();
     canMove = false;
-
+    for(var i = 0; i < effectList.length; i++){
+        effectList[i].active = false;
+    }
 
     if (typeof custom_enemy === "undefined") {
         customCombat = false;
@@ -217,7 +232,7 @@ function enter_combat(room, custom_enemy) {
     }
 
     enemy.vitality = enemy.maxVitality; //bc we use same objects across mult. fights
-
+    console.log(enemy);
     //set spell targets:
     for(var i = 0; i < hero.spells.length; i++){
         hero.spells[i].target = enemy;
@@ -225,10 +240,16 @@ function enter_combat(room, custom_enemy) {
             if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target === 'enemy'){
                 activeSpellEffects[hero.spells[i].name]['buffs'][n].target = enemy;
             }
+            else if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target === 'hero'){
+                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = hero;
+            }
         }
         for(var m = 0; m < activeSpellEffects[hero.spells[i].name]['debuffs'].length; m++){
             if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target === 'enemy'){
                 activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = enemy;
+            }
+            else if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target === 'hero'){
+                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = hero;
             }
         }
     }
@@ -397,6 +418,19 @@ function exit_combat(room, customCombat) {
 
         clearAllFog(room_list[curr_floor][curr_room].room_map);
         room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+    }
+    for(var i = 0; i < hero.spells.length; i++){
+        hero.spells[i].target = enemy;
+        for(var n = 0; n < activeSpellEffects[hero.spells[i].name]['buffs'].length; n++){
+            if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target.constructorName === 'Enemy' || activeSpellEffects[hero.spells[i].name]['buffs'][n].target.constructorName === 'Boss'){
+                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = 'enemy';
+            }
+        }
+        for(var m = 0; m < activeSpellEffects[hero.spells[i].name]['debuffs'].length; m++){
+            if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Enemy' || activeSpellEffects[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Boss'){
+                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = 'enemy';
+            }
+        }
     }
 }
 
@@ -949,12 +983,18 @@ function refreshInfo() {
             $("#closeWindow").click(function(){
                 refreshInfo();
             })
-            if(!spellTree[$(this).attr('this_spell')]['learned'] && hero.level >= spellTree[$(this).attr('this_spell')]['level']){
+            if(!spellTree[$(this).attr('this_spell')]['learned'] && hero.level >= spellTree[$(this).attr('this_spell')]['level'] &&
+            ((spellTree[$(this).attr('this_spell')]['karma'] >= 0 && hero.karma >= spellTree[$(this).attr('this_spell')]['level'] - 3) ||
+            (spellTree[$(this).attr('this_spell')]['karma'] <= 0 && hero.karma <= spellTree[$(this).attr('this_spell')]['level'] * -1 + 3))){
                 $(learnID).show();
                 $(learnID).click(function(){
                     spellTree[$(this).attr('this_spell')]['learned'] = true;
-                    if(spellTree[$(this).attr('this_spell')]['active spell'] != undefined){
+                    hero.karma += spellTree[$(this).attr('this_spell')]['karma'];
+                    if(typeof spellTree[$(this).attr('this_spell')]['active spell'] != 'undefined'){
                         spellTree[$(this).attr('this_spell')]['active spell'].createButton();
+                    }
+                    else if(typeof spellTree[$(this).attr('this_spell')]['upgrade'] != 'undefined'){
+                        spellTree[$(this).attr('this_spell')]['upgrade'].upgrade();
                     }
                     refreshInfo();
 

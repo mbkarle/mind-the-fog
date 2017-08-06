@@ -32,14 +32,14 @@ var spellTree = {
                         'learned': false,
                         'objid': 'mindBody'
                 },
-    'stun': {   'description': 'Your mastery of magic allows you to put your opponent out of action',
-                'level': 6,
-                'karma': 1,
-                'learned': false,
-                'objid': 'stunBox'
+    'channel divinity': {   'description': 'Your mastery of magic of the light allows you to ascend to divinity',
+                            'level': 7,
+                            'karma': 1,
+                            'learned': false,
+                            'objid': 'divineBox'
                 },
     'forcefield': { 'description': 'You learn to block kinetic impacts with magic',
-                    'level': 7,
+                    'level': 6,
                     'karma': 1,
                     'learned': false,
                     'objid': 'forcefieldBox'
@@ -68,7 +68,7 @@ var spellTree = {
                             'learned': false,
                             'objid': 'lightningBox'
                 },
-    'Blood Magic': {    'description': 'You can sacrifice your vitality to cast more effectively',
+    'blood magic': {    'description': 'You can sacrifice your vitality to cast more effectively',
                         'level': 7,
                         'karma': -1,
                         'learned': false,
@@ -87,12 +87,56 @@ var activeSpellEffects = {
         ]
     },
 
-    'stun': {
+    'channel divinity': {
+        'buffs': [
+            {   'buff': divine,
+                'chance': 1,
+                'target': 'hero'
+            }
+        ],
+        'debuffs': [
+            {   'debuff': fire,
+                'chance': .3,
+                'target': 'enemy'
+            },
+            {   'debuff': ice,
+                'chance': .3,
+                'target': 'enemy'
+            }
+        ]
+    },
+    'forcefield': {
         'buffs': [],
         'debuffs': [
-            {   'debuff': stunned,
+            {   'debuff': blocked,
                 'chance': 1,
                 'target': 'enemy'
+            }
+        ]
+    },
+    'mind domination': {
+        'buffs': [],
+        'debuffs': [
+            {   'debuff': suppressed,
+                'chance': 1,
+                'target': 'enemy'
+            },
+            {   'debuff': dominated,
+                'chance': 1,
+                'target': 'enemy'
+            },
+            {   'debuff': asphyxiation,
+                'chance': .3,
+                'target': 'hero'
+            }
+        ]
+    },
+    'lightning strike': {
+        'buffs': [],
+        'debuffs': [
+            {   'debuff': asphyxiation,
+                'chance': .3,
+                'target': 'hero'
             }
         ]
     }
@@ -117,7 +161,7 @@ class ActiveSpell extends Spell {
             }
             for(var n = 0; n < this.effectJSON['debuffs'].length; n++){
                 if(Math.random() <= this.effectJSON['debuffs'][n].chance){
-                    console.log(this.effectJSON['debuffs'][n]['debuff']);
+                    console.log(this.effectJSON['debuffs'][n]['target']);
                     this.effectJSON['debuffs'][n]['debuff'].applyDebuff(this.effectJSON['debuffs'][n]['target']);
                 }
             }
@@ -129,7 +173,7 @@ class ActiveSpell extends Spell {
             var thisButton;
             var thisID = '#' + this.objid;
             hero.spells.push(this);
-            if(hero.spells.length % 2 == 0){
+            if(hero.spells.length > 1){
                 thisButton = "<div id='" + this.objid + "' class='spell' style='top: " + (250 + 50 * (hero.spells.length - 1)) + "px;left: 320px;'>" + this.name + "</div>"
             }
             else{
@@ -147,18 +191,117 @@ class ActiveSpell extends Spell {
     }
 }
 
-// effectJSON format:
-// {
-//     buffs: [
-//         {buff: <buff>,
-//             chance: <chance>,
-//             target: target
-//                },
-//             {buff2JSON},
-//             {etc}
-//         ],
-//     debuffs: [
-//             {same format},
-//             {etc}
-//         ]
-// }
+var upgradesJSON = {
+    'learned caster': {
+        'fireball': {
+            'characteristics': ['cooldown'],
+            'changes': [-2000]
+        }
+    },
+    'power of will': {
+        'fireball': {
+            'characteristics': ['cooldown', 'damage'],
+            'changes': [-500, 2]
+        }
+    },
+    'mind over body': {
+        'hero': {
+            'characteristics': ['strength', 'dexterity', 'vitality', 'maxVitality'],
+            'changes': [1, 1, 10, 10]
+        }
+    },
+    'dirty magic': {
+        'fireball': {
+            'characteristics': ['cooldown', 'damage'],
+            'changes': [-3000, 2],
+            'effectAdd': {
+                'type': 'debuffs',
+                'effect': {
+                    'debuff': asphyxiation,
+                    'chance': .3,
+                    'target': 'hero'
+                }
+            }
+        }
+    },
+    'blood disciple': {
+        'fireball': {
+            'characteristics': ['damage'],
+            'changes': [-1]
+        }
+    },
+    'blood magic': {
+        'fireball':{
+            'characteristics': ['cooldown'],
+            'changes': [-3000]
+        },
+        'lightning': {
+            'characteristics': ['cooldown'],
+            'changes': [-3000]
+        },
+        'mind domination': {
+            'characteristics': ['cooldown'],
+            'changes': [-3000]
+        }
+    }
+
+}
+
+class Upgrade {
+    constructor(name, addedFunction){
+        this.name = name;
+        this.addedFunction = addedFunction;
+        this.cached_function;
+        var self = this;
+        this.upgrade = function(){
+            for(var target in upgradesJSON[this.name]){
+                for(var i = 0; i < hero.spells.length; i++){
+                    if(target === hero.spells[i].name){
+                        for(var n = 0; n < upgradesJSON[this.name][target]['characteristics'].length; n++){
+                            hero.spells[i][upgradesJSON[this.name][target]['characteristics'][n]] += upgradesJSON[this.name][target]['changes'][n];
+                        }
+                        if(typeof upgradesJSON[this.name][target]['effectAdd'] != 'undefined'){
+                            console.log(upgradesJSON[this.name][target]['effectAdd']['effect']);
+                            activeSpellEffects[hero.spells[i].name][upgradesJSON[this.name][target]['effectAdd']['type']].push(upgradesJSON[this.name][target]['effectAdd']['effect']);
+                        }
+                    }
+                    else if(target == 'hero'){
+                        for(var n = 0; n < upgradesJSON[this.name][target]['characteristics'].length; n++){
+                            hero[upgradesJSON[this.name][target]['characteristics'][n]] += upgradesJSON[this.name][target]['changes'][n];
+                        }
+                    }
+                    if(typeof this.addedFunction != 'undefined'){
+                        if(typeof this.cached_function != 'undefined'){
+                            hero.spells[i].castSpell = this.cached_function;
+                        }
+                        hero.spells[i].castSpell = (function(){
+                            self.cached_function = hero.spells[i].castSpell;
+
+                            return function(){
+                                self.addedFunction();
+                                self.cached_function.apply(this, arguments);
+                            };
+                        }())
+                    }
+                }
+            }
+
+        }
+        spellTree[this.name]['upgrade'] = this;
+    }
+}
+
+function bloodDisFoo(){
+    if(magicReady && hero.vitality <= hero.maxVitality - 2){
+        hero.vitality += 2;
+    }
+    else if(magicReady && hero.vitality < hero.maxVitality){
+        hero.vitality += 1;
+    }
+}
+function bloodMagFoo(){
+    bloodDisFoo();
+    if(magicReady){
+        hero.vitality -= 5;
+    }
+}

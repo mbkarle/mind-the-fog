@@ -7,6 +7,7 @@ class Character{
         this.maxVitality = vitality;
         this.objid = objid;
         this.effects = [];
+
     }
 }
 
@@ -30,6 +31,7 @@ class Hero extends Character{
     this.constructorName = "Hero";
     this.num_torches = 3;
     this.spells = [];
+    this.karma = 0;
   }
 }
 

@@ -1,3 +1,5 @@
+var effectList = [];
+
 class Effect {
     constructor(name, target, duration, attributes, quantity){
         this.name = name;
@@ -5,13 +7,17 @@ class Effect {
         this.duration = duration; //pass in milliseconds
         this.attributes = attributes; //pass an array containing attributes to facilitate buffs with multiple
         this.quantity = quantity; //pass an array with quantities that matches the attributes array
-
+        this.active = false;
+        effectList.push(this);
     }
     displayEffects(target){
         var effectBoxes = "";
         var effectInfos = [];
         var toShow = false;
         var objid = target.constructorName + "Effects"
+        if(target.constructorName == 'Boss'){
+            objid = 'EnemyEffects';
+        }
         for(var i = 0; i < target.effects.length; i++){
             if(target.effects[i].constructorName == "Buff"){
                 effectBoxes += "<div id='effect" + i + target.objid + "' class='effect' style='left: " + 20 * i + "px'>▲</div>";
@@ -22,8 +28,9 @@ class Effect {
 
         }
         document.getElementById(objid).innerHTML = effectBoxes;
-
-        $("#" + objid).show();
+        if(target.effects.length > 0){
+            $("#" + objid).show();
+        }
         for(var i = 0; i < target.effects.length; i++){
             effectInfos.push(target.effects[i].name);
             var effectID = "#effect" + i + target.objid;
@@ -45,13 +52,12 @@ class Buff extends Effect {
     constructor(name, target, duration, attributes, quantity){
         super(name, target, duration, attributes, quantity);
         var self = this;
-        this.active = false;
         this.constructorName = "Buff";
         this.applyBuff = function(character){
             console.log("buff applied!")
             this.target = character;
-            if(!self.active){
-            self.active = true;
+            if(!this.active){
+            this.active = true;
             this.target.effects.push(this);
             for(var i = 0; i < this.attributes.length; i++){
                 this.target[attributes[i]] += this.quantity[i];
@@ -68,7 +74,7 @@ class Buff extends Effect {
                 }
                 refreshInfo();}
                 var SpliceIdx = self.target.effects.indexOf(self);
-                self.target.effects.splice(SpliceIdx);
+                self.target.effects.splice(SpliceIdx, 1);
                 self.displayEffects(self.target);
             }, self.duration);
         }
@@ -81,17 +87,21 @@ class Debuff extends Effect {
     constructor(name, target, duration, attributes, quantity ){
         super(name, target, duration, attributes, quantity);
         var self = this;
-        this.active = false;
+        this.cached_stats = [];
         this.constructorName = "Debuff";
         this.applyDebuff = function(character) {
             this.target = character;
-            if(!self.active){
-                self.active = true;
+            if(!this.active){
+                this.active = true;
                 for(var i = 0; i < this.attributes.length; i++){
+                    this.cached_stats.push(this.target[attributes[i]]);
                     this.target[attributes[i]] -= this.quantity[i];
 
                     if(character.dexterity <= 0){ //no dividing by 0!!
                         character.dexterity = 0.1;
+                    }
+                    if(character.strength <= 0){
+                        character.strength = 0;
                     }
                     refreshInfo();
                 }
@@ -101,10 +111,10 @@ class Debuff extends Effect {
                     self.active = false;
                   for(var i = 0; i < self.attributes.length; i++){
                     console.log(self.target[self.attributes[i]] + "+" + self.quantity[i]);
-                    self.target[attributes[i]] += self.quantity[i];
+                    self.target[attributes[i]] = self.cached_stats[i];
                     refreshInfo();}
                     var SpliceIdx = self.target.effects.indexOf(self);
-                    self.target.effects.splice(SpliceIdx);
+                    self.target.effects.splice(SpliceIdx, 1);
                     self.displayEffects(self.target);
                 }, self.duration);
             }
@@ -128,7 +138,7 @@ class Exhaustion extends Debuff {
                     magicReady= true;
                     self.active = false;
                     var SpliceIdx = self.target.effects.indexOf(self);
-                    self.target.effects.splice(SpliceIdx);
+                    self.target.effects.splice(SpliceIdx, 1);
                     self.displayEffects(self.target);
                 }, this.duration)
             }
@@ -144,9 +154,10 @@ class damageDebuff extends Debuff {
         this.source = {strength: this.damage};
         var self = this;
         this.applyDebuff = function(character){
-            self.target = character;
-            if(!self.active){
-                self.active = true;
+            this.target = character;
+            console.log(this.target)
+            if(!this.active){
+                this.active = true;
                 console.log(this.target);
                 this.target.effects.push(this);
                 this.displayEffects(this.target);
@@ -157,13 +168,16 @@ class damageDebuff extends Debuff {
             }, self.interval);
             if(self.target.vitality <= 0){
                 window.clearInterval(damageInterval);
+                if(self.target == hero){
+                    hero.vitality = 1;
+                }
             }
             else{
             window.setTimeout(function(){
                 window.clearInterval(damageInterval);
                 self.active = false;
                 var SpliceIdx = self.target.effects.indexOf(self);
-                self.target.effects.splice(SpliceIdx);
+                self.target.effects.splice(SpliceIdx, 1);
                 self.displayEffects(self.target);
             }, duration);}
         }}
@@ -176,6 +190,10 @@ class damageDebuff extends Debuff {
 var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1]);
 var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20]);
 var fire = new damageDebuff("fire", null, 16000, 4000, 3);
+var divine = new Buff("divinity", null, 8000, ['strength', 'dexterity', 'vitality', 'maxVitality'], [5, 5, 50, 50]);
 var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2]);
-var stunned = new Debuff("stunned", null, 10000, ['dexterity'], [200]);
 var exhaust = new Exhaustion('magic exhaust', null, null);
+var asphyxiation = new damageDebuff('asphyxiation', null, 12000, 4000, 2);
+var blocked = new Debuff('blocked', null, 10000, ['strength'], [200]);
+var suppressed = new Debuff('suppressed', null, 10000, ['strength'], [200]);
+var dominated = new damageDebuff('dominated', null, 10000, 2000, 3);
