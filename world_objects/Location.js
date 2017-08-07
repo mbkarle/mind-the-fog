@@ -194,7 +194,7 @@ class Door extends Location{ //highly experimental content at hand here
 
                     console.log(room_list[curr_floor][curr_room].room_map[avatarY][avatarX]);
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-                    room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY);
+                    room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY,fog_radius);
                     canMove = true;
                 }
             )

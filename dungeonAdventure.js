@@ -193,7 +193,7 @@ room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 //LetsiGO!
 window.addEventListener("keydown", move, false);
 window.onload = function(){
-    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
             refreshInfo();
@@ -202,6 +202,14 @@ window.onload = function(){
         $("#tree-module").toggle(100);
         refreshInfo();
     })
+
+    //Slowly remove fog
+    setInterval(function(){
+        oldFog = fog_radius;
+        fog_radius--;
+        console.log('fog closes in')
+        room_list[curr_floor][curr_room].addFogWhenFogRadiusChanges(avatarX,avatarY, torchlight, oldFog, fog_radius)
+    }, 5000)
 }
 
 
@@ -419,7 +427,7 @@ function exit_combat(room, customCombat) {
 
         clearAllFog(room_list[curr_floor][curr_room].room_map);
         room_list[curr_floor][curr_room].clearAllFogTimeouts();
-        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
     }
     for(var i = 0; i < hero.spells.length; i++){
         hero.spells[i].target = enemy;
@@ -484,7 +492,7 @@ function move(e) {
 
             clearAllFog(room_list[curr_floor][curr_room].room_map)
             room_list[curr_floor][curr_room].clearAllFogTimeouts();
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
         } else if (e.keyCode == "84"){ //t for torch
             if(hero.num_torches > 0){
                 if(!torchlight){
@@ -496,9 +504,9 @@ function move(e) {
                     setTimeout(function(){
                         torchlight = false;
                         if(!room_list[curr_floor][curr_room].roomCleared){
-                            room_list[curr_floor][curr_room].addFogWhenTorchBurnsOut(avatarX,avatarY);
+                            room_list[curr_floor][curr_room].addFogWhenTorchBurnsOut(avatarX,avatarY,fog_radius);
                             var newPos = [avatarX,avatarY];
-                            room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight);
+                            room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight,fog_radius);
                         }
                         console.log("Your torch fades to nothing."
                     )}, 10000)
@@ -524,7 +532,7 @@ function move(e) {
 
         if(didMove || activatedTorch){
             var newPos = [avatarX,avatarY];
-            room_list[curr_floor][curr_room].updateRoomHTML(oldPos,newPos,torchlight);
+            room_list[curr_floor][curr_room].updateRoomHTML(oldPos,newPos,torchlight,fog_radius);
         }
 
         //chance to enter combat
@@ -804,7 +812,7 @@ function descend(descend){
             avatarY = room_list[curr_floor][curr_room].room_entry[0];
             avatarX = room_list[curr_floor][curr_room].room_entry[1];
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
 
             // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;
