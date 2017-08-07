@@ -417,6 +417,7 @@ function exit_combat(room, customCombat) {
             })
 
         clearAllFog(room_list[curr_floor][curr_room].room_map);
+        room_list[curr_floor][curr_room].clearAllFogTimeouts();
         room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
     }
     for(var i = 0; i < hero.spells.length; i++){
@@ -481,6 +482,7 @@ function move(e) {
             hero.maxVitality = 100000;
 
             clearAllFog(room_list[curr_floor][curr_room].room_map)
+            room_list[curr_floor][curr_room].clearAllFogTimeouts();
             room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
         } else if (e.keyCode == "84"){ //t for torch
             if(hero.num_torches > 0){
@@ -785,7 +787,7 @@ function descend(descend){
                 room_list[curr_floor][curr_room].enemy_list[i].strength += 1;
 
             }}
-
+            room_list[curr_floor][curr_room].clearAllFogTimeouts();
             curr_floor++;
             curr_room = 0;
             avatarY = room_list[curr_floor][curr_room].room_entry[0];

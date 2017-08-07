@@ -118,6 +118,15 @@ class Room {
         return map;
     }
 
+
+    clearAllFogTimeouts(){
+        for(var i = 0; i < this.room_map.length; i++){
+            for(var j = 0; j < this.room_map[0].length; j++){
+                clearInterval(this.room_map[i][j].fogTimeout)
+            }
+        }
+    }
+
     buildRoomHTML(avatarX, avatarY, torchlight) {
         var worldContents = "";
 
