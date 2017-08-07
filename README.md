@@ -1,9 +1,10 @@
 # Mind the Fog
 
 Caulfield Road Studios presents:
-~MIND THE FOG~
 
-With ~magic~ and COMBAT and all sorts of wild things like that.
+MIND THE FOG
+
+With magic and combat and all sorts of wild things like that.
 
 All inquiries about fog related issues redirect to @akarle
 
