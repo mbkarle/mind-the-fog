@@ -484,6 +484,9 @@ function tier_to_items(tier){
 function tier_to_xp(tier){
     return 75 + tier * 25;
 }
+function tier_to_xp(tier){
+    return 50 + tier * 50;
+}
 
 function tier_to_enemies(tier){
     //TODO: randomize using larger lists and num_enemies

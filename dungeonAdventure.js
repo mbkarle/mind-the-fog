@@ -881,7 +881,14 @@ function descend(descend){
             avatarY = room_list[curr_floor][curr_room].room_entry[0];
             avatarX = room_list[curr_floor][curr_room].room_entry[1];
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
+
+
+            var gatekeep = new CharDialogue(room_list[curr_floor][curr_room].room_entry[0], room_list[curr_floor][curr_room].room_entry[1], 'gatekeeper' + curr_floor, 'the gatekeeper');
+            room_list[curr_floor][curr_room].room_map[gatekeep.rowID][gatekeep.colID] = gatekeep;
+            room_list[curr_floor][curr_room].room_map[gatekeep.rowID][gatekeep.colID].computeCoordsWithOffset(room_list[curr_floor][curr_room].yoff, room_list[curr_floor][curr_room].xoff);
+            checkLocation();
+
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
 
             // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;
