@@ -256,62 +256,20 @@ class Room {
         //getValidCoords is a function which will return all visible coordinates
         // IN [X,Y] ORDERING around a [x,y] position.
         var possCoords = []
-        possCoords.push([avX+1,avY+1]);
-        possCoords.push([avX+1,avY]);
-        possCoords.push([avX+1,avY-1]);
-        possCoords.push([avX,avY+1]);
-        possCoords.push([avX,avY]);
-        possCoords.push([avX,avY-1]);
-        possCoords.push([avX-1,avY+1]);
-        possCoords.push([avX-1,avY]);
-        possCoords.push([avX-1,avY-1]);
-
-        if(torchlight){ //radius increases...
-            //5 on right
-            possCoords.push([avX+2,avY+2]);
-            possCoords.push([avX+2,avY+1]);
-            possCoords.push([avX+2,avY]);
-            possCoords.push([avX+2,avY-1]);
-            possCoords.push([avX+2,avY-2]);
-
-            //5 on left
-            possCoords.push([avX-2,avY+2]);
-            possCoords.push([avX-2,avY+1]);
-            possCoords.push([avX-2,avY]);
-            possCoords.push([avX-2,avY-1]);
-            possCoords.push([avX-2,avY-2]);
-
-            //missing 3 up top
-            possCoords.push([avX-1,avY+2]);
-            possCoords.push([avX,avY+2]);
-            possCoords.push([avX+1,avY+2]);
-
-            //missing 3 on bottom
-            possCoords.push([avX-1,avY-2]);
-            possCoords.push([avX,avY-2]);
-            possCoords.push([avX+1,avY-2]);
-
-            //5x5 square complete... fill to be 6x6 with corners missing
-            //3 on right
-            possCoords.push([avX+3,avY+1]);
-            possCoords.push([avX+3,avY]);
-            possCoords.push([avX+3,avY-1]);
-
-            //3 on left
-            possCoords.push([avX-3,avY+1]);
-            possCoords.push([avX-3,avY]);
-            possCoords.push([avX-3,avY-1]);
-
-            //3 on top
-            possCoords.push([avX-1,avY+3]);
-            possCoords.push([avX,avY+3]);
-            possCoords.push([avX+1,avY+3]);
-
-            //3 on bottom
-            possCoords.push([avX-1,avY-3]);
-            possCoords.push([avX,avY-3]);
-            possCoords.push([avX+1,avY-3]);
+        var rad = fog_radius;
+        if(torchlight){
+            rad += 3;
         }
+
+        for(var y = avY - rad; y <= avY + rad; y++){
+            for(var x = avX - rad; x <= avX + rad; x++){
+                var dist_from_hero = Math.sqrt((x-avX)**2 + (y-avY)**2)
+                if(dist_from_hero < rad){
+                    possCoords.push([x,y])
+                }
+            }
+        }
+
         var realCoords = []
         for(var i = 0; i < possCoords.length; i++){
             if(this.isValidCoord(possCoords[i][0], possCoords[i][1])){

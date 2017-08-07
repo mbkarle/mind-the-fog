@@ -29,6 +29,7 @@ var shieldReadyup;
 var magicReady = true;
 var enemyAttack;
 var torchlight = false;
+var fog_radius = 5;
 
 var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000);
 var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000);
@@ -509,6 +510,16 @@ function move(e) {
             else{
                 console.log("No torches to use!")
             }
+        } else if(e.keyCode == '189'){
+            //'-' removes monsters!
+            //for debugging only
+            alert("****removing monsters from the game!****")
+            for(var i = 0; i < room_list.length; i++){
+                for(var j = 0; j < room_list[0].length; j++){
+                    room_list[i][j].fightChance = 0;
+                }
+            }
+
         }
 
         if(didMove || activatedTorch){
