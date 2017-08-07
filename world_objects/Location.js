@@ -129,13 +129,14 @@ class EmptyTile extends Location{
 }
 
 class CharDialogue extends Location{
-    constructor(rowID, colID, charId){
+    constructor(rowID, colID, charId, charDisplay){
         super(rowID, colID, 'Character Dialogue', 'charDialogue', 'C', "", true);
         this.charId = charId;
+        this.charDisplay = charDisplay;
         var self = this;
 
         this.dialogue = function(stringArray, thisMessage){
-        print("message", "<div style='font-size:12px;position:absolute;top:0;left:10px;'>" + this.charId + "</div>" + stringArray[thisMessage]);
+        print("message", "<div style='font-size:12px;position:absolute;top:0;left:10px;'>" + this.charDisplay + "</div>" + stringArray[thisMessage]);
         $("#text-module").show();
         $("#enter").hide();
         $("#open").show();
@@ -192,7 +193,6 @@ class Door extends Location{ //highly experimental content at hand here
                         avatarY = room_list[curr_floor][curr_room].room_entry[0];
                     }
 
-                    console.log(room_list[curr_floor][curr_room].room_map[avatarY][avatarX]);
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                     room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY,torchlight, fog_radius);
                     canMove = true;
@@ -204,6 +204,20 @@ class Door extends Location{ //highly experimental content at hand here
                 }
             )
 
+        }
+    }
+}
+class LockedDoor extends Location{
+    constructor(rowID, colID){
+        super(rowID, colID, "Locked Door", 'lockedDoor', '□', "It appears to be the way out of here, but it's locked. If only you had a key...", true);
+        this.interact = function(){
+            print('message', this.message);
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#open").show().click(function(){
+                revertTextModule();
+                $("#open").hide().off('click');
+            })
         }
     }
 }

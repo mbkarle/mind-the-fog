@@ -143,16 +143,23 @@ var activeSpellEffects = {
 }
 
 class ActiveSpell extends Spell {
-    constructor(name, objid, source, target, damage, cooldown){
+    constructor(name, objid, source, target, damage, spellCooldown, exhaustAdd){
         super(name, source, target);
         this.damage = damage;
         this.effectJSON = activeSpellEffects[this.name];
         this.objid = objid;
-        this.cooldown = cooldown;
+        this.spellCooldown = spellCooldown;
+        this.exhaustAdd = exhaustAdd;
+        this.exhaustCooldown = 15000;
+        this.ready = true;
         var self = this;
         this.castSpell = function(){
-            if(magicReady){
+            if(magicReady && this.ready){
+            this.ready = false;
             console.log('casting');
+            var spellReadyTimeout = setTimeout(function(){
+                self.ready = true;
+            }, this.spellCooldown);
             Damage({strength: this.damage}, this.target);
             for(var i = 0; i < this.effectJSON['buffs'].length; i++){
                 if(Math.random() <= this.effectJSON['buffs'][i].chance){
@@ -166,24 +173,42 @@ class ActiveSpell extends Spell {
                 }
             }
             exhaust.target = hero;
-            exhaust.duration = this.cooldown;
-            exhaust.applyDebuff();
+            exhaust.duration = this.exhaustCooldown;
+            hero.exhaustStatus += this.exhaustAdd;
+            var exhaustTimeout = setTimeout(function(){
+                hero.exhaustStatus -= this.exhaustAdd;
+            }, 6000);
+            if(hero.exhaustStatus >= hero.exhaustLimit){
+                exhaust.applyDebuff();
+            }
+
         }}
         this.createButton = function(){
             var thisButton;
             var thisID = '#' + this.objid;
+            var thisSlider = '#' + this.objid + 'slider';
             hero.spells.push(this);
             if(hero.spells.length > 1){
-                thisButton = "<div id='" + this.objid + "' class='spell' style='top: " + (250 + 50 * (hero.spells.length - 1)) + "px;left: 320px;'>" + this.name + "</div>"
+                thisButton = "<div id='" + this.objid + "' class='spell' style='top: " + (250 + 50 * (hero.spells.length - 1)) + "px;left: 320px;'>" + this.name +
+                "<div id='" + this.objid + "slider' class='coolDown' style='position:absolute;top:0;left:0;display:none;width:100%;'></div></div>"
             }
             else{
-                thisButton = "<div id='" + this.objid + "' class='spell' style='top: " + (250 + 50 * hero.spells.length) + "px;left: 150px;'>" + this.name + "</div>"
+                thisButton = "<div id='" + this.objid + "' class='spell' style='top: " + (250 + 50 * hero.spells.length) + "px;left: 150px;'>" + this.name +
+                "<div id='" + this.objid + "slider' class='coolDown' style='position:absolute;top:0;left:0;display:none;width:100%;'></div></div>"
             }
 
             $("#combat-module").append(thisButton);
             console.log("#" + this.objid);
             $(thisID).click(function(){
                 self.castSpell();
+                $(thisSlider).show().animate({
+                    width: '0%'
+                }, self.spellCooldown, function(){
+                    $(thisSlider).hide();
+                    $(thisSlider).animate({
+                        width: '100%'
+                    }, 1);
+                })
                 console.log('casting ' + self);
             })
         }
@@ -194,13 +219,13 @@ class ActiveSpell extends Spell {
 var upgradesJSON = {
     'learned caster': {
         'fireball': {
-            'characteristics': ['cooldown'],
+            'characteristics': ['spellCooldown'],
             'changes': [-2000]
         }
     },
     'power of will': {
         'fireball': {
-            'characteristics': ['cooldown', 'damage'],
+            'characteristics': ['spellCooldown', 'damage'],
             'changes': [-500, 2]
         }
     },
@@ -212,7 +237,7 @@ var upgradesJSON = {
     },
     'dirty magic': {
         'fireball': {
-            'characteristics': ['cooldown', 'damage'],
+            'characteristics': ['spellCooldown', 'damage'],
             'changes': [-3000, 2],
             'effectAdd': {
                 'type': 'debuffs',
@@ -232,15 +257,15 @@ var upgradesJSON = {
     },
     'blood magic': {
         'fireball':{
-            'characteristics': ['cooldown'],
+            'characteristics': ['spellCooldown'],
             'changes': [-3000]
         },
         'lightning': {
-            'characteristics': ['cooldown'],
+            'characteristics': ['spellCooldown'],
             'changes': [-3000]
         },
         'mind domination': {
-            'characteristics': ['cooldown'],
+            'characteristics': ['spellCooldown'],
             'changes': [-3000]
         }
     }

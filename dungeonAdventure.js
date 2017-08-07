@@ -35,11 +35,11 @@ var initial_fog_radius;
 var fog_radius;
 var inventory;
 
-var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000);
-var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000);
-var lightningStrike = new ActiveSpell('lightning strike', 'lightningS', hero, null, 15, 15000);
-var mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 18000);
-var forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 12000);
+var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);
+var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000, 1);
+var lightningStrike = new ActiveSpell('lightning strike', 'lightningS', hero, null, 30, 15000, 2);
+var mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 20000, 3);
+var forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 12000, 2);
 var learnCast = new Upgrade('learned caster');
 var powerWill = new Upgrade('power of will');
 var mindBody = new Upgrade('mind over body');
@@ -429,7 +429,8 @@ function enter_combat(room, custom_enemy) {
 }
 
 function exit_combat(room, customCombat) {
-    console.log('exiting combat')
+    console.log('exiting combat');
+    hero.xp += room.xp;
     if (room.num_enemies > 0 || customCombat == true ) {
         // $("#open").show()
         // $("#open").click(function() {
@@ -805,7 +806,10 @@ function checkLocation(){
             canMove = false;
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].nextRoom();
 
-
+    }
+    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'lockedDoor'){
+        canMove = false;
+        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].interact();
     }
     if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'merchant'){
         canMove = false;
@@ -1093,7 +1097,6 @@ function Damage(source, target) {
     //if the source was a hero (check based on if target is enemy or boss), and target dead
     if ((target.constructorName == 'Enemy' || customCombat) && target.vitality <= 0) {
         target.vitality = 0;
-        hero.xp += 100; //TODO: scale
         window.clearInterval(enemyAttack);
 
         window.clearInterval(shielded);

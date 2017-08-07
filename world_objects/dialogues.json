@@ -2,9 +2,10 @@
 var dialogues = {
     "gatekeeper": ["Greetings, wanderer.",
     "Before you lies the dungeon. It is rife with danger but filled with opportunity.",
-    "You may find great fortune within, but be careful. While your blade will provide the means to smite your enemies, " +
-    "it may be necessary to take shelter behind your shield to recover when you suffer their reprisals.",
-    "Good fortune to you, adventurer."
+    "Seven floors down lives the warden. He holds the key that will let you out of here, " +
+    "but to reach him, you will need to find better equipment, as it gets dark and dangerous the further down you go.",
+    "Good fortune to you, adventurer.",
+    "Mind the fog!"
     ],
 
     "instructor": ["Hello there. You must be a newcomer.",
@@ -15,5 +16,13 @@ var dialogues = {
         "You'll have some time to get the hang of it, as the shallow parts of the dungeon contain weaker creatures. However, it gets much more " +
         "dangerous further down, and you'll need to find better gear to face the enemy.",
         "You'll need to learn to manage your inventory, which can be toggled by pressing 'i'."
-    ]
+    ],
+
+    "gatekeeper1": ["It's a bit darker down here, so you'll need to find better equipment as soon as possible.", "Mind the fog!"],
+    "gatekeeper2": ["You'll see a mix of enemies down here, I'd recommend you prepare for the worst.", "Mind the fog!"],
+    "gatekeeper3": ["We're nearly halfway to floor 7.", "Mind the fog!"],
+    "gatekeeper4": ["It's getting dark down here, but you may want to start conserving torches as it will only get worse.", "Mind the fog!"],
+    "gatekeeper5": ["Only three more floors remain. Make sure you have the best possible equipment before moving on, though.", "Mind the fog!"],
+    "gatekeeper6": ["We're getting close, I can sense it.", "Mind the fog!"],
+    "gatekeeper7": ["The warden's floor. Let us end this.", "Mind the fog!"]
 }

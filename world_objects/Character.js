@@ -32,6 +32,8 @@ class Hero extends Character{
     this.num_torches = 3;
     this.spells = [];
     this.karma = 0;
+    this.exhaustStatus = 0;
+    this.exhaustLimit = 3;
   }
 }
 

@@ -22,6 +22,7 @@ class Room {
         this.roomCleared = roomCleared;
         this.enemy_list = tier_to_enemies(tier);
         this.num_enemies = tier_to_num_enemies(tier);
+        this.xp = tier_to_xp(tier);
         this.boss = boss;
         this.fightChance = fightChance;
         this.floor = floor;
@@ -47,13 +48,24 @@ class Room {
         var width;
         var height;
         switch (type) {
+            case 'exitRoom':
+                width = 20;
+                height = 15;
+
+                map = buildRoomOfSize(height, width);
+
+                var exitDoor = new LockedDoor(7, 0);
+                map[exitDoor.rowID][exitDoor.colID] = exitDoor;
+                clearAllFog(map);
+                break;
+
             case 'tutRoom':
                 width = 30;
                 height = 20;
 
                 map = buildRoomOfSize(height, width);
 
-                var tutorialDialogue = new CharDialogue(3, 5, "instructor");
+                var tutorialDialogue = new CharDialogue(3, 5, "instructor", "instructor");
                 map[tutorialDialogue.rowID][tutorialDialogue.colID] = tutorialDialogue;
 
                 clearAllFog(map);
@@ -101,7 +113,7 @@ class Room {
                 var entrance = new DungeonEntrance(6,35)
                 map[entrance.rowID][entrance.colID] = entrance;
 
-                var gateKeeper = new CharDialogue(9, 30, "gatekeeper");
+                var gateKeeper = new CharDialogue(9, 30, "gatekeeper", 'the gatekeeper');
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
 
@@ -461,6 +473,9 @@ function tier_to_items(tier){
         return itemList3;
     }
 }
+function tier_to_xp(tier){
+    return 50 + tier * 50;
+}
 
 function tier_to_enemies(tier){
     //TODO: randomize using larger lists and num_enemies
@@ -494,12 +509,12 @@ function tier_to_locations(tier, maxLocs){
 }
     else if(maxLocs == 1){
         var locationList = ['trapdoor'];
-        console.log(locationList);
+
 
     }
     else if(maxLocs == 2 || maxLocs == 3){
         var locationList = ['chest'];
-        console.log(locationList);
+
     }
 
     if(tier == 1){
@@ -522,7 +537,6 @@ function tier_to_locations(tier, maxLocs){
 }
     if(tier > 0){
 
-    console.log("# of additional locations: " + num_added_locs);
     for(var i = 0; i < num_added_locs; i++){
         locToAdd = Math.floor(Math.random() * poss_addedLocs.length);
         added_locs.push(poss_addedLocs[locToAdd]);

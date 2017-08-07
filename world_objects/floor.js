@@ -20,7 +20,6 @@ class Floor {
 
                     }
                     else if(type == 'SmallNorm'){
-                        console.log()
                         maxLocs = 1;
 
 
@@ -29,7 +28,6 @@ class Floor {
                         maxLocs = undefined;
 
                     }
-                    console.log("maxLocs = " + maxLocs)
                     room_list[this.floor_num][i] = new FightRoom("", type, this.tierList[Math.floor(Math.random()*this.tierList.length)], this.floor_num, maxLocs);
                 }
                 else{
