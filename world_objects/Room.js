@@ -485,7 +485,7 @@ function tier_to_xp(tier){
     return 75 + tier * 25;
 }
 function tier_to_xp(tier){
-    return 50 + tier * 50;
+    return 75 + tier * 25;
 }
 
 function tier_to_enemies(tier){

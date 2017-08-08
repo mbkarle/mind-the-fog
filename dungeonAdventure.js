@@ -54,6 +54,7 @@ var itemList1 = [];
 var itemList2 = [];
 var itemList3 = [];
 var mobDrops = [];
+var itemList4 = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
 var heroShield = new Shields("the shield", "shield", null, null, 50, 2, 4, false, "defendText", [itemList1]);
