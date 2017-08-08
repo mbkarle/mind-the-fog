@@ -26,6 +26,8 @@ class Room {
         this.fightChance = fightChance;
         this.floor = floor;
         this.tier = tier;
+        this.darkness = tier_to_darkness(tier);
+        this.fog_free_room = (tier == 0);
 
 
         this.room_map = this.buildRoom(room_type, this.locations, this.itemList, this.tier)
@@ -87,7 +89,7 @@ class Room {
                 map = buildRoomOfSize(height, width);
                 var exit = new Trapdoor(5, 5);
                 map[exit.rowID][exit.colID] = exit;
-                clearAllFog(map);
+                // clearAllFog(map);
                 break;
 
             case 'GreatHall':
@@ -101,7 +103,6 @@ class Room {
 
                 var gateKeeper = new CharDialogue(9, 30, "gatekeeper");
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
-
 
 
                 //after creating all special locations, turn fog off!
@@ -118,11 +119,34 @@ class Room {
         return map;
     }
 
-    buildRoomHTML(avatarX, avatarY, torchlight) {
+
+    clearAllFogTimeouts(){
+        for(var i = 0; i < this.room_map.length; i++){
+            for(var j = 0; j < this.room_map[0].length; j++){
+                clearInterval(this.room_map[i][j].fogTimeout)
+            }
+        }
+    }
+
+    buildRoomHTML(avatarX, avatarY, torchlight, fog_rad) {
         var worldContents = "";
 
+        //add fog to whole map (in case room has been seen before)
+        if(!this.fog_free_room){
+            for(var i = 0; i < this.room_map.length; i++){
+                for(var j = 0; j < this.room_map[0].length; j++){
+                    this.room_map[i][j].fog = true;
+                }
+            }
+        }
+
+        var hero_sight = fog_rad;
+        if(this.roomCleared){
+            hero_sight = this.darkness;
+        }
+
         //Remove the fog around the hero
-        var neigh = this.getNeighborLocations([avatarX,avatarY],torchlight);
+        var neigh = this.getNeighborLocations([avatarX,avatarY],torchlight, hero_sight);
         for(var i = 0; i < neigh.length; i++){
             neigh[i].fog = false;
         }
@@ -143,13 +167,17 @@ class Room {
         document.getElementById("worldContent").innerHTML = worldContents;
     }
 
-    addFogWhenTorchBurnsOut(avX, avY){
+    addFogWhenTorchBurnsOut(avX, avY, fog_rad){
         //Since the addition of "addFogBackAfterTimeout", all we need to do here
         //is find the coords that used to be in the radius of the torch and add
         //their fog back after a timeout!
-        if(!this.roomCleared){
-            var torch_coords = this.getValidCoords(avX, avY, true);
-            var no_torch_coords = this.getValidCoords(avX,avY,false);
+        if(!this.fog_free_room){
+            var hero_sight = fog_rad;
+            if(this.roomCleared){
+                hero_sight = this.darkness;
+            }
+            var torch_coords = this.getValidCoords(avX, avY, true, hero_sight);
+            var no_torch_coords = this.getValidCoords(avX,avY,false, hero_sight);
 
             var coords_to_update = []
             var haystack = JSON.stringify(no_torch_coords);
@@ -168,10 +196,30 @@ class Room {
         }
     }
 
-    updateRoomHTML(oldPos, newPos, torchlight) { //in [x,y] format
+    addFogWhenFogRadiusChanges(avX, avY, torchlight, old_rad, new_rad){
+        var old_rad_coords = this.getValidCoords(avX, avY, torchlight, old_rad);
+        var new_rad_coords = this.getValidCoords(avX,avY, torchlight, new_rad);
+
+        var coords_to_update = []
+        var haystack = JSON.stringify(new_rad_coords);
+        for(var i = 0; i < old_rad_coords.length; i++){
+            var coord = old_rad_coords[i];
+            if(haystack.indexOf(JSON.stringify(coord)) === -1){
+                coords_to_update.push(coord);
+            }
+        }
+
+        for(var i = 0; i < coords_to_update.length; i++){
+            var cx = coords_to_update[i][0];
+            var cy = coords_to_update[i][1];
+            this.room_map[cy][cx].addFogBackAfterTimeout(this.tier);
+        }
+    }
+
+    updateRoomHTML(oldPos, newPos, torchlight, fog_rad) { //in [x,y] format
         //If you cleared the room (or are in a safe room), you REALLY only need
         //to update the character position (no fog updates necessary!)
-        if(this.roomCleared){
+        if(this.fog_free_room){
             var oldX = oldPos[0];
             var oldY = oldPos[1];
             $(this.room_map[oldY][oldX].htmlID).html(this.room_map[oldY][oldX].symbol);
@@ -182,14 +230,18 @@ class Room {
         }
         else{ //Else, theres fog work to be done
             //hero_visible_locs need their fog timeouts cleared.
-            var hero_visible_locs = this.getNeighborLocations(newPos,torchlight)
+            var hero_sight = fog_rad;
+            if(this.roomCleared){
+                hero_sight = this.darkness;
+            }
+            var hero_visible_locs = this.getNeighborLocations(newPos,torchlight, hero_sight)
             for (var i = 0; i < hero_visible_locs.length; i++) {
                 hero_visible_locs[i].removeFogBecauseHeroPresent();
             }
 
             //out_of_date_coords are coords no longer visible to the player that need
             //their fog regenerated.
-            var out_of_date_coords = this.getOutOfDateCoords(oldPos, newPos, torchlight)
+            var out_of_date_coords = this.getOutOfDateCoords(oldPos, newPos, torchlight, hero_sight)
             for(var i = 0; i < out_of_date_coords.length; i++){
                 var cx = out_of_date_coords[i][0]
                 var cy = out_of_date_coords[i][1]
@@ -199,9 +251,9 @@ class Room {
     }
 
     //Returns the actual Location objects of the visible places around a position
-    getNeighborLocations(position, torchlight){
+    getNeighborLocations(position, torchlight, fog_rad){
         var neigh = [];
-        var validCoords = this.getValidCoords(position[0], position[1], torchlight);
+        var validCoords = this.getValidCoords(position[0], position[1], torchlight, fog_rad);
         for(var i = 0; i < validCoords.length; i++){
             var cx = validCoords[i][0];
             var cy = validCoords[i][1];
@@ -210,7 +262,7 @@ class Room {
         return neigh;
     }
 
-    getOutOfDateCoords(oldPos, newPos, torchlight) {
+    getOutOfDateCoords(oldPos, newPos, torchlight, fog_rad) {
         //The reason to call this is to decide which parts of the html to update.
         //In this case, we care about the new position, the old position, and the difference
         //between them.
@@ -227,8 +279,8 @@ class Room {
         //If you are on a higher tier which fog regenerates:
         //Now, we need to find all old_coords that were NOT in new_coords,
         //because these are no longer visible to the player...
-        var validCoords_newPos = this.getValidCoords(newPos[0], newPos[1], torchlight);
-        var validCoords_oldPos = this.getValidCoords(oldPos[0], oldPos[1], torchlight);
+        var validCoords_newPos = this.getValidCoords(newPos[0], newPos[1], torchlight, fog_rad);
+        var validCoords_oldPos = this.getValidCoords(oldPos[0], oldPos[1], torchlight, fog_rad);
 
         var out_of_date_coords = []
 
@@ -243,66 +295,23 @@ class Room {
         return out_of_date_coords;
     }
 
-    getValidCoords(avX,avY, torchlight){
+    getValidCoords(avX,avY, torchlight, fog_rad){
         //getValidCoords is a function which will return all visible coordinates
         // IN [X,Y] ORDERING around a [x,y] position.
         var possCoords = []
-        possCoords.push([avX+1,avY+1]);
-        possCoords.push([avX+1,avY]);
-        possCoords.push([avX+1,avY-1]);
-        possCoords.push([avX,avY+1]);
-        possCoords.push([avX,avY]);
-        possCoords.push([avX,avY-1]);
-        possCoords.push([avX-1,avY+1]);
-        possCoords.push([avX-1,avY]);
-        possCoords.push([avX-1,avY-1]);
-
-        if(torchlight){ //radius increases...
-            //5 on right
-            possCoords.push([avX+2,avY+2]);
-            possCoords.push([avX+2,avY+1]);
-            possCoords.push([avX+2,avY]);
-            possCoords.push([avX+2,avY-1]);
-            possCoords.push([avX+2,avY-2]);
-
-            //5 on left
-            possCoords.push([avX-2,avY+2]);
-            possCoords.push([avX-2,avY+1]);
-            possCoords.push([avX-2,avY]);
-            possCoords.push([avX-2,avY-1]);
-            possCoords.push([avX-2,avY-2]);
-
-            //missing 3 up top
-            possCoords.push([avX-1,avY+2]);
-            possCoords.push([avX,avY+2]);
-            possCoords.push([avX+1,avY+2]);
-
-            //missing 3 on bottom
-            possCoords.push([avX-1,avY-2]);
-            possCoords.push([avX,avY-2]);
-            possCoords.push([avX+1,avY-2]);
-
-            //5x5 square complete... fill to be 6x6 with corners missing
-            //3 on right
-            possCoords.push([avX+3,avY+1]);
-            possCoords.push([avX+3,avY]);
-            possCoords.push([avX+3,avY-1]);
-
-            //3 on left
-            possCoords.push([avX-3,avY+1]);
-            possCoords.push([avX-3,avY]);
-            possCoords.push([avX-3,avY-1]);
-
-            //3 on top
-            possCoords.push([avX-1,avY+3]);
-            possCoords.push([avX,avY+3]);
-            possCoords.push([avX+1,avY+3]);
-
-            //3 on bottom
-            possCoords.push([avX-1,avY-3]);
-            possCoords.push([avX,avY-3]);
-            possCoords.push([avX+1,avY-3]);
+        if(torchlight){
+            fog_rad += 3;
         }
+
+        for(var y = avY - fog_rad; y <= avY + fog_rad; y++){
+            for(var x = avX - fog_rad; x <= avX + fog_rad; x++){
+                var dist_from_hero = Math.sqrt((x-avX)**2 + (y-avY)**2)
+                if(dist_from_hero < fog_rad){
+                    possCoords.push([x,y])
+                }
+            }
+        }
+
         var realCoords = []
         for(var i = 0; i < possCoords.length; i++){
             if(this.isValidCoord(possCoords[i][0], possCoords[i][1])){
@@ -552,4 +561,8 @@ function center_map(map, yoff, xoff){
             map[i][j].computeCoordsWithOffset(yoff,xoff)
         }
     }
+}
+
+function tier_to_darkness(tier){
+    return Math.floor(8 - (1.5*tier))
 }

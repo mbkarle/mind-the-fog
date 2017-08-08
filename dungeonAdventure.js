@@ -29,6 +29,10 @@ var shieldReadyup;
 var magicReady = true;
 var enemyAttack;
 var torchlight = false;
+var initial_fog_radius = 5;
+var fog_radius = initial_fog_radius;
+var game_duration = 300000; //how long before the fog closes in totally
+// var hero_sight = fog_radius;
 
 var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000);
 var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000);
@@ -192,7 +196,7 @@ room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 //LetsiGO!
 window.addEventListener("keydown", move, false);
 window.onload = function(){
-    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
             refreshInfo();
@@ -201,6 +205,16 @@ window.onload = function(){
         $("#tree-module").toggle(100);
         refreshInfo();
     })
+
+    //Slowly remove fog
+    setInterval(function(){
+        if(!room_list[curr_floor][curr_room].roomCleared && fog_radius > 1){
+            oldFog = fog_radius;
+            fog_radius--;
+            console.log('fog closes in')
+            room_list[curr_floor][curr_room].addFogWhenFogRadiusChanges(avatarX,avatarY, torchlight, oldFog, fog_radius)
+        }
+    }, game_duration / (initial_fog_radius-1))
 }
 
 
@@ -416,8 +430,11 @@ function exit_combat(room, customCombat) {
                 $("#open").off("click");
             })
 
-        clearAllFog(room_list[curr_floor][curr_room].room_map);
-        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+        // clearAllFog(room_list[curr_floor][curr_room].room_map);
+        // hero_sight = room.darkness
+        //TODO: darkness for a room based on tier!
+        room_list[curr_floor][curr_room].clearAllFogTimeouts();
+        room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
     }
     for(var i = 0; i < hero.spells.length; i++){
         hero.spells[i].target = enemy;
@@ -481,7 +498,8 @@ function move(e) {
             hero.maxVitality = 100000;
 
             clearAllFog(room_list[curr_floor][curr_room].room_map)
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+            room_list[curr_floor][curr_room].clearAllFogTimeouts();
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
         } else if (e.keyCode == "84"){ //t for torch
             if(hero.num_torches > 0){
                 if(!torchlight){
@@ -492,10 +510,11 @@ function move(e) {
                     torchlight = true;
                     setTimeout(function(){
                         torchlight = false;
-                        if(!room_list[curr_floor][curr_room].roomCleared){
-                            room_list[curr_floor][curr_room].addFogWhenTorchBurnsOut(avatarX,avatarY);
+                        // if(!room_list[curr_floor][curr_room].roomCleared){
+                        if(!room_list[curr_floor][curr_room].fog_free_room){
+                            room_list[curr_floor][curr_room].addFogWhenTorchBurnsOut(avatarX,avatarY,fog_radius);
                             var newPos = [avatarX,avatarY];
-                            room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight);
+                            room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight,fog_radius);
                         }
                         console.log("Your torch fades to nothing."
                     )}, 10000)
@@ -507,11 +526,30 @@ function move(e) {
             else{
                 console.log("No torches to use!")
             }
+        } else if(e.keyCode == '189'){
+            //'-' removes monsters!
+            //for debugging only
+            alert("****removing monsters from the game!****")
+            for(var i = 0; i < room_list.length; i++){
+                for(var j = 0; j < room_list[i].length; j++){
+                    room_list[i][j].fightChance = 0;
+                }
+            }
+
+        }
+        else if(e.keyCode == '187'){
+            //'-' removes monsters!
+            //for debugging only
+            alert("****clearing floor!****")
+            room_list[curr_floor][curr_room].roomCleared = true;
+            var newPos = [avatarX,avatarY];
+            room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight,fog_radius);
+
         }
 
         if(didMove || activatedTorch){
             var newPos = [avatarX,avatarY];
-            room_list[curr_floor][curr_room].updateRoomHTML(oldPos,newPos,torchlight);
+            room_list[curr_floor][curr_room].updateRoomHTML(oldPos,newPos,torchlight,fog_radius);
         }
 
         //chance to enter combat
@@ -785,13 +823,13 @@ function descend(descend){
                 room_list[curr_floor][curr_room].enemy_list[i].strength += 1;
 
             }}
-
+            room_list[curr_floor][curr_room].clearAllFogTimeouts();
             curr_floor++;
             curr_room = 0;
             avatarY = room_list[curr_floor][curr_room].room_entry[0];
             avatarX = room_list[curr_floor][curr_room].room_entry[1];
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
 
             // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;

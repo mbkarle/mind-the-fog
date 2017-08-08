@@ -13,9 +13,6 @@ class Floor {
                 var maxLocs;
 
                 if(Math.random() < .75){
-
-
-
                     type = this.fightRoomTypes[Math.floor(Math.random()*this.fightRoomTypes.length)];
 
                     if(type == 'MidNorm' || type == 'HorizHallNorm' || type == 'VertHallNorm'){
@@ -49,40 +46,36 @@ class Floor {
                     room_list[this.floor_num][i] = new SafeRoom("", type,
                 this.tierList[Math.floor(Math.random()*this.tierList.length)], this.floor_num, maxLocs);
             }
-                if(!room_list[this.floor_num][num_rooms-1]){
-                    var nextRoomDoor = new Door(Math.floor(room_list[this.floor_num][i].room_exit[0]), room_list[this.floor_num][i].room_width - 1, i, i + 1);
-
-                    room_list[this.floor_num][i].room_map[nextRoomDoor.rowID][nextRoomDoor.colID] = nextRoomDoor;
-                }
-                if(i > 0){
-                    var prevRoomDoor = new Door(room_list[this.floor_num][i].room_entry[0], 0, i, i - 1);
-                    room_list[this.floor_num][i].room_map[prevRoomDoor.rowID][prevRoomDoor.colID] = prevRoomDoor;
-                }
+                build_doors(this, room_list, i, num_rooms)
                 center_map(room_list[this.floor_num][i].room_map, room_list[this.floor_num][i].yoff, room_list[this.floor_num][i].xoff);
-                if(room_list[this.floor_num][i].constructor.name == 'SafeRoom'){
-                    clearAllFog(room_list[this.floor_num][i].room_map);
-                }
+
             }}
             else{
                 for(var i = 0; i < this.custom.length; i++){
                     room_list[this.floor_num][i] = this.custom[i];
-                    if(!room_list[this.floor_num][num_rooms-1]){
-                        var nextRoomDoor = new Door(Math.floor(room_list[this.floor_num][i].room_exit[0]), room_list[this.floor_num][i].room_width - 1, i, i + 1);
-
-                        room_list[this.floor_num][i].room_map[nextRoomDoor.rowID][nextRoomDoor.colID] = nextRoomDoor;
-                    }
-                    if(i > 0){
-                        var prevRoomDoor = new Door(room_list[this.floor_num][i].room_entry[0], 0, i, i - 1);
-                        room_list[this.floor_num][i].room_map[prevRoomDoor.rowID][prevRoomDoor.colID] = prevRoomDoor;
-                    }
+                    build_doors(this, room_list, i, num_rooms)
                     center_map(room_list[this.floor_num][i].room_map, room_list[this.floor_num][i].yoff, room_list[this.floor_num][i].xoff);
-                    if(room_list[this.floor_num][i].constructor.name == 'SafeRoom'){
-                        clearAllFog(room_list[this.floor_num][i].room_map);
-                    }
                 }
             }
 
             return room_list[this.floor_num];
+
+            function build_doors(self, room_list, i, num_rooms){
+                if(!room_list[self.floor_num][num_rooms-1]){
+                    var nextRoomDoor = new Door(Math.floor(room_list[self.floor_num][i].room_exit[0]), room_list[self.floor_num][i].room_width - 1, i, i + 1);
+                    if(room_list[self.floor_num][i].constructor.name == 'SafeRoom'){
+                        nextRoomDoor.fog = false;
+                    }
+                    room_list[self.floor_num][i].room_map[nextRoomDoor.rowID][nextRoomDoor.colID] = nextRoomDoor;
+                }
+                if(i > 0){
+                    var prevRoomDoor = new Door(room_list[self.floor_num][i].room_entry[0], 0, i, i - 1);
+                    if(room_list[self.floor_num][i].constructor.name == 'SafeRoom'){
+                        prevRoomDoor.fog = false;
+                    }
+                    room_list[self.floor_num][i].room_map[prevRoomDoor.rowID][prevRoomDoor.colID] = prevRoomDoor;
+                }
+            }
         }
     }
 }

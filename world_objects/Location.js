@@ -178,6 +178,7 @@ class Door extends Location{ //highly experimental content at hand here
                 function(){
                     revertTextModule();
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
+                    room_list[curr_floor][curr_room].clearAllFogTimeouts();
                     curr_room = self.nextRoomID;
                     // var oldRoomID = self.roomID;
                     // self.roomID = self.nextRoomID;
@@ -193,7 +194,7 @@ class Door extends Location{ //highly experimental content at hand here
 
                     console.log(room_list[curr_floor][curr_room].room_map[avatarY][avatarX]);
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-                    room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY);
+                    room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY,torchlight, fog_radius);
                     canMove = true;
                 }
             )
