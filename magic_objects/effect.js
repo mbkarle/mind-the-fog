@@ -195,5 +195,5 @@ var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2]);
 var exhaust = new Exhaustion('magic exhaust', null, 15000);
 var asphyxiation = new damageDebuff('asphyxiation', null, 12000, 4000, 2);
 var blocked = new Debuff('blocked', null, 10000, ['strength'], [200]);
-var suppressed = new Debuff('suppressed', null, 10000, ['strength'], [200]);
-var dominated = new damageDebuff('dominated', null, 10000, 2000, 3);
+var suppressed = new Debuff('suppressed', null, 8000, ['strength'], [200]);
+var dominated = new damageDebuff('dominated', null, 8000, 2000, 3);

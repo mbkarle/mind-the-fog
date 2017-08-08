@@ -175,9 +175,13 @@ class ActiveSpell extends Spell {
             exhaust.target = hero;
             exhaust.duration = this.exhaustCooldown;
             hero.exhaustStatus += this.exhaustAdd;
-            var exhaustTimeout = setTimeout(function(){
-                hero.exhaustStatus -= this.exhaustAdd;
-            }, 6000);
+            for(var i = 0; i < this.exhaustAdd; i++){
+              var duration = 3000 + 3000 * i;
+              window.setTimeout(function(){
+                hero.exhaustStatus -= 1;
+                console.log("hero.exhaustStatus: " + hero.exhaustStatus);
+              }, duration );
+            }
             if(hero.exhaustStatus >= hero.exhaustLimit){
                 exhaust.applyDebuff();
             }
@@ -190,11 +194,11 @@ class ActiveSpell extends Spell {
             hero.spells.push(this);
             if(hero.spells.length > 1){
                 thisButton = "<div id='" + this.objid + "' class='spell' style='top: " + (250 + 50 * (hero.spells.length - 1)) + "px;left: 320px;'>" + this.name +
-                "<div id='" + this.objid + "slider' class='coolDown' style='position:absolute;top:0;left:0;display:none;width:100%;'></div></div>"
+                "<div id='" + this.objid + "slider' class='coolDown' style='position:absolute;top:0;left:0;display:none;width:100%;height:100%;'></div></div>"
             }
             else{
                 thisButton = "<div id='" + this.objid + "' class='spell' style='top: " + (250 + 50 * hero.spells.length) + "px;left: 150px;'>" + this.name +
-                "<div id='" + this.objid + "slider' class='coolDown' style='position:absolute;top:0;left:0;display:none;width:100%;'></div></div>"
+                "<div id='" + this.objid + "slider' class='coolDown' style='position:absolute;top:0;left:0;display:none;width:100%;height:100%;'></div></div>"
             }
 
             $("#combat-module").append(thisButton);
@@ -221,6 +225,10 @@ var upgradesJSON = {
         'fireball': {
             'characteristics': ['spellCooldown'],
             'changes': [-2000]
+        },
+        'hero': {
+          'characteristics': ['exhaustLimit'],
+          'changes': [1]
         }
     },
     'power of will': {
@@ -247,6 +255,10 @@ var upgradesJSON = {
                     'target': 'hero'
                 }
             }
+        },
+        'hero': {
+          'characteristics': ['exhaustLimit'],
+          'changes': [1]
         }
     },
     'blood disciple': {
@@ -258,7 +270,7 @@ var upgradesJSON = {
     'blood magic': {
         'fireball':{
             'characteristics': ['spellCooldown'],
-            'changes': [-3000]
+            'changes': [-2000]
         },
         'lightning': {
             'characteristics': ['spellCooldown'],
@@ -267,6 +279,10 @@ var upgradesJSON = {
         'mind domination': {
             'characteristics': ['spellCooldown'],
             'changes': [-3000]
+        },
+        'hero': {
+            'characteristics': ['exhaustLimit'],
+            'changes': [1]
         }
     }
 

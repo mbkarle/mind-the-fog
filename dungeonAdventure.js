@@ -36,10 +36,10 @@ var fog_radius;
 var inventory;
 
 var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);
-var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000, 1);
+var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 5000, 1);
 var lightningStrike = new ActiveSpell('lightning strike', 'lightningS', hero, null, 30, 15000, 2);
 var mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 20000, 3);
-var forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 12000, 2);
+var forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 8000, 2);
 var learnCast = new Upgrade('learned caster');
 var powerWill = new Upgrade('power of will');
 var mindBody = new Upgrade('mind over body');
