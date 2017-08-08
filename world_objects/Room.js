@@ -26,6 +26,8 @@ class Room {
         this.fightChance = fightChance;
         this.floor = floor;
         this.tier = tier;
+        this.darkness = tier_to_darkness(tier);
+        this.fog_free_room = (tier == 0);
 
 
         this.room_map = this.buildRoom(room_type, this.locations, this.itemList, this.tier)
@@ -87,7 +89,7 @@ class Room {
                 map = buildRoomOfSize(height, width);
                 var exit = new Trapdoor(5, 5);
                 map[exit.rowID][exit.colID] = exit;
-                clearAllFog(map);
+                // clearAllFog(map);
                 break;
 
             case 'GreatHall':
@@ -101,7 +103,6 @@ class Room {
 
                 var gateKeeper = new CharDialogue(9, 30, "gatekeeper");
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
-
 
 
                 //after creating all special locations, turn fog off!
@@ -130,6 +131,16 @@ class Room {
     buildRoomHTML(avatarX, avatarY, torchlight, fog_rad) {
         var worldContents = "";
 
+        //add fog to whole map (in case room has been seen before)
+        if(!this.fog_free_room){
+            for(var i = 0; i < this.room_map.length; i++){
+                for(var j = 0; j < this.room_map[0].length; j++){
+                    this.room_map[i][j].fog = true;
+                }
+            }
+        }
+
+
         //Remove the fog around the hero
         var neigh = this.getNeighborLocations([avatarX,avatarY],torchlight, fog_rad);
         for(var i = 0; i < neigh.length; i++){
@@ -156,7 +167,7 @@ class Room {
         //Since the addition of "addFogBackAfterTimeout", all we need to do here
         //is find the coords that used to be in the radius of the torch and add
         //their fog back after a timeout!
-        if(!this.roomCleared){
+        if(!this.fog_free_room){
             var torch_coords = this.getValidCoords(avX, avY, true, fog_rad);
             var no_torch_coords = this.getValidCoords(avX,avY,false, fog_rad);
 
@@ -200,7 +211,7 @@ class Room {
     updateRoomHTML(oldPos, newPos, torchlight, fog_rad) { //in [x,y] format
         //If you cleared the room (or are in a safe room), you REALLY only need
         //to update the character position (no fog updates necessary!)
-        if(this.roomCleared){
+        if(this.fog_free_room){
             var oldX = oldPos[0];
             var oldY = oldPos[1];
             $(this.room_map[oldY][oldX].htmlID).html(this.room_map[oldY][oldX].symbol);
@@ -538,4 +549,8 @@ function center_map(map, yoff, xoff){
             map[i][j].computeCoordsWithOffset(yoff,xoff)
         }
     }
+}
+
+function tier_to_darkness(tier){
+    return Math.floor(14 - (1.5*tier))
 }

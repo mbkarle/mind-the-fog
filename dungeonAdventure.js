@@ -30,6 +30,7 @@ var magicReady = true;
 var enemyAttack;
 var torchlight = false;
 var fog_radius = 5;
+var hero_sight = fog_radius;
 
 var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000);
 var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000);
@@ -205,10 +206,12 @@ window.onload = function(){
 
     //Slowly remove fog
     setInterval(function(){
-        oldFog = fog_radius;
-        fog_radius--;
-        console.log('fog closes in')
-        room_list[curr_floor][curr_room].addFogWhenFogRadiusChanges(avatarX,avatarY, torchlight, oldFog, fog_radius)
+        if(!room_list[curr_floor][curr_room].roomCleared && fog_radius > 1){
+            oldFog = fog_radius;
+            fog_radius--;
+            console.log('fog closes in')
+            room_list[curr_floor][curr_room].addFogWhenFogRadiusChanges(avatarX,avatarY, torchlight, oldFog, fog_radius)
+        }
     }, 5000)
 }
 
@@ -425,7 +428,9 @@ function exit_combat(room, customCombat) {
                 $("#open").off("click");
             })
 
-        clearAllFog(room_list[curr_floor][curr_room].room_map);
+        // clearAllFog(room_list[curr_floor][curr_room].room_map);
+        // hero_sight = room.darkness
+        //TODO: darkness for a room based on tier!
         room_list[curr_floor][curr_room].clearAllFogTimeouts();
         room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
     }
@@ -503,7 +508,8 @@ function move(e) {
                     torchlight = true;
                     setTimeout(function(){
                         torchlight = false;
-                        if(!room_list[curr_floor][curr_room].roomCleared){
+                        // if(!room_list[curr_floor][curr_room].roomCleared){
+                        if(!room_list[curr_floor][curr_room].fog_free_room){
                             room_list[curr_floor][curr_room].addFogWhenTorchBurnsOut(avatarX,avatarY,fog_radius);
                             var newPos = [avatarX,avatarY];
                             room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight,fog_radius);
@@ -523,7 +529,7 @@ function move(e) {
             //for debugging only
             alert("****removing monsters from the game!****")
             for(var i = 0; i < room_list.length; i++){
-                for(var j = 0; j < room_list[0].length; j++){
+                for(var j = 0; j < room_list[i].length; j++){
                     room_list[i][j].fightChance = 0;
                 }
             }
