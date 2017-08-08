@@ -140,9 +140,13 @@ class Room {
             }
         }
 
+        var hero_sight = fog_rad;
+        if(this.roomCleared){
+            hero_sight = this.darkness;
+        }
 
         //Remove the fog around the hero
-        var neigh = this.getNeighborLocations([avatarX,avatarY],torchlight, fog_rad);
+        var neigh = this.getNeighborLocations([avatarX,avatarY],torchlight, hero_sight);
         for(var i = 0; i < neigh.length; i++){
             neigh[i].fog = false;
         }
@@ -168,8 +172,12 @@ class Room {
         //is find the coords that used to be in the radius of the torch and add
         //their fog back after a timeout!
         if(!this.fog_free_room){
-            var torch_coords = this.getValidCoords(avX, avY, true, fog_rad);
-            var no_torch_coords = this.getValidCoords(avX,avY,false, fog_rad);
+            var hero_sight = fog_rad;
+            if(this.roomCleared){
+                hero_sight = this.darkness;
+            }
+            var torch_coords = this.getValidCoords(avX, avY, true, hero_sight);
+            var no_torch_coords = this.getValidCoords(avX,avY,false, hero_sight);
 
             var coords_to_update = []
             var haystack = JSON.stringify(no_torch_coords);
@@ -222,14 +230,18 @@ class Room {
         }
         else{ //Else, theres fog work to be done
             //hero_visible_locs need their fog timeouts cleared.
-            var hero_visible_locs = this.getNeighborLocations(newPos,torchlight, fog_rad)
+            var hero_sight = fog_rad;
+            if(this.roomCleared){
+                hero_sight = this.darkness;
+            }
+            var hero_visible_locs = this.getNeighborLocations(newPos,torchlight, hero_sight)
             for (var i = 0; i < hero_visible_locs.length; i++) {
                 hero_visible_locs[i].removeFogBecauseHeroPresent();
             }
 
             //out_of_date_coords are coords no longer visible to the player that need
             //their fog regenerated.
-            var out_of_date_coords = this.getOutOfDateCoords(oldPos, newPos, torchlight, fog_rad)
+            var out_of_date_coords = this.getOutOfDateCoords(oldPos, newPos, torchlight, hero_sight)
             for(var i = 0; i < out_of_date_coords.length; i++){
                 var cx = out_of_date_coords[i][0]
                 var cy = out_of_date_coords[i][1]
@@ -552,5 +564,5 @@ function center_map(map, yoff, xoff){
 }
 
 function tier_to_darkness(tier){
-    return Math.floor(14 - (1.5*tier))
+    return Math.floor(8 - (1.5*tier))
 }

@@ -30,7 +30,7 @@ var magicReady = true;
 var enemyAttack;
 var torchlight = false;
 var fog_radius = 5;
-var hero_sight = fog_radius;
+// var hero_sight = fog_radius;
 
 var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000);
 var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000);
@@ -533,6 +533,15 @@ function move(e) {
                     room_list[i][j].fightChance = 0;
                 }
             }
+
+        }
+        else if(e.keyCode == '187'){
+            //'-' removes monsters!
+            //for debugging only
+            alert("****clearing floor!****")
+            room_list[curr_floor][curr_room].roomCleared = true;
+            var newPos = [avatarX,avatarY];
+            room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight,fog_radius);
 
         }
 
