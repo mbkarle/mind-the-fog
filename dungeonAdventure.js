@@ -29,7 +29,9 @@ var shieldReadyup;
 var magicReady = true;
 var enemyAttack;
 var torchlight = false;
-var fog_radius = 5;
+var initial_fog_radius = 5;
+var fog_radius = initial_fog_radius;
+var game_duration = 300000; //how long before the fog closes in totally
 // var hero_sight = fog_radius;
 
 var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000);
@@ -212,7 +214,7 @@ window.onload = function(){
             console.log('fog closes in')
             room_list[curr_floor][curr_room].addFogWhenFogRadiusChanges(avatarX,avatarY, torchlight, oldFog, fog_radius)
         }
-    }, 5000)
+    }, game_duration / (initial_fog_radius-1))
 }
 
 
