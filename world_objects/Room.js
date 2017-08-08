@@ -472,9 +472,12 @@ function tier_to_items(tier){
     else if(tier == 3){
         return itemList3;
     }
+    else if(tier == 4){
+      return itemList4;
+    }
 }
 function tier_to_xp(tier){
-    return 50 + tier * 50;
+    return 75 + tier * 25;
 }
 
 function tier_to_enemies(tier){
@@ -488,7 +491,10 @@ function tier_to_enemies(tier){
      enemies = [Sorcerer, DireRat2, Ogre, Vagrant, HellHound, Werewolf, slime, ferBeast, pillager];
     }
     else if(tier == 3){
-        enemies = [HellHound, Werewolf, frostGiant, smallWyrm, DisOfMoranos, DarkKnight, CrimsonRider]
+        enemies = [pillager, frostGiant, smallWyrm, DisOfMoranos, DarkKnight, CrimsonRider]
+    }
+    else if(tier == 4){
+      enemies = [AncientWyrm, Moranos, Reaper, DreadPirate, DarkLord, smallWyrm, CrimsonRider];
     }
     else {
         enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre, Vagrant, HellHound, Werewolf, slime, frostGiant, ferBeast, smallWyrm, pillager];

@@ -90,6 +90,17 @@ var hoodMor = new Item("hood of Moranos", 'headgear', 2, 5, -10, true, null, [it
 var execAxe = new Item("executioner's axe", 'weapon', 9, 1, 10, true, null, [itemList3]);
 var unbreakMail = new effectItem("unbreakable chainmail", 'armor', 5, 2, 30, [indestructible], [.3], [],[], true, null, [itemList3]);
 var legionHelm = new Item("legionairre's helmet", 'headgear', 4, 3, 20, true, null, [itemList3]);
+var HammerWrath = new Item("Hammer of Wrath", 'weapon', 15, 2, 20, true, null, [itemList4, mobDrops2]);
+var scythe = new Item("Reaper's Scythe", 'weapon', 12, 6, 15, true, null, [[]]);
+var bladeMor = new Item("Blade of Moranos", 'weapon', 5, 15, -10, true, null, [[]]);
+var belia = new Item("Belia", 'weapon', 10, 10, 10, true, null, [itemList4]);
+var CourDeath = new Item("Courier of Death", 'weapon', 13, 8, null, true, null, [itemList4]);
+var invisCloak = new effectItem("Invisibility Cloak", 'armor', null, 5, 40, [], [], [suppressed], [.3], true, null, [itemList4]);
+var MasterArmor = new effectItem("Master Armor", 'armor', 5, 3, 80, [indestructible], [.5], [], [], true, null, [itemList4]);
+var ImpenetrableArm = new Item("Impenetrable Armor", 'armor', 6, -5, 200, true, null, [itemList4]);
+var MasterHelm = new Item("Master's Helmet", 'headgear', 4, 4, 40, true, null, [itemList4]);
+var enchantedHelm = new effectItem("enchanted helmet", 'headgear', 2, 2, 20, [adrenaline, indestructible], [.4, .4], [fire, ice], [.4, .4], true, null, [itemList4]);
+var unbreakHelm = new Item("Unbreakable helmet", 'headgear', 5, -3, 100, true, null, [itemList4]);
 
 
 
@@ -123,6 +134,12 @@ var CultMaster = new Enemy("Cult Master", 4, 5, 40);
 var DarkKnight = new Enemy("Dark Knight", 7, 7, 100);
 var CrimsonRider = new Enemy("Crimson Rider", 9, 5, 250);
 var DisOfMoranos = new Enemy("Disciple of Moranos", 11, 3, 200);
+var DreadPirate = new Enemy("Dread Pirate Williams", 15, 4, 300);
+var AncientWyrm = new Enemy("Ancient Wyrm", 14, 8, 500);
+var Moranos = new Boss("Moranos", 10, 15, 100, bladeMor.items[0]);
+var DarkLord = new Enemy("Dark Lord", 9, 9, 300);
+var Reaper = new Boss("Reaper", 20, 2, 200, scythe.items[0]);
+
 
 
 //------------------------------------------------------
