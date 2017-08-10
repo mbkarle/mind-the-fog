@@ -161,6 +161,71 @@ class CharDialogue extends Location{
     }}
 }
 
+class Pit extends Location{
+    constructor(rowID, colID, charID, charDisplay){
+        super(rowID, colID, "Pit", 'pit', 'p', 'A pitfall, once covered with crumbled stone. Someone appears trapped within.', true)
+        this.charID = charID;
+        this.charDisplay = charDisplay;
+        this.empty = false;
+        var self = this;
+        this.encounter = function(){
+            print('message', this.message);
+            canMove = false;
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#stay").show().html('Leave').click(function(){
+                revertTextModule();
+            })
+            $("#descend").show().html('Rescue').click(function(){
+                if(Math.random() < .4){
+                    self.message = 'You descend carefully and reach the bottom unscathed.';
+                }
+                else{
+                    self.message = 'You make it to the bottom, slightly worse for wear.';
+                    hero.vitality -= 10;
+                    refreshInfo();
+                }
+                print('message', self.message);
+                $("#descend").off('click').hide();
+                $("#stay").off('click').hide();
+                $("#open").show().click(function(){
+                    $("#open").off('click').hide();
+                    self.used = true;
+                    dialogues['trapped'][self.charID].push("Together you climb out. The gatekeeper will take care of " +  self.charDisplay + " from here.");
+                    self.interact(self, dialogues['trapped'][self.charID], 0);
+                })
+            })
+        }
+    }
+    interact(self, stringArray, thisMessage){
+        if(thisMessage == 0 || thisMessage == stringArray.length - 1){
+            print('message', stringArray[thisMessage]);
+        }
+        else{
+        print("message", "<div style='font-size:12px;position:absolute;top:0;left:10px;'>" + self.charDisplay + "</div>" + stringArray[thisMessage]);
+    }
+        $("#open").show();
+        $("#open").click(
+            function() {
+                $("#open").off('click');
+                if(thisMessage + 1 < stringArray.length){
+                    console.log("next panel");
+                    thisMessage++;
+                    self.interact(self, stringArray, thisMessage);
+                }
+                else{
+                    console.log("dialogue over");
+                    $("#open").hide();
+                    $("#enter").show();
+                    $("#text-module").hide();
+                    print("lastMessage", "enemy-message");
+                    canMove = true;
+                }
+            }
+        )
+    }
+}
+
 class Door extends Location{ //highly experimental content at hand here
     constructor(rowID, colID, roomID, nextRoomID){
         super(rowID, colID, 'Door', 'door', '□', 'Leave room?', true);

@@ -64,10 +64,11 @@ class Currency extends Item {
 }
 
 class Shields extends Item {
-  constructor(name, type, strength, dexterity, vitality, healthBoost, toList, objid, items){
+  constructor(name, type, strength, dexterity, vitality, healthBoost, weight, toList, objid, items){
     super(name, type, strength, dexterity, vitality, toList, objid, items);
     this.shield_ready = true;
     this.healthBoost = healthBoost;
+    this.weight = weight;
     this.constructorName = "Shields";
   }
   shieldReady() {
@@ -84,4 +85,38 @@ class Torch extends Item {
         this.constructorName = "Torch";
     }
 
+}
+
+var ConsumableList = {
+    "minor health potion": {
+        'characteristics' : ['vitality'],
+        'changes': [10],
+        'buffs': [],
+        'debuffs': []
+    },
+    "major health potion": {
+        'characteristics': ['vitality'],
+        'changes': [50],
+        'buffs': [],
+        'debuffs': []
+    },
+    'strength potion': {
+        'characteristics' : [],
+        'changes': [],
+        'buffs': [
+            {
+            'buff': supStrength,
+            'chance': 1,
+            'target': 'hero'
+            }
+        ],
+        'debuffs': []
+    }
+}
+
+class Consumable {
+    constructor(name, objid){
+        this.name = name;
+        this.objid = objid;
+    }
 }

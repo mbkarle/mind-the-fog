@@ -56,7 +56,7 @@ var itemList3 = [];
 var mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var heroShield = new Shields("the shield", "shield", null, null, 50, 2, false, "defendText", [itemList1]);
+var heroShield = new Shields("the shield", "shield", null, null, 50, 2, 4, false, "defendText", [itemList1]);
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList1]);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null,[itemList1]);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList1]);
@@ -428,7 +428,7 @@ function enter_combat(room, custom_enemy) {
                 shielded = setInterval(function() {
                     // console.log("shielding");
                     Shield()
-                }, 4000);
+                }, heroShield.weight * 1000);
             }
         }
     }
@@ -662,6 +662,9 @@ function checkLocation(){
                 descend(false)
             }
         )
+    }
+    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'pit' && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].used){
+        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].encounter();
     }
 
     //check if on statue

@@ -378,6 +378,11 @@ function makeNormalRoom(height, width, map, locations, itemList, tier){
                 map[locs[i][0]][locs[i][1]].pickItems();
                 break;
 
+            case 'pit':
+                var thisNPC = NPCList[Object.keys(NPCList)[Math.floor(Math.random() * Object.keys(NPCList).length)]];
+                map[locs[i][0]][locs[i][1]] = new Pit(locs[i][0], locs[i][1], thisNPC['charID'], thisNPC['charDisplay']);
+                break;
+
 
             default:
                 alert('UNKNOWN LOCATION TYPE!')
@@ -534,6 +539,9 @@ function tier_to_locations(tier, maxLocs){
     }
     else {
         poss_addedLocs = [];
+    }
+    if(Math.random() < .04){
+        poss_addedLocs.push('pit');
     }
     if(typeof maxLocs == 'undefined'){
         var num_added_locs = Math.ceil(Math.random() * 3);

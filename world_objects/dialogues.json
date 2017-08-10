@@ -24,5 +24,15 @@ var dialogues = {
     "gatekeeper4": ["It's getting dark down here, but you may want to start conserving torches as it will only get worse.", "Mind the fog!"],
     "gatekeeper5": ["Only three more floors remain. Make sure you have the best possible equipment before moving on, though.", "Mind the fog!"],
     "gatekeeper6": ["We're getting close, I can sense it.", "Mind the fog!"],
-    "gatekeeper7": ["The warden's floor. Let us end this.", "Mind the fog!"]
+    "gatekeeper7": ["The warden's floor. Let us end this.", "Mind the fog!"],
+    "trapped": {
+        "alchemist": ["The prisoner is a balding man with thick spectacles. He shakes your hand limply.",
+            "I'm an alchemist, sir. I can make potions, or other consumable concoctions.",
+            "If you help me out of here, I'll be forever in your debt."
+        ],
+        "shieldMaker": ["The trapped is a tall woman with a large shield strapped to her back.",
+            "I'm fine, thanks. The shield took away most of the impact.",
+            "If you get me out I might be able to do something about yours."
+        ]
+    }
 }

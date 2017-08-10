@@ -189,6 +189,7 @@ class damageDebuff extends Debuff {
 //------------------------------------------------------
 var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1]);
 var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20]);
+var supStrength = new Buff("super strength", null, 10000, ['strength', 'dexterity'], [4, 1]);
 var fire = new damageDebuff("fire", null, 16000, 4000, 3);
 var divine = new Buff("divinity", null, 8000, ['strength', 'dexterity', 'vitality', 'maxVitality'], [5, 5, 50, 50]);
 var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2]);
