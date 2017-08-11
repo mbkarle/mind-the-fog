@@ -303,6 +303,13 @@ function start_game(){
     avatarX = Math.floor(room_list[curr_floor][curr_room].room_width/8);
     avatarY = Math.floor(room_list[curr_floor][curr_room].room_height/2);
 
+    //establish NPCs
+    getNPCs();
+    for(var i = 0; i < activeNPCs.length; i++){
+        addNPC(activeNPCs[i]['charID'], room_list[0][activeNPCs[i]['roomIdx']].room_map, activeNPCs[i]['coords'][0], activeNPCs[i]['coords'][1]);
+        room_list[0][activeNPCs[i]['roomIdx']].room_map[activeNPCs[i]['coords'][0]][activeNPCs[i]['coords'][1]].computeCoordsWithOffset(room_list[0][activeNPCs[i]['roomIdx']].yoff, room_list[0][activeNPCs[i]['roomIdx']].xoff);
+    }
+
     //get ready to start...
     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
     room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
