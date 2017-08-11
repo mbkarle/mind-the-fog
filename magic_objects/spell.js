@@ -176,10 +176,12 @@ class ActiveSpell extends Spell {
             exhaust.duration = this.exhaustCooldown;
             hero.exhaustStatus += this.exhaustAdd;
             for(var i = 0; i < this.exhaustAdd; i++){
-              var duration = 3000 + 3000 * i;
+              var duration = 4000 + 4000 * i;
               window.setTimeout(function(){
-                hero.exhaustStatus -= 1;
-                console.log("hero.exhaustStatus: " + hero.exhaustStatus);
+                  if(hero.exhaustStatus > 0){
+                    hero.exhaustStatus -= 1;
+                    console.log("hero.exhaustStatus: " + hero.exhaustStatus);
+                }
               }, duration );
             }
             if(hero.exhaustStatus >= hero.exhaustLimit){

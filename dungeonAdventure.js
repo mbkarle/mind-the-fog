@@ -16,7 +16,7 @@ Array.prototype.move = function(old_index, new_index){
 //------------------------------------------------------
 //          Some magical game variables...
 //------------------------------------------------------
-var game_duration = 3000; //how long before the fog closes in totally
+var game_duration = 300000; //how long before the fog closes in totally
 
 //variables to track printed messages
 var messageArray;
@@ -35,11 +35,11 @@ var initial_fog_radius;
 var fog_radius;
 var inventory;
 
-var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);
-var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 5000, 1);
-var lightningStrike = new ActiveSpell('lightning strike', 'lightningS', hero, null, 30, 15000, 2);
-var mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 20000, 3);
-var forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 8000, 2);
+var channelDivSpell;// new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);
+var fireball;// new ActiveSpell('fireball', 'fireball', hero, null, 2, 5000, 1);
+var lightningStrike;// new ActiveSpell('lightning strike', 'lightningS', hero, null, 30, 15000, 2);
+var mindDom;// new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 20000, 3);
+var forcefieldSpell;// new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 8000, 2);
 var learnCast = new Upgrade('learned caster');
 var powerWill = new Upgrade('power of will');
 var mindBody = new Upgrade('mind over body');
@@ -54,6 +54,7 @@ var itemList1 = [];
 var itemList2 = [];
 var itemList3 = [];
 var mobDrops = [];
+var mobDrops2 = [];
 var itemList4 = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
@@ -112,34 +113,34 @@ var torch = new Torch(1)
 //------------------------------------------------------
 //              Initialize Characters
 //------------------------------------------------------
-var hero = new Hero("The Hero", 5, 3, 2, "hero");
-var tutorial = new Enemy("tutorial", 1, 5, 15);
-var Troglodyte = new Enemy("Troglodyte", 3, 2, 30);
-var DireRat = new Enemy("Dire Rat", 1, 15, 20);
-var DireRat2 = new Enemy("Dire Rat", 1.5, 15, 20);
-var Ogre = new Enemy("Ogre", 9, 1, 60);
-var Sorcerer = new Enemy("Sorcerer", 6, 4, 20);
-var Vagrant = new Enemy("Wandering Vagrant", 5, 4, 35);
-var HellHound = new Boss("Hell Hound", 5, 6, 50, fireSword.items[0]);
-var Golem = new Boss("Golem", 7, 3, 50, GreatSword.items[0]);
-var Werewolf = new Enemy("werewolf", 6, 4, 40);
-var slime = new Enemy("slime", 8, 2, 50);
-var frostGiant = new Boss("frost giant", 8, 5, 100, icyShell.items[0]);
-var ferBeast = new Enemy("feral beast", 9, 3, 20);
-var smallWyrm = new Enemy("young wyrm", 10, 4, 300);
-var pillager = new Enemy("pillager", 6, 6, 80);
-var Bandit = new Enemy("Bandit", 3, 5, 40);
-var DarkSquire = new Enemy("Dark Squire", 5, 3, 35);
-var Cultist = new Enemy("Cultist", 2, 5, 30);
-var CultMaster = new Enemy("Cult Master", 4, 5, 40);
-var DarkKnight = new Enemy("Dark Knight", 7, 7, 100);
-var CrimsonRider = new Enemy("Crimson Rider", 9, 5, 250);
-var DisOfMoranos = new Enemy("Disciple of Moranos", 11, 3, 200);
-var DreadPirate = new Enemy("Dread Pirate Williams", 15, 4, 300);
-var AncientWyrm = new Enemy("Ancient Wyrm", 14, 8, 500);
-var Moranos = new Boss("Moranos", 10, 15, 100, bladeMor.items[0]);
-var DarkLord = new Enemy("Dark Lord", 9, 9, 300);
-var Reaper = new Boss("Reaper", 20, 2, 200, scythe.items[0]);
+var hero;// new Hero("The Hero", 5, 3, 20, "hero");
+var tutorial;// new Enemy("tutorial", 1, 5, 15);
+var Troglodyte;// new Enemy("Troglodyte", 3, 2, 30);
+var DireRat;// new Enemy("Dire Rat", 1, 15, 20);
+var DireRat2;// new Enemy("Dire Rat", 1.5, 15, 20);
+var Ogre;// new Enemy("Ogre", 9, 1, 60);
+var Sorcerer;// new Enemy("Sorcerer", 6, 4, 20);
+var Vagrant;// new Enemy("Wandering Vagrant", 5, 4, 35);
+var HellHound;// new Boss("Hell Hound", 5, 6, 50, fireSword.items[0]);
+var Golem;// new Boss("Golem", 7, 3, 50, GreatSword.items[0]);
+var Werewolf;// new Enemy("werewolf", 6, 4, 40);
+var slime;// new Enemy("slime", 8, 2, 50);
+var frostGiant;// new Boss("frost giant", 8, 5, 100, icyShell.items[0]);
+var ferBeast;// new Enemy("feral beast", 9, 3, 20);
+var smallWyrm;// new Enemy("young wyrm", 10, 4, 300);
+var pillager;// new Enemy("pillager", 6, 6, 80);
+var Bandit;// new Enemy("Bandit", 3, 5, 40);
+var DarkSquire;// new Enemy("Dark Squire", 5, 3, 35);
+var Cultist;// new Enemy("Cultist", 2, 5, 30);
+var CultMaster;// new Enemy("Cult Master", 4, 5, 40);
+var DarkKnight;// new Enemy("Dark Knight", 7, 7, 100);
+var CrimsonRider;// new Enemy("Crimson Rider", 9, 5, 250);
+var DisOfMoranos;// new Enemy("Disciple of Moranos", 11, 3, 200);
+var DreadPirate;// new Enemy("Dread Pirate Williams", 15, 4, 300);
+var AncientWyrm;// new Enemy("Ancient Wyrm", 14, 8, 500);
+var Moranos;// new Boss("Moranos", 10, 15, 100, bladeMor.items[0]);
+var DarkLord;// new Enemy("Dark Lord", 9, 9, 300);
+var Reaper;// new Boss("Reaper", 20, 2, 200, scythe.items[0]);
 
 
 
@@ -149,6 +150,7 @@ var Reaper = new Boss("Reaper", 20, 2, 200, scythe.items[0]);
 //SPECIAL ROOMS
 var GreatHall = new SafeRoom('Great Hall', 'GreatHall', 0, 0);
 var TutRoom = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
+var exitRoom = new SafeRoom('exitRoom', 'exitRoom', 0, 0);
 
 var num_floors;// = 6;
 
@@ -164,9 +166,13 @@ var curr_floor;
 var avatarX;
 var avatarY;
 
+//variables for resets
+var start_combatModule;
+
 //LetsiGO!
 window.addEventListener("keydown", move, false);
 window.onload = function(){
+    start_combatModule = document.getElementById('combat-module').innerHTML;
     start_game();
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
@@ -198,6 +204,51 @@ function start_game(){
     //Additionally, this function builds a brand new world (except for the First
     //floor, since the GreatHall should be added to.)
 
+    //character stats must reset
+    hero = new Hero("The Hero", 5, 3, 20, "hero");
+    tutorial = new Enemy("tutorial", 1, 5, 15);
+    Troglodyte = new Enemy("Troglodyte", 3, 2, 30);
+    DireRat = new Enemy("Dire Rat", 1, 15, 20);
+    DireRat2 = new Enemy("Dire Rat", 1.5, 15, 20);
+    Ogre = new Enemy("Ogre", 9, 1, 60);
+    Sorcerer = new Enemy("Sorcerer", 6, 4, 20);
+    Vagrant = new Enemy("Wandering Vagrant", 5, 4, 35);
+    HellHound = new Boss("Hell Hound", 5, 6, 50, fireSword.items[0]);
+    Golem = new Boss("Golem", 7, 3, 50, GreatSword.items[0]);
+    Werewolf = new Enemy("werewolf", 6, 4, 40);
+    slime = new Enemy("slime", 8, 2, 50);
+    frostGiant = new Boss("frost giant", 8, 5, 100, icyShell.items[0]);
+    ferBeast = new Enemy("feral beast", 9, 3, 20);
+    smallWyrm = new Enemy("young wyrm", 10, 4, 300);
+    pillager = new Enemy("pillager", 6, 6, 80);
+    Bandit = new Enemy("Bandit", 3, 5, 40);
+    DarkSquire = new Enemy("Dark Squire", 5, 3, 35);
+    Cultist = new Enemy("Cultist", 2, 5, 30);
+    CultMaster = new Enemy("Cult Master", 4, 5, 40);
+    DarkKnight = new Enemy("Dark Knight", 7, 7, 100);
+    CrimsonRider = new Enemy("Crimson Rider", 9, 5, 250);
+    DisOfMoranos = new Enemy("Disciple of Moranos", 11, 3, 200);
+    DreadPirate = new Enemy("Dread Pirate Williams", 15, 4, 300);
+    AncientWyrm = new Enemy("Ancient Wyrm", 14, 8, 500);
+    Moranos = new Boss("Moranos", 10, 15, 100, bladeMor.items[0]);
+    DarkLord = new Enemy("Dark Lord", 9, 9, 300);
+    Reaper = new Boss("Reaper", 20, 2, 200, scythe.items[0]);
+
+    //active spells must be reset
+    channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);
+    fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 5000, 1);
+    lightningStrike = new ActiveSpell('lightning strike', 'lightningS', hero, null, 30, 15000, 2);
+    mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 20000, 3);
+    forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 8000, 2);
+
+    for(var i = 0; i < Object.keys(spellTree).length; i++){
+        spellTree[Object.keys(spellTree)[i]]['learned'] = false;
+    }
+
+    //combat-module must be reset
+    $('#combat-module').html(start_combatModule);
+    heroShield.vitality = heroShield.maxVitality;
+
     //message globals
     messageArray = [];
     messageCount = 0;
@@ -212,7 +263,7 @@ function start_game(){
     initial_fog_radius = 5;
     fog_radius = initial_fog_radius;
 
-    //hero strat inventory
+    //hero start inventory
     inventory = {
         weapon: startWeapon,
         headgear: null,
@@ -230,7 +281,7 @@ function start_game(){
         room_list.push([])
     }
 
-    var Floor0 = new Floor(0, 2, [0], [GreatHall, TutRoom]);
+    var Floor0 = new Floor(0, 3, [0], [exitRoom, GreatHall, TutRoom]);
     var Floor1 = new Floor(1, 4, [1], null);
     var Floor2 = new Floor(2, 4, [1, 2], null);
     var Floor3 = new Floor(3, 6, [2], null);
@@ -244,7 +295,7 @@ function start_game(){
     room_list[4] = Floor4.build_floor();
     room_list[5] = Floor5.build_floor();
 
-    curr_room = 0;
+    curr_room = 1;
     curr_floor = 0;
 
     //MOAR magic game variables
@@ -255,6 +306,8 @@ function start_game(){
     //get ready to start...
     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
     room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
+
+    refreshInfo();
 }
 
 //Takes in @room, which has a number of enemies left, and a list of enemies to fight
