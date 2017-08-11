@@ -16,23 +16,24 @@ Array.prototype.move = function(old_index, new_index){
 //------------------------------------------------------
 //          Some magical game variables...
 //------------------------------------------------------
+var game_duration = 3000; //how long before the fog closes in totally
+
 //variables to track printed messages
-var messageArray = [];
-var messageCount = 0;
+var messageArray;
+var messageCount;
 
 //variables of hero status
-var canMove = true;
-var hero_protected = false;
-var ready = true;
+var canMove;
+var hero_protected;
+var ready;
 var shielded;
 var shieldReadyup;
-var magicReady = true;
+var magicReady;
 var enemyAttack;
-var torchlight = false;
-var initial_fog_radius = 5;
-var fog_radius = initial_fog_radius;
-var game_duration = 300000; //how long before the fog closes in totally
-// var hero_sight = fog_radius;
+var torchlight;
+var initial_fog_radius;
+var fog_radius;
+var inventory;
 
 var channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000);
 var fireball = new ActiveSpell('fireball', 'fireball', hero, null, 2, 8000);
@@ -49,10 +50,10 @@ var bloodMag = new Upgrade('blood magic', bloodMagFoo);
 //------------------------------------------------------
 //              Initialize Items
 //------------------------------------------------------
-itemList1 = [];
-itemList2 = [];
-itemList3 = [];
-mobDrops = [];
+var itemList1 = [];
+var itemList2 = [];
+var itemList3 = [];
+var mobDrops = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
 var heroShield = new Shields("the shield", "shield", null, null, 50, 2, false, "defendText", [itemList1]);
@@ -99,7 +100,7 @@ var torch = new Torch(1)
 //------------------------------------------------------
 //              Initialize Characters
 //------------------------------------------------------
-var hero = new Hero("The Hero", 5, 3, 20, "hero");
+var hero = new Hero("The Hero", 5, 3, 2, "hero");
 var tutorial = new Enemy("tutorial", 1, 5, 15);
 var Troglodyte = new Enemy("Troglodyte", 3, 2, 30);
 var DireRat = new Enemy("Dire Rat", 1, 15, 20);
@@ -124,79 +125,31 @@ var CrimsonRider = new Enemy("Crimson Rider", 9, 5, 250);
 var DisOfMoranos = new Enemy("Disciple of Moranos", 11, 3, 200);
 
 
-
-//------------------------------------------------------
-//        Initialize Inventory
-//------------------------------------------------------
-//inventory!!!!
-var inventory = {
-    weapon: startWeapon,
-    headgear: null,
-    armor: null,
-    carried: [startWeapon]
-}
-
-startWeapon.equipped = true;
-
 //------------------------------------------------------
 //              Spinning up your world...
 //------------------------------------------------------
-var num_floors = 6;
-
-var room_list = []
-
-//have an array of rooms per floor
-for(var i = 0; i < num_floors; i++){
-    room_list.push([])
-}
+//SPECIAL ROOMS
 var GreatHall = new SafeRoom('Great Hall', 'GreatHall', 0, 0);
 var TutRoom = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
 
-var Floor0 = new Floor(0, 2, [0], [GreatHall, TutRoom]);
-var Floor1 = new Floor(1, 4, [1], null);
-var Floor2 = new Floor(2, 4, [1, 2], null);
-var Floor3 = new Floor(3, 6, [2], null);
-var Floor4 = new Floor(4, 5, [2, 3], null);
-var Floor5 = new Floor(5, 4, [3], null);
+var num_floors;// = 6;
 
-room_list[0] = Floor0.build_floor();
-room_list[1] = Floor1.build_floor();
-room_list[2] = Floor2.build_floor();
-room_list[3] = Floor3.build_floor();
-room_list[4] = Floor4.build_floor();
-room_list[5] = Floor5.build_floor();
-// room_list[1][0] = new SafeRoom('Great Hall', 'GreatHall', 0, 0)
-// room_list[1][1] = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
-// room_list[2][0] = new FightRoom('First Floor', 'norm', 1, 1)
-// room_list[3][0] = new FightRoom('Second Floor', 'norm', 2, 2);
-// room_list[4][0] = new FightRoom('Third Floor', 'norm', 2, 3);
-// room_list[5][0] = new FightRoom('Fourth Floor', 'norm', 3, 4);
-// room_list[6][0] = new FightRoom('Fifth Floor', 'norm', 3, 5);
+var room_list;// = []
 
-// room_list[0][0] = new SafeRoom('Great Hall', 'GreatHall', 0, 0)
-// room_list[0][1] = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
-// room_list[1][0] = new FightRoom('First Floor', 'norm', 1, 1)
-// room_list[2][0] = new FightRoom('Second Floor', 'norm', 2, 2);
-// room_list[3][0] = new FightRoom('Third Floor', 'norm', 2, 3);
-// room_list[4][0] = new FightRoom('Fourth Floor', 'norm', 3, 4);
-// room_list[5][0] = new FightRoom('Fifth Floor', 'norm', 3, 5);
 
-var curr_room = 0;
-var curr_floor = 0;
+
+var curr_room;
+var curr_floor;
 
 //MOAR magic game variables
 //variables to track the current position of hero
-var avatarX = Math.floor(room_list[curr_floor][curr_room].room_width/8);
-var avatarY = Math.floor(room_list[curr_floor][curr_room].room_height/2);
-
-
-//get ready to start...
-room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
+var avatarX;
+var avatarY;
 
 //LetsiGO!
 window.addEventListener("keydown", move, false);
 window.onload = function(){
-    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
+    start_game();
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
             refreshInfo();
@@ -221,6 +174,70 @@ window.onload = function(){
 //================================================================
 //                      HELPER FUNCTIONS
 //================================================================
+
+function start_game(){
+    //This is a function to set or reset all the relevant global game variables.
+    //Additionally, this function builds a brand new world (except for the First
+    //floor, since the GreatHall should be added to.)
+
+    //message globals
+    messageArray = [];
+    messageCount = 0;
+
+    //hero globals
+    canMove = true;
+    hero_protected = false
+    ready = true;
+    clearInterval(shielded);
+    magicReady = true;
+    torchlight = false;
+    initial_fog_radius = 5;
+    fog_radius = initial_fog_radius;
+
+    //hero strat inventory
+    inventory = {
+        weapon: startWeapon,
+        headgear: null,
+        armor: null,
+        carried: [startWeapon]
+    }
+    startWeapon.equipped = true;
+
+    //Build room_list
+    num_floors = 6;
+    room_list = []
+
+    //have an array of rooms per floor
+    for(var i = 0; i < num_floors; i++){
+        room_list.push([])
+    }
+
+    var Floor0 = new Floor(0, 2, [0], [GreatHall, TutRoom]);
+    var Floor1 = new Floor(1, 4, [1], null);
+    var Floor2 = new Floor(2, 4, [1, 2], null);
+    var Floor3 = new Floor(3, 6, [2], null);
+    var Floor4 = new Floor(4, 5, [2, 3], null);
+    var Floor5 = new Floor(5, 4, [3], null);
+
+    room_list[0] = Floor0.build_floor();
+    room_list[1] = Floor1.build_floor();
+    room_list[2] = Floor2.build_floor();
+    room_list[3] = Floor3.build_floor();
+    room_list[4] = Floor4.build_floor();
+    room_list[5] = Floor5.build_floor();
+
+    curr_room = 0;
+    curr_floor = 0;
+
+    //MOAR magic game variables
+    //variables to track the current position of hero
+    avatarX = Math.floor(room_list[curr_floor][curr_room].room_width/8);
+    avatarY = Math.floor(room_list[curr_floor][curr_room].room_height/2);
+
+    //get ready to start...
+    room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
+    room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
+}
 
 //Takes in @room, which has a number of enemies left, and a list of enemies to fight
 function enter_combat(room, custom_enemy) {
@@ -306,9 +323,19 @@ function enter_combat(room, custom_enemy) {
             if (hero.vitality <= 0) {
                 print("message", "You died!");
                 hero.vitality = 0;
+                room_list[curr_floor][curr_room].clearAllFogTimeouts();
                 refreshInfo();
                 $("#combat-module").hide(1000);
                 window.clearInterval(enemyAttack);
+                $("#descend").show().html('Restart').click(function(){
+                        revertTextModule();
+                        $("#worldMap").show();
+                        start_game();
+                        $("#text-module").animate({
+                            top: "175px"
+                        }, 1000);
+                        $("#defendSlider").hide('fast');
+                })
             }
             if (heroShield.vitality <= 0) {
                 window.clearInterval(shielded);
@@ -824,6 +851,7 @@ function descend(descend){
 
             }}
             room_list[curr_floor][curr_room].clearAllFogTimeouts();
+            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
             curr_floor++;
             curr_room = 0;
             avatarY = room_list[curr_floor][curr_room].room_entry[0];
