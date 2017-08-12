@@ -198,3 +198,5 @@ var asphyxiation = new damageDebuff('asphyxiation', null, 12000, 4000, 2);
 var blocked = new Debuff('blocked', null, 10000, ['strength'], [200]);
 var suppressed = new Debuff('suppressed', null, 8000, ['strength'], [200]);
 var dominated = new damageDebuff('dominated', null, 8000, 2000, 3);
+var sponge = new Buff('sponge', null, 10000, ['vitality', 'maxVitality'], [100, 100]);
+var slow = new Debuff('slow', null, 10000, ['dexterity'], [1]);

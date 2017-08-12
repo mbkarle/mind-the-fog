@@ -93,13 +93,15 @@ var ConsumableList = {
         'characteristics' : ['vitality'],
         'changes': [10],
         'buffs': [],
-        'debuffs': []
+        'debuffs': [],
+        'value': 20
     },
     "major health potion": {
         'characteristics': ['vitality'],
         'changes': [50],
         'buffs': [],
-        'debuffs': []
+        'debuffs': [],
+        'value': 50
     },
     'strength potion': {
         'characteristics' : [],
@@ -111,7 +113,26 @@ var ConsumableList = {
             'target': 'hero'
             }
         ],
-        'debuffs': []
+        'debuffs': [],
+        'value': 60
+    },
+    'sponge potion': {
+        'characteristics': [],
+        'changes': [],
+        'buffs': [
+            {
+                'buff': sponge,
+                'chance': 1,
+                'target': 'hero'
+            }
+        ],
+        'debuff': [
+            {
+                'debuff': slow,
+                'chance': .5,
+                'target': 'hero'
+            }
+        ]
     }
 }
 
@@ -119,7 +140,64 @@ class Consumable {
     constructor(name, objid){
         this.name = name;
         this.objid = objid;
+        for(var i = 0; i < ConsumableList[name]['characteristics'].length; i++){
+            this[ConsumableList[name]['characteristics'][i]] = ConsumableList[name]['changes'][i];
+        }
+        this.buffArray = ConsumableList[name]['buffs'];
+        this.debuffArray = ConsumableList[name]['debuffs'];
+        this.constructorName = 'Consumable';
+        this.value = ConsumableList[name]['value'];
     }
+    useConsumable(consumable){
+        for(var i = 0; i < ConsumableList[consumable.name]['characteristics'].length; i++){
+            hero[ConsumableList[consumable.name]['characteristics'][i]] += ConsumableList[consumable.name]['changes'][i];
+        }
+        if(hero.vitality > hero.maxVitality){
+            hero.vitality = hero.maxVitality;
+        }
+        for(var i = 0; i < ConsumableList[consumable.name]['buffs'].length; i++){
+            if(Math.random() < ConsumableList[consumable.name]['buffs'][i]['chance']){
+                ConsumableList[consumable.name]['buffs'][i]['buff'].applyBuff(hero);
+            }
+        }
+        for(var i = 0; i < ConsumableList[consumable.name]['debuffs'].length; i++){
+            if(Math.random() < ConsumableList[consumable.name]['debuffs'][i]['chance']){
+                ConsumableList[consumable.name]['debuffs'][i]['debuff'].applyDebuff(hero);
+            }
+        }
+        refreshInfo();
+    }
+    buyItem(item){
+        var successful_transaction = false;
+        if(hero.wallet >= item.value){
+            hero.wallet -= item.value;
+            successful_transaction = true;
+            take_item(item);
+            refreshInfo();
+        }
+        else{
+            alert("You can't afford this item");
+        }
+        return successful_transaction;
+    }
+    drop_onSale(self){
+        for(var i = 0; i < self.onSale.length; i++){
+            var buyID = "#buy" + i;
+            $(buyID).attr("buy_id", i);
+            $(buyID).html(self.onSale[$(buyID).attr('buy_id')].value + 'gold');
+            $(buyID).click(function(){
+                console.log('buying item');
+                if(self.onSale[$(this).attr('buy_id')].buyItem(self.onSale[$(this).attr('buy_id')])){
+                $(this).off('click');
+                self.openNPCModule(self); //updates window
+            }
+            })
+        }
+    }
+}
+for(var consumable in ConsumableList){
+    var newConsumable = new Consumable(consumable, 'lul');
+    NPCList['alchemist']['merchandise'].push(newConsumable);
 }
 var ShieldList = {
     'wood': {

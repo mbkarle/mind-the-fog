@@ -255,7 +255,7 @@ class NPC extends Location {
       for(var i = 0; i < self.onSale.length; i++){
         itemInfos.push((self.onSale[i].name + "<br>"))
         for (attribute in self.onSale[i]) {
-            if (typeof self.onSale[i][attribute] == "number") {
+            if (typeof self.onSale[i][attribute] == "number" && attribute != 'value') {
                 if(self.onSale[i].constructorName != 'ShieldUpgrade'){
                     if(self.onSale[i][attribute] >= 0){
                         itemInfos[i] += attribute + ": +" + self.onSale[i][attribute] + "<br>";
@@ -277,6 +277,16 @@ class NPC extends Location {
             }
             for(var k = 0; k < self.onSale[i].debuffArray.length; k++){
                 itemInfos[i] += "debuffs: " + self.onSale[i].debuffArray[k].name + "<br>";
+            }
+        }
+        if(self.onSale[i].constructorName == 'Consumable'){
+
+            for(var j = 0; j < self.onSale[i].buffArray.length; j++){
+
+                itemInfos[i] += "buffs: " + self.onSale[i].buffArray[j]['buff'].name + "<br>";
+            }
+            for(var k = 0; k < self.onSale[i].debuffArray.length; k++){
+                itemInfos[i] += "debuffs: " + self.onSale[i].debuffArray[k]['debuff'].name + "<br>";
             }
         }
 

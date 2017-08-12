@@ -63,7 +63,7 @@ var heroShield = new Shields("the shield", "shield", null, null, 30, 1, 3, 4, fa
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList1]);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null,[itemList1]);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList1]);
-var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList1, mobDrops, NPCList['alchemist']['merchandise']]);
+var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList1, mobDrops]);
 var ritDagger = new effectItem("ritual dagger", "weapon", -2, 2, 5, [indestructible], [.2], [], [], true, null, [itemList1]);
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList1]);
 var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList1, mobDrops]);
@@ -1058,7 +1058,7 @@ function refreshInfo() {
         //store all the item infos to be displayed upon hover...
         itemInfos.push((items_carried[i].name + "<br>"))
         for (attribute in items_carried[i]) {
-            if (typeof items_carried[i][attribute] == "number") {
+            if (typeof items_carried[i][attribute] == "number" && attribute != 'value') {
                 if(items_carried[i][attribute] >= 0){
                     itemInfos[i] += attribute + ": +" + items_carried[i][attribute] + "<br>";
                 }
@@ -1077,6 +1077,16 @@ function refreshInfo() {
                 itemInfos[i] += "debuffs: " + items_carried[i].debuffArray[k].name + "<br>";
             }
         }
+        if(items_carried[i].constructorName == 'Consumable'){
+
+            for(var j = 0; j < items_carried[i].buffArray.length; j++){
+
+                itemInfos[i] += "buffs: " + items_carried[i].buffArray[j]['buff'].name + "<br>";
+            }
+            for(var k = 0; k < items_carried[i].debuffArray.length; k++){
+                itemInfos[i] += "debuffs: " + items_carried[i].debuffArray[k]['debuff'].name + "<br>";
+            }
+        }
     }
 
     //set equip listeners to inventory
@@ -1091,10 +1101,19 @@ function refreshInfo() {
         $(dropID).attr('drop_idx', i);
         $(invCarID).attr('item_to_print', item_to_print)
         $(invCarID).attr('inv_idx', i);
-        $(carriedID).click(function(){
-            equip(hero,items_carried[$(this).attr('inv_idx')])
-            refreshInfo()
-        })
+        if(items_carried[$(carriedID).attr('inv_idx')].constructorName != 'Consumable'){
+            $(carriedID).click(function(){
+                equip(hero,items_carried[$(this).attr('inv_idx')])
+                refreshInfo()
+            })
+        }
+        else{
+            $(carriedID).html('Use').click(function(){
+                items_carried[$(this).attr('inv_idx')].useConsumable(items_carried[$(this).attr('inv_idx')]);
+                items_carried.splice($(this).attr('inv_idx'), 1);
+                refreshInfo();
+            })
+        }
         $(dropID).click(function(){
           console.log($(this).attr('drop_idx'));
           items_carried.splice($(this).attr('drop_idx'), 1);
@@ -1397,7 +1416,7 @@ function print(messageType, message) { //TODO: change so that multiple items can
             //store all the item infos to be displayed upon hover...
             itemInfos.push((items[i].name + "<br>"))
             for (attribute in items[i]) {
-                if (typeof items[i][attribute] == "number") {
+                if (typeof items[i][attribute] == "number" && attribute != 'value') {
                     if(items[i][attribute] >= 0){
                         itemInfos[i] += attribute + ": +" + items[i][attribute] + "<br>";
                     }
@@ -1414,6 +1433,16 @@ function print(messageType, message) { //TODO: change so that multiple items can
                 }
                 for(var k = 0; k < items[i].debuffArray.length; k++){
                     itemInfos[i] += "debuffs: " + items[i].debuffArray[k].name + "<br>";
+                }
+            }
+            if(self.items[i].constructorName == 'Consumable'){
+
+                for(var j = 0; j < self.items[i].buffArray.length; j++){
+
+                    itemInfos[i] += "buffs: " + self.items[i].buffArray[j]['buff'].name + "<br>";
+                }
+                for(var k = 0; k < self.items[i].debuffArray.length; k++){
+                    itemInfos[i] += "debuffs: " + self.items[i].debuffArray[k]['debuff'].name + "<br>";
                 }
             }
             //build the html to print to the textBox
