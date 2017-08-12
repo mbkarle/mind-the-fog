@@ -256,10 +256,15 @@ class NPC extends Location {
         itemInfos.push((self.onSale[i].name + "<br>"))
         for (attribute in self.onSale[i]) {
             if (typeof self.onSale[i][attribute] == "number") {
-                if(self.onSale[i][attribute] >= 0){
-                    itemInfos[i] += attribute + ": +" + self.onSale[i][attribute] + "<br>";
+                if(self.onSale[i].constructorName != 'ShieldUpgrade'){
+                    if(self.onSale[i][attribute] >= 0){
+                        itemInfos[i] += attribute + ": +" + self.onSale[i][attribute] + "<br>";
+                    }
+                    else{ //issue #49
+                        itemInfos[i] += attribute + ": " + self.onSale[i][attribute] + "<br>";
+                    }
                 }
-                else{ //issue #49
+                else{
                     itemInfos[i] += attribute + ": " + self.onSale[i][attribute] + "<br>";
                 }
             }
@@ -275,10 +280,10 @@ class NPC extends Location {
             }
         }
 
-        itemMessage += "<div class='itemInfo' id='onSale" + i + "' style='border-width:2px;'>" + self.onSale[i].name + "<div id='buy" + i + "' class='interact'>" + self.onSale[i].value + "gold </div></div>";
+        itemMessage += "<div class='itemInfo' id='onSale" + i + "' style='border-width:2px;'>" + self.onSale[i].name + "<div id='buy" + i + "' class='interact'>" +  "</div></div>";
       }
       $('#vendor-contents').html(itemMessage);
-      self.drop_onSale(self);
+      self.onSale[0].drop_onSale(self);
 
       for(var i = 0; i < self.onSale.length; i++){
           var item_to_print =  (' ' + itemInfos[i]).slice(1)
@@ -298,37 +303,6 @@ class NPC extends Location {
       })
     }
 
-    buyItem(item){
-        var successful_transaction = false;
-        if(inventory['carried'].length < 10 && hero.wallet >= item.value){
-            take_item(item);
-            hero.wallet -= item.value;
-            successful_transaction = true;
-            refreshInfo();
-        }
-        else if(inventory['carried'].length >= 10){
-            alert("Your inventory is full");
-        }
-        else if(hero.wallet < item.value){
-            alert("You can't afford this item");
-        }
-        return successful_transaction;
-    }
-
-    drop_onSale(self){
-        for(var i = 0; i < self.onSale.length; i++){
-            var buyID = "#buy" + i;
-            $(buyID).attr("buy_id", i)
-            $(buyID).click(function(){
-                console.log('buying item');
-                if(self.buyItem(self.onSale[$(this).attr('buy_id')])){
-                $(this).hide().off('click');
-                self.onSale.splice($(this).attr('buy_id'), 1);
-                self.openNPCModule(self); //updates window
-            }
-            })
-        }
-    }
     closeModule(){
         $("#tab").show();
         canMove = true;

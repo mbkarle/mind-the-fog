@@ -27,6 +27,7 @@ var canMove;
 var hero_protected;
 var ready;
 var shielded;
+var shieldUp;
 var shieldReadyup;
 var magicReady;
 var enemyAttack;
@@ -58,11 +59,11 @@ var mobDrops2 = [];
 var itemList4 = [];
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
-var heroShield = new Shields("the shield", "shield", null, null, 50, 2, 4, false, "defendText", [itemList1]);
+var heroShield = new Shields("the shield", "shield", null, null, 30, 1, 3, 4, false, "defendText", [itemList1]);
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList1]);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null,[itemList1]);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList1]);
-var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList1, mobDrops, NPCList['alchemist']['merchandise'], NPCList['shieldMaker']['merchandise']]);
+var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList1, mobDrops, NPCList['alchemist']['merchandise']]);
 var ritDagger = new effectItem("ritual dagger", "weapon", -2, 2, 5, [indestructible], [.2], [], [], true, null, [itemList1]);
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList1]);
 var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList1, mobDrops]);
@@ -259,6 +260,7 @@ function start_game(){
     hero_protected = false
     ready = true;
     clearInterval(shielded);
+    clearTimeout(shieldUp);
     magicReady = true;
     torchlight = false;
     initial_fog_radius = 5;
@@ -421,6 +423,7 @@ function enter_combat(room, custom_enemy) {
             }
             if (heroShield.vitality <= 0) {
                 window.clearInterval(shielded);
+                window.clearTimeout(shieldUp);
                 hero_protected = false;
                 heroShield.shieldReady();
                 //jquery animation:
@@ -483,17 +486,21 @@ function enter_combat(room, custom_enemy) {
     document.getElementById("defend").onclick = function() {
         if (hero_protected == false && heroShield.vitality > 0) {
             //  $("#defend").off('click');
-            $("#defendSlider").show(4000);
+            $("#defendSlider").show(heroShield.weight * 1000);
             shieldReadyup = setTimeout(function() {
                 heroShield.shield_ready = false;
-            }, 4000);
+            }, heroShield.weight * 1000);
             //    console.log("shield clicked")
             if (heroShield.shield_ready) {
                 heroShield.shield_ready = false;
-                shielded = setInterval(function() {
-                    // console.log("shielding");
-                    Shield()
+                shieldUp = setTimeout(function(){
+                    Shield();
+                    shielded = setInterval(function() {
+                        // console.log("shielding");
+                        Shield()
+                    }, heroShield.recovery * 1000);
                 }, heroShield.weight * 1000);
+
             }
         }
     }
@@ -502,6 +509,7 @@ function enter_combat(room, custom_enemy) {
         console.log('combat-module clicked')
         if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
             window.clearInterval(shielded);
+            window.clearTimeout(shieldUp);
             heroShield.shieldReady();
             hero_protected = false;
             //jquery animation:
@@ -952,10 +960,10 @@ function descend(descend){
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 
 
-            var gatekeep = new CharDialogue(room_list[curr_floor][curr_room].room_entry[0], room_list[curr_floor][curr_room].room_entry[1], 'gatekeeper' + curr_floor, 'the gatekeeper');
+            /*var gatekeep = new CharDialogue(room_list[curr_floor][curr_room].room_entry[0], room_list[curr_floor][curr_room].room_entry[1], 'gatekeeper' + curr_floor, 'the gatekeeper');
             room_list[curr_floor][curr_room].room_map[gatekeep.rowID][gatekeep.colID] = gatekeep;
             room_list[curr_floor][curr_room].room_map[gatekeep.rowID][gatekeep.colID].computeCoordsWithOffset(room_list[curr_floor][curr_room].yoff, room_list[curr_floor][curr_room].xoff);
-            checkLocation();
+            checkLocation(); */
 
             room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
 
@@ -1196,6 +1204,7 @@ function Damage(source, target) {
         window.clearInterval(enemyAttack);
 
         window.clearInterval(shielded);
+        window.clearInterval(shieldUp)
         hero_protected = false;
         heroShield.shieldReady();
 
