@@ -6,7 +6,8 @@ var NPCList = {
         "roomIdx": 2,
         'coords': [3, 3],
         'symbol': 'A',
-        'description': 'A pungent smell wafts towards you from where the alchemist sits, peddling his wares.'
+        'description': 'A pungent smell wafts towards you from where the alchemist sits, peddling his wares.',
+        'merchandise': []
     },
     "shieldMaker":{
         "charID": "shieldMaker",
@@ -15,16 +16,24 @@ var NPCList = {
         "roomIdx": 1,
         'coords': [3, 6],
         'symbol': 'S',
-        'description': 'The shield maker can improve your shield, for a price.'
+        'description': 'The shield maker can improve your shield, for a price.',
+        'merchandise': []
     }
 }
 
 var activeNPCs = [];
+var inactiveNPCs = [];
+
 function getNPCs(){
     var NPCListKeys = Object.keys(NPCList);
     for(var i = 0; i < NPCListKeys.length; i++){
         if(NPCList[NPCListKeys[i]]['active']){
             activeNPCs.push(NPCList[NPCListKeys[i]]);
+            var inactiveSplice = inactiveNPCs.indexOf(NPCList[NPCListKeys[i]]);
+            inactiveNPCs.splice(inactiveSplice, 1);
+        }
+        else{
+          inactiveNPCs.push(NPCList[NPCListKeys[i]]);
         }
     }
 }

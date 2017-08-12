@@ -204,6 +204,7 @@ class Pit extends Location{
         else{
         print("message", "<div style='font-size:12px;position:absolute;top:0;left:10px;'>" + self.charDisplay + "</div>" + stringArray[thisMessage]);
     }
+      NPCList[self.charID]['active'] = true;
         $("#open").show();
         $("#open").click(
             function() {
@@ -228,7 +229,114 @@ class Pit extends Location{
 
 class NPC extends Location {
     constructor(rowID, colID, name){
-        super(rowID, colID, 'NPC', 'npc', NPCList[name]['symbol'], NPCList[name]['description'], true);
+        super(rowID, colID, name, 'npc', NPCList[name]['symbol'], NPCList[name]['description'], true);
+        this.onSale = NPCList[name]['merchandise'];
+        var self = this;
+        this.interact = function(){
+          canMove = false;
+          print('message', this.message);
+          $('#text-module').show();
+          $('#enter').hide();
+          $('#open').show().click(function(){
+            self.openNPCModule(self);
+            $('#open').hide().off('click');
+            $('#text-module').animate({
+              top: '175px'
+            })
+          })
+        }
+    }
+    openNPCModule(self){
+      $('#worldMap').hide();
+      $("#vendor-module").show();
+      $("#tab").hide();
+      var itemMessage = "On sale: <br>";
+      var itemInfos = [];
+      for(var i = 0; i < self.onSale.length; i++){
+        itemInfos.push((self.onSale[i].name + "<br>"))
+        for (attribute in self.onSale[i]) {
+            if (typeof self.onSale[i][attribute] == "number") {
+                if(self.onSale[i][attribute] >= 0){
+                    itemInfos[i] += attribute + ": +" + self.onSale[i][attribute] + "<br>";
+                }
+                else{ //issue #49
+                    itemInfos[i] += attribute + ": " + self.onSale[i][attribute] + "<br>";
+                }
+            }
+        }
+        if(self.onSale[i].constructorName == 'effectItem'){
+
+            for(var j = 0; j < self.onSale[i].buffArray.length; j++){
+
+                itemInfos[i] += "buffs: " + self.onSale[i].buffArray[j].name + "<br>";
+            }
+            for(var k = 0; k < self.onSale[i].debuffArray.length; k++){
+                itemInfos[i] += "debuffs: " + self.onSale[i].debuffArray[k].name + "<br>";
+            }
+        }
+
+        itemMessage += "<div class='itemInfo' id='onSale" + i + "' style='border-width:2px;'>" + self.onSale[i].name + "<div id='buy" + i + "' class='interact'>" + self.onSale[i].value + "gold </div></div>";
+      }
+      $('#vendor-contents').html(itemMessage);
+      self.drop_onSale(self);
+
+      for(var i = 0; i < self.onSale.length; i++){
+          var item_to_print =  (' ' + itemInfos[i]).slice(1)
+          var id = '#onSale'+i;
+          $(id).attr('item_to_print', item_to_print)
+          $(id).mouseenter(function(){
+              document.getElementById("vendor-hover").innerHTML = $(this).attr('item_to_print');
+              $("#vendor-hover").show();
+          })
+          $(id).mouseleave(function(){
+              $("#vendor-hover").hide();
+          })
+
+      }
+      $("#close").click(function(){
+          self.closeModule();
+      })
+    }
+
+    buyItem(item){
+        var successful_transaction = false;
+        if(inventory['carried'].length < 10 && hero.wallet >= item.value){
+            take_item(item);
+            hero.wallet -= item.value;
+            successful_transaction = true;
+            refreshInfo();
+        }
+        else if(inventory['carried'].length >= 10){
+            alert("Your inventory is full");
+        }
+        else if(hero.wallet < item.value){
+            alert("You can't afford this item");
+        }
+        return successful_transaction;
+    }
+
+    drop_onSale(self){
+        for(var i = 0; i < self.onSale.length; i++){
+            var buyID = "#buy" + i;
+            $(buyID).attr("buy_id", i)
+            $(buyID).click(function(){
+                console.log('buying item');
+                if(self.buyItem(self.onSale[$(this).attr('buy_id')])){
+                $(this).hide().off('click');
+                self.onSale.splice($(this).attr('buy_id'), 1);
+                self.openNPCModule(self); //updates window
+            }
+            })
+        }
+    }
+    closeModule(){
+        $("#tab").show();
+        canMove = true;
+        $("#worldMap").show();
+        $("#vendor-module").hide();
+        revertTextModule();
+        refreshInfo();
+        $("#close").off('click');
     }
 }
 

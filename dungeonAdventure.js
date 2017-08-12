@@ -62,7 +62,7 @@ var heroShield = new Shields("the shield", "shield", null, null, 50, 2, 4, false
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList1]);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null,[itemList1]);
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList1]);
-var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList1, mobDrops]);
+var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList1, mobDrops, NPCList['alchemist']['merchandise'], NPCList['shieldMaker']['merchandise']]);
 var ritDagger = new effectItem("ritual dagger", "weapon", -2, 2, 5, [indestructible], [.2], [], [], true, null, [itemList1]);
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList1]);
 var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList1, mobDrops]);
@@ -168,6 +168,7 @@ var avatarY;
 
 //variables for resets
 var start_combatModule;
+var pitActive;
 
 //LetsiGO!
 window.addEventListener("keydown", move, false);
@@ -304,6 +305,9 @@ function start_game(){
     avatarY = Math.floor(room_list[curr_floor][curr_room].room_height/2);
 
     //establish NPCs
+    if(inactiveNPCs.length > 0){
+      pitActive = false;
+    }
     getNPCs();
     for(var i = 0; i < activeNPCs.length; i++){
         addNPC(activeNPCs[i]['charID'], room_list[0][activeNPCs[i]['roomIdx']].room_map, activeNPCs[i]['coords'][0], activeNPCs[i]['coords'][1]);
@@ -726,6 +730,10 @@ function checkLocation(){
     }
     if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'pit' && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].used){
         room_list[curr_floor][curr_room].room_map[avatarY][avatarX].encounter();
+    }
+
+    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'npc' && NPCList[room_list[curr_floor][curr_room].room_map[avatarY][avatarX].name]['merchandise'].length > 0){
+      room_list[curr_floor][curr_room].room_map[avatarY][avatarX].interact();
     }
 
     //check if on statue

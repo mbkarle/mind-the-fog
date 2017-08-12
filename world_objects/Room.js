@@ -527,7 +527,7 @@ function tier_to_locations(tier, maxLocs){
 
     }
     else if(maxLocs == 2 || maxLocs == 3){
-        var locationList = ['chest'];
+        var locationList = ['chest', 'pit'];
 
     }
 
@@ -543,7 +543,7 @@ function tier_to_locations(tier, maxLocs){
     else {
         poss_addedLocs = [];
     }
-    if(Math.random() < .04){
+    if(Math.random() < .2 - activeNPCs.length/50 && !pitActive){
         poss_addedLocs.push('pit');
     }
     if(typeof maxLocs == 'undefined'){
@@ -557,7 +557,10 @@ function tier_to_locations(tier, maxLocs){
     for(var i = 0; i < num_added_locs; i++){
         locToAdd = Math.floor(Math.random() * poss_addedLocs.length);
         added_locs.push(poss_addedLocs[locToAdd]);
-
+        if(poss_addedLocs[locToAdd] == 'pit'){
+          pitActive = true;
+          console.log("pit is present");
+        }
         for(var j = 0; j < i; j++){ //no repeats in added_locs !
             if(added_locs[i] == added_locs[j]){
                 added_locs.splice(i, 1);
