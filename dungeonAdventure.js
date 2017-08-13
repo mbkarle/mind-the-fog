@@ -170,6 +170,7 @@ var avatarY;
 
 //variables for resets
 var start_combatModule;
+var cached_gold = 0;
 var pitActive;
 
 //LetsiGO!
@@ -251,6 +252,7 @@ function start_game(){
     //combat-module must be reset
     $('#combat-module').html(start_combatModule);
     heroShield.vitality = heroShield.maxVitality;
+    hero.wallet = cached_gold;
 
     //message globals
     messageArray = [];
@@ -407,11 +409,14 @@ function enter_combat(room, custom_enemy) {
             })
             if (hero.vitality <= 0) {
                 print("message", "You died!");
-                hero.vitality = 0;
                 room_list[curr_floor][curr_room].clearAllFogTimeouts();
                 refreshInfo();
                 $("#combat-module").hide(1000);
                 window.clearInterval(enemyAttack);
+                window.clearInterval(shielded);
+                window.clearTimeout(shieldUp);
+                hero.vitality = 0;
+                cached_gold = Math.floor(hero.wallet / 10);
                 $("#descend").show().html('Restart').click(function(){
                         revertTextModule();
                         $("#worldMap").show();

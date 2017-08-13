@@ -230,6 +230,7 @@ class Consumable {
               for(var i = 0; i < ConsumableList[item.name]['itemlists'].length; i++){
                 itemListMeta[ConsumableList[item.name]['itemlists'][i]].push(item);
               }
+              refillChests();
             }
             refreshInfo();
         }

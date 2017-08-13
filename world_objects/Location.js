@@ -395,7 +395,9 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
             this.num_items = 3 + Math.floor(Math.random() * 6);
             for(var i = 0; i < this.num_items; i++){
                 var thisItem = Math.floor(Math.random() * this.itemList.length);
-                this.itemList[thisItem].value = Math.floor(Math.random() * 50) * 10;
+                var itemListfor_idx = this.itemList[thisItem].items[0];
+                this.itemList[thisItem].value = Math.floor(Math.random() * 10 * (itemListMeta.indexOf(itemListfor_idx) + 1)) * 10;
+            //    console.log(itemListMeta.indexOf[this.itemList[thisItem].items[0]]);
                 this.onSale.push(this.itemList[thisItem])
             }
         }
@@ -502,7 +504,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
                         }
 
 
-                        itemMessage += "<div class='itemInfo' id='forSale" + n + "' style='border-width:2px;'>" + inventoryForSale[n].name + "<div id = 'sell" + n + "' class='interact'>" + inventoryForSale[n].value + "gold </div></div>";
+                        itemMessage += "<div class='itemInfo' id='forSale" + n + "' style='border-width:2px;'>" + inventoryForSale[n].name + "<div id = 'sell" + n + "' class='interact'>" + Math.floor(inventoryForSale[n].value / 4) + "gold </div></div>";
 
                     }
 
@@ -572,7 +574,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
             $(sellID).attr("sell_id", (i + self.excludedItems));
             $(sellID).click(function(){
                 console.log('selling item');
-                hero.wallet += inventory['carried'][$(this).attr('sell_id')].value;
+                hero.wallet += Math.floor(inventory['carried'][$(this).attr('sell_id')].value / 4);
                 inventory['carried'].splice($(this).attr('sell_id'), 1);
                 $(this).hide().off('click');
                 refreshInfo();
@@ -591,7 +593,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
     getValueForList(itemList){
         for(var i = 0; i < itemList.length; i++){
             if(itemList[i].value == null){
-                itemList[i].value = Math.floor(Math.random() * 50) * 10;
+                itemList[i].value = Math.floor(Math.random() * 10 * itemListMeta.indexOf(itemList[i].items[0])) * 10;
             }
         }
     }
