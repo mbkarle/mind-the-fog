@@ -544,10 +544,10 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
             refreshInfo();
         }
         else if(inventory['carried'].length >= 10){
-            alert("Your inventory is full");
+            openAlert("Your inventory is full");
         }
         else if(hero.wallet < item.value){
-            alert("You can't afford this item");
+            openAlert("You can't afford this item");
         }
         return successful_transaction;
     }

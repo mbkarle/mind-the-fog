@@ -200,3 +200,4 @@ var suppressed = new Debuff('suppressed', null, 8000, ['strength'], [200]);
 var dominated = new damageDebuff('dominated', null, 8000, 2000, 3);
 var sponge = new Buff('sponge', null, 10000, ['vitality', 'maxVitality'], [100, 100]);
 var slow = new Debuff('slow', null, 10000, ['dexterity'], [1]);
+var supSpeed = new Buff('super speed', null, 10000, ['dexterity'], [4]);

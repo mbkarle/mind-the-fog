@@ -46,7 +46,7 @@ class Floor {
             }
                 build_doors(this, room_list, i, num_rooms)
                 center_map(room_list[this.floor_num][i].room_map, room_list[this.floor_num][i].yoff, room_list[this.floor_num][i].xoff);
-
+                room_list[this.floor_num][i].origin_floor = this;
             }}
             else{
                 for(var i = 0; i < this.custom.length; i++){

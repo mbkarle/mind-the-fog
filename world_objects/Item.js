@@ -94,14 +94,16 @@ var ConsumableList = {
         'changes': [10],
         'buffs': [],
         'debuffs': [],
-        'value': 20
+        'value': 20,
+        'itemlists': [1, 2]
     },
     "major health potion": {
         'characteristics': ['vitality'],
         'changes': [50],
         'buffs': [],
         'debuffs': [],
-        'value': 50
+        'value': 50,
+        'itemlists': [0, 2, 3, 4]
     },
     'strength potion': {
         'characteristics' : [],
@@ -114,7 +116,22 @@ var ConsumableList = {
             }
         ],
         'debuffs': [],
-        'value': 60
+        'value': 50,
+        'itemlists': [2, 3]
+    },
+    'dexterity potion': {
+        'characteristics': [],
+        'changes': [],
+        'buffs': [
+          {
+            'buff': supSpeed,
+            'chance': 1,
+            'target': 'hero'
+          }
+        ],
+        'debuffs': [],
+        'value': 50,
+        'itemlists': [2, 3]
     },
     'sponge potion': {
         'characteristics': [],
@@ -126,13 +143,47 @@ var ConsumableList = {
                 'target': 'hero'
             }
         ],
-        'debuff': [
+        'debuffs': [
             {
                 'debuff': slow,
                 'chance': .5,
                 'target': 'hero'
             }
-        ]
+        ],
+        'value': 80,
+        'itemlists': [3, 4]
+    },
+    'perma strength': {
+      'characteristics': ['strength', 'vitality', 'maxVitality'],
+      'changes': [2, 5, 5],
+      'buffs': [],
+      'debuffs': [],
+      'value': 100,
+      'itemlists': [2, 3]
+    },
+    'perma dexterity': {
+      'characteristics': ['dexterity'],
+      'changes': [2],
+      'buffs': [],
+      'debuffs': [],
+      'value': 100,
+      'itemlists': [2, 3]
+    },
+    'perma vitality': {
+      'characteristics': ['vitality', 'maxVitality'],
+      'changes': [20, 20],
+      'buffs': [],
+      'debuffs': [],
+      'value': 100,
+      'itemlists': [2, 3]
+    },
+    'liquid machismo': {
+      'characteristics': ['strength', 'dexterity', 'vitality', 'maxVitality'],
+      'changes': [1, 1, 20, 20],
+      'buffs': [],
+      'debuffs': [],
+      'value': 150,
+      'itemlists': [3, 4]
     }
 }
 
@@ -147,6 +198,7 @@ class Consumable {
         this.debuffArray = ConsumableList[name]['debuffs'];
         this.constructorName = 'Consumable';
         this.value = ConsumableList[name]['value'];
+        this.prototyped = false;
     }
     useConsumable(consumable){
         for(var i = 0; i < ConsumableList[consumable.name]['characteristics'].length; i++){
@@ -173,10 +225,16 @@ class Consumable {
             hero.wallet -= item.value;
             successful_transaction = true;
             take_item(item);
+            if(!item.prototyped){
+              item.prototyped = true;
+              for(var i = 0; i < ConsumableList[item.name]['itemlists'].length; i++){
+                itemListMeta[ConsumableList[item.name]['itemlists'][i]].push(item);
+              }
+            }
             refreshInfo();
         }
         else{
-            alert("You can't afford this item");
+            openAlert("You can't afford this item");
         }
         return successful_transaction;
     }
@@ -336,7 +394,7 @@ class ShieldUpgrade {
             refreshInfo();
         }
         else{
-            alert("You can't afford this item");
+            openAlert("You can't afford this item");
         }
         return successful_transaction;
     }

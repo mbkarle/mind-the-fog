@@ -385,7 +385,7 @@ function makeNormalRoom(height, width, map, locations, itemList, tier){
 
 
             default:
-                alert('UNKNOWN LOCATION TYPE!')
+                openAlert('UNKNOWN LOCATION TYPE!')
         }
     }
     return map;

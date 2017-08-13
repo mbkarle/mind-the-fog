@@ -99,6 +99,24 @@
   position: relative;
 }
 
+#alertBox {
+  position: absolute;
+  top: 20px;
+  left: 40%;
+  display: none;
+  font-size: 12px;
+  border-style: solid;
+  border-color: #a6a6a6;
+  border-width: medium;
+  font-family:cursive;
+  height: 100px;
+  width: 260px;
+  text-align: center;
+  background-color: white;
+  z-index: 5;
+  overflow: hidden;
+}
+
 .interact {
   border-style: solid;
   border-color: #e6e6e6;

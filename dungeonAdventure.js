@@ -57,6 +57,7 @@ var itemList3 = [];
 var mobDrops = [];
 var mobDrops2 = [];
 var itemList4 = [];
+var itemListMeta = new Array(mobDrops, itemList1, itemList2, itemList3, itemList4)
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
 var heroShield = new Shields("the shield", "shield", null, null, 30, 1, 3, 4, false, "defendText", [itemList1]);
@@ -647,7 +648,7 @@ function move(e) {
         } else if(e.keyCode == '189'){
             //'-' removes monsters!
             //for debugging only
-            alert("****removing monsters from the game!****")
+            openAlert("****removing monsters from the game!****")
             for(var i = 0; i < room_list.length; i++){
                 for(var j = 0; j < room_list[i].length; j++){
                     room_list[i][j].fightChance = 0;
@@ -658,7 +659,7 @@ function move(e) {
         else if(e.keyCode == '187'){
             //'-' removes monsters!
             //for debugging only
-            alert("****clearing floor!****")
+            openAlert("****clearing floor!****")
             room_list[curr_floor][curr_room].roomCleared = true;
             var newPos = [avatarX,avatarY];
             room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight,fog_radius);
@@ -965,7 +966,7 @@ function descend(descend){
             room_list[curr_floor][curr_room].room_map[gatekeep.rowID][gatekeep.colID].computeCoordsWithOffset(room_list[curr_floor][curr_room].yoff, room_list[curr_floor][curr_room].xoff);
             checkLocation(); */
 
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight);
+            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight, fog_radius);
 
             // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;
@@ -1293,6 +1294,16 @@ function readyUp() {
     return ready;
 }
 
+function refillChests(){ //rebuilds floors so that chests can be filled with newly introduced materials
+  console.log('Old room 1: ')
+  console.log(room_list[1][0]);
+  for(var i = 1; i < room_list.length; i++){
+    room_list[i] = room_list[i][0].origin_floor.build_floor();
+  }
+  console.log('new room 1: ')
+  console.log(room_list[1][0]);
+}
+
 function openChest(stage) {
     $("#open").click(
         function() {
@@ -1358,7 +1369,7 @@ function drop_items(items){
     console.log(items.length)
     var itemsTaken = 0;
     for(var i = 0; i < items.length; i++){
-        takeID = '#take'+i
+        takeID = '#take'+i;
         item = $().extend({}, items[i])
         $(takeID).attr('item_id', i)
         $(takeID).click(
@@ -1370,15 +1381,30 @@ function drop_items(items){
                     }
                     item_to_take = items[$(this).attr('item_id')];
                     // equip(hero, item_to_take);
-                    take_item($().extend({},item_to_take))
+                    if(item_to_take.constructorName != 'Consumable'){
+                        take_item($().extend({},item_to_take))
+                    }
+                    else{
+                      var temp = new Consumable(item_to_take.name, 'lul');
+                      take_item(temp);
+                    }
+
                     $(this).hide();
                 }
                 else {
-                    alert("Your inventory is full");
+                    openAlert("Your inventory is full");
                 }
             }
         )
     }
+}
+function openAlert(message){
+  var cached_html = '<div id="ok" class="interact" style="z-index:6;">––&#62;</div>';
+  $('#alertBox').show().append(message + "<br>");
+  $('#ok').click(function(){
+    $('#ok').off('click');
+    $('#alertBox').hide().html(cached_html);
+  })
 }
 
 
