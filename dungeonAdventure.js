@@ -25,6 +25,8 @@ var messageCount;
 //variables of hero status
 var canMove;
 var hero_protected;
+var last_key_press;
+var loc_facing;
 var ready;
 var shielded;
 var shieldUp;
@@ -309,6 +311,9 @@ function start_game(){
     avatarX = Math.floor(room_list[curr_floor][curr_room].room_width/8);
     avatarY = Math.floor(room_list[curr_floor][curr_room].room_height/2);
 
+    loc_facing = [avatarX+1, avatarY];
+    last_key_press = 'd';
+
     //establish NPCs
     if(inactiveNPCs.length > 0){
       pitActive = false;
@@ -579,20 +584,43 @@ function exit_combat(room, customCombat) {
 //   return Math.pow(Math.random(), 1 / (Character.dexterity / 3));
 // }
 
+function update_loc_facing(key_press){
+    switch (key_press) {
+        case 'w':
+            loc_facing = [avatarX, avatarY-1];
+            break;
+        case 's':
+            loc_facing = [avatarX, avatarY+1];
+            break;
+        case 'a':
+            loc_facing = [avatarX-1, avatarY];
+            break;
+
+        case 'd':
+            loc_facing = [avatarX+1, avatarY];
+            break;
+
+        default:
+            console.log('unknown update_loc_facing');
+
+    }
+}
+
 function move(e) {
     if (canMove == true) {
         var didMove = false;
         var activatedTorch = false;
         var oldPos = [avatarX,avatarY]
         if (e.keyCode == "87" && avatarY > 0) { //up
+            last_key_press = 'w';
             if(room_list[curr_floor][curr_room].room_map[avatarY-1][avatarX].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarY --;
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                 didMove = true;
             }
-
         } else if (e.keyCode == "83" && avatarY < room_list[curr_floor][curr_room].room_height-1) { //down
+            last_key_press = 's';
             if(room_list[curr_floor][curr_room].room_map[avatarY+1][avatarX].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarY ++;
@@ -600,6 +628,7 @@ function move(e) {
                 didMove = true;
             }
         } else if (e.keyCode == "65" && avatarX > 0) { //left
+            last_key_press = 'a';
             if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX-1].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarX --;
@@ -607,6 +636,7 @@ function move(e) {
                 didMove = true;
             }
         } else if (e.keyCode == "68" && avatarX < room_list[curr_floor][curr_room].room_width-1) { //right
+            last_key_press = 'd';
             if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX+1].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarX ++;
@@ -670,6 +700,7 @@ function move(e) {
             room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight,fog_radius);
 
         }
+        update_loc_facing(last_key_press);
 
         if(didMove || activatedTorch){
             var newPos = [avatarX,avatarY];
@@ -963,6 +994,7 @@ function descend(descend){
             curr_room = 0;
             avatarY = room_list[curr_floor][curr_room].room_entry[0];
             avatarX = room_list[curr_floor][curr_room].room_entry[1];
+            update_loc_facing(last_key_press);
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 
 

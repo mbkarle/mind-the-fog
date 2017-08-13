@@ -350,10 +350,12 @@ class Door extends Location{ //highly experimental content at hand here
                     if(avatarX == 0){
                         avatarX = room_list[curr_floor][curr_room].room_width - 1;
                         avatarY = room_list[curr_floor][curr_room].room_exit[0];
+                        update_loc_facing(last_key_press);
                     }
                     else{
                         avatarX = 1;
                         avatarY = room_list[curr_floor][curr_room].room_entry[0];
+                        update_loc_facing(last_key_press);
                     }
 
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
