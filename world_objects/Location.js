@@ -51,7 +51,7 @@ class Location {
 
 class Chest extends Location {
     constructor(rowID, colID, itemList){
-        super(rowID, colID,'Treasure Chest', 'treasure', 'v', "A wooden chest. It's locked, but no wood can withstand your blade.",true);
+        super(rowID, colID,'Treasure Chest', 'treasure', 'v', "A wooden chest. It's locked, but no wood can withstand your blade.",false);
         this.emptied_chest = false; //has the chest been emptied?
         this.treasureIDs = []; //id of treasure Item inside in itemList
         this.size = Math.ceil(Math.random() * 3)
@@ -84,7 +84,7 @@ class Tile extends Location {
 
 class Statue extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, 'Statue', 'statue', 's', 'A mysterious statue stands impassively in front of you. It clutches a steel blade in its stony fingers which glimmers with a menacing edge.',true);
+        super(rowID, colID, 'Statue', 'statue', 's', 'A mysterious statue stands impassively in front of you. It clutches a steel blade in its stony fingers which glimmers with a menacing edge.',false);
         this.destroyed_statue = false;
     }
 }
@@ -98,21 +98,21 @@ class Cave extends Location {
 
 class Fountain extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, "Fountain", 'fountain', 'f', "A beautiful fountain, flowing with divine grace.", true);
+        super(rowID, colID, "Fountain", 'fountain', 'f', "A beautiful fountain, flowing with divine grace.", false);
         this.used = false;
     }
 }
 
 class Altar extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, "Altar", 'altar', 'a', "A blood-stained altar. Sacrifice here might make the gods of death smile upon you.", true);
+        super(rowID, colID, "Altar", 'altar', 'a', "A blood-stained altar. Sacrifice here might make the gods of death smile upon you.", false);
         this.used = false;
     }
 }
 
 class DungeonEntrance extends Location{
     constructor(rowID,colID){
-        super(rowID, colID, 'Dungeon Entrance', 'entrance', 'D', 'The entrance to the dungeon stands, forboding and dark.',true);
+        super(rowID, colID, 'Dungeon Entrance', 'entrance', 'D', 'The entrance to the dungeon stands, forboding and dark.',false);
     }
 }
 
@@ -130,7 +130,7 @@ class EmptyTile extends Location{
 
 class CharDialogue extends Location{
     constructor(rowID, colID, charId, charDisplay){
-        super(rowID, colID, 'Character Dialogue', 'charDialogue', 'C', "", true);
+        super(rowID, colID, 'Character Dialogue', 'charDialogue', 'C', "", false);
         this.charId = charId;
         this.charDisplay = charDisplay;
         var self = this;
@@ -229,7 +229,7 @@ class Pit extends Location{
 
 class NPC extends Location {
     constructor(rowID, colID, name){
-        super(rowID, colID, name, 'npc', NPCList[name]['symbol'], NPCList[name]['description'], true);
+        super(rowID, colID, name, 'npc', NPCList[name]['symbol'], NPCList[name]['description'], false);
         this.onSale = NPCList[name]['merchandise'];
         var self = this;
         this.interact = function(){
@@ -387,7 +387,7 @@ class LockedDoor extends Location{
 
 class Merchant extends Location{ // problems with selling: page needs to refresh when items are equipped in the inventory (equipped items shouldn't be sold)
     constructor(rowID, colID, itemList){
-        super(rowID, colID, "Merchant", "merchant", "m", "Another wanderer has set up shop here, vending his wares – for a price.", true);
+        super(rowID, colID, "Merchant", "merchant", "m", "Another wanderer has set up shop here, vending his wares – for a price.", false);
         this.itemList = itemList;
         this.onSale = [];
         this.excludedItems = 0;
