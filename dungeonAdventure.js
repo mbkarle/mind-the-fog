@@ -25,6 +25,8 @@ var messageCount;
 //variables of hero status
 var canMove;
 var hero_protected;
+var last_key_press;
+var loc_facing;
 var ready;
 var shielded;
 var shieldUp;
@@ -309,6 +311,9 @@ function start_game(){
     avatarX = Math.floor(room_list[curr_floor][curr_room].room_width/8);
     avatarY = Math.floor(room_list[curr_floor][curr_room].room_height/2);
 
+    loc_facing = [avatarX+1, avatarY];
+    last_key_press = 'd';
+
     //establish NPCs
     if(inactiveNPCs.length > 0){
       pitActive = false;
@@ -579,20 +584,43 @@ function exit_combat(room, customCombat) {
 //   return Math.pow(Math.random(), 1 / (Character.dexterity / 3));
 // }
 
+function update_loc_facing(key_press){
+    switch (key_press) {
+        case 'w':
+            loc_facing = [avatarX, avatarY-1];
+            break;
+        case 's':
+            loc_facing = [avatarX, avatarY+1];
+            break;
+        case 'a':
+            loc_facing = [avatarX-1, avatarY];
+            break;
+
+        case 'd':
+            loc_facing = [avatarX+1, avatarY];
+            break;
+
+        default:
+            console.log('unknown update_loc_facing');
+
+    }
+}
+
 function move(e) {
     if (canMove == true) {
         var didMove = false;
         var activatedTorch = false;
         var oldPos = [avatarX,avatarY]
         if (e.keyCode == "87" && avatarY > 0) { //up
+            last_key_press = 'w';
             if(room_list[curr_floor][curr_room].room_map[avatarY-1][avatarX].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarY --;
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                 didMove = true;
             }
-
         } else if (e.keyCode == "83" && avatarY < room_list[curr_floor][curr_room].room_height-1) { //down
+            last_key_press = 's';
             if(room_list[curr_floor][curr_room].room_map[avatarY+1][avatarX].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarY ++;
@@ -600,6 +628,7 @@ function move(e) {
                 didMove = true;
             }
         } else if (e.keyCode == "65" && avatarX > 0) { //left
+            last_key_press = 'a';
             if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX-1].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarX --;
@@ -607,6 +636,7 @@ function move(e) {
                 didMove = true;
             }
         } else if (e.keyCode == "68" && avatarX < room_list[curr_floor][curr_room].room_width-1) { //right
+            last_key_press = 'd';
             if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX+1].passable){
                 room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                 avatarX ++;
@@ -670,6 +700,12 @@ function move(e) {
             room_list[curr_floor][curr_room].updateRoomHTML(newPos,newPos,torchlight,fog_radius);
 
         }
+        else if(e.keyCode == '69'){
+            //e for interact (#81 issues)
+            //do a checkLocation with the loc_facing
+            checkLocation(loc_facing[0], loc_facing[1])
+        }
+        update_loc_facing(last_key_press);
 
         if(didMove || activatedTorch){
             var newPos = [avatarX,avatarY];
@@ -692,7 +728,7 @@ function move(e) {
         }
 
         if(didMove){
-            checkLocation();
+            checkLocation(avatarX, avatarY);
         }
     }
     //keypresses outside of canMove
@@ -706,26 +742,26 @@ function move(e) {
     }
 }
 
-function checkLocation(){
+function checkLocation(avX, avY){
     //check if on a chest
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === "treasure" && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].emptied_chest){ //if both coords of same chest and its a match
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === "treasure" && !room_list[curr_floor][curr_room].room_map[avY][avX].emptied_chest){ //if both coords of same chest and its a match
         $("#text-module").show();
         $("#enter").hide();
         $("#open").show();
         canMove = false;
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
-        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message = "the chest lays smashed by your blade, its treasures still there."
+        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
+        room_list[curr_floor][curr_room].room_map[avY][avX].message = "the chest lays smashed by your blade, its treasures still there."
         openChest(true);
     };
 
     //check if on the trapdoor
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'trapdoor' || room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'entrance'){
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'trapdoor' || room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'entrance'){
         $("#text-module").show();
         $("#enter").hide();
         $("#stay").show();
 
         canMove = false;
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
+        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
 
         $("#descend").show();
         $("#descend").click(
@@ -742,16 +778,16 @@ function checkLocation(){
             }
         )
     }
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'pit' && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].used){
-        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].encounter();
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'pit' && !room_list[curr_floor][curr_room].room_map[avY][avX].used){
+        room_list[curr_floor][curr_room].room_map[avY][avX].encounter();
     }
 
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'npc' && NPCList[room_list[curr_floor][curr_room].room_map[avatarY][avatarX].name]['merchandise'].length > 0){
-      room_list[curr_floor][curr_room].room_map[avatarY][avatarX].interact();
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'npc' && NPCList[room_list[curr_floor][curr_room].room_map[avY][avX].name]['merchandise'].length > 0){
+      room_list[curr_floor][curr_room].room_map[avY][avX].interact();
     }
 
     //check if on statue
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'statue' && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].destroyed_statue){
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'statue' && !room_list[curr_floor][curr_room].room_map[avY][avX].destroyed_statue){
         $("#text-module").show();
         $("#enter").hide();
         //using descend buttons for position and convenience
@@ -759,7 +795,7 @@ function checkLocation(){
         $("#stay").show();
 
         canMove = false;
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
+        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
         document.getElementById("descend").innerHTML = "Take Sword";
         document.getElementById("stay").innerHTML = "Leave";
 
@@ -770,7 +806,7 @@ function checkLocation(){
                 print("message", "The statue springs to life and raises its sword. There's no escape!");
                 $("#text-module").show();
                 enter_combat(room_list[curr_floor][curr_room], Golem);
-                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].destroyed_statue = true;
+                room_list[curr_floor][curr_room].room_map[avY][avX].destroyed_statue = true;
             }
         )
         $("#stay").click(
@@ -780,14 +816,14 @@ function checkLocation(){
         )
     }
 
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid == 'cave' && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].empty){
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid == 'cave' && !room_list[curr_floor][curr_room].room_map[avY][avX].empty){
         canMove = false;
         $("#text-module").show();
         $("#enter").hide();
         $("#descend").show();
         $("#stay").show();
 
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
+        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
         document.getElementById("descend").innerHTML = "Enter";
 
         $("#descend").click(
@@ -797,7 +833,7 @@ function checkLocation(){
                 print("message", "The occupant of the cave awakes. A massive frost giant looms before you!");
                 $("#text-module").show();
                 enter_combat(room_list[curr_floor][curr_room], frostGiant);
-                room_list[curr_floor][curr_room].room_map[avatarY][avatarX].empty = true;
+                room_list[curr_floor][curr_room].room_map[avY][avX].empty = true;
             }
         )
         $("#stay").click(
@@ -806,14 +842,14 @@ function checkLocation(){
             }
         )
     }
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'fountain' && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].used){
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'fountain' && !room_list[curr_floor][curr_room].room_map[avY][avX].used){
         canMove = false;
         $("#text-module").show();
         $("#enter").hide();
         $("#descend").show();
         $("#stay").show();
 
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
+        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
         document.getElementById("descend").innerHTML = "Use";
         document.getElementById("stay").innerHTML = "Leave";
 
@@ -843,7 +879,7 @@ function checkLocation(){
                         revertTextModule();
                     })
                 }
-            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].used = true;
+            room_list[curr_floor][curr_room].room_map[avY][avX].used = true;
             }
         )
     $("#stay").click(function(){
@@ -851,14 +887,14 @@ function checkLocation(){
     })
     }
 
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'altar' && !room_list[curr_floor][curr_room].room_map[avatarY][avatarX].used){
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'altar' && !room_list[curr_floor][curr_room].room_map[avY][avX].used){
         canMove = false;
         $("#text-module").show();
         $("#enter").hide();
         $("#descend").show();
         $("#stay").show();
 
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
+        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
         document.getElementById("descend").innerHTML = "Use";
         document.getElementById("stay").innerHTML = "Leave";
 
@@ -889,7 +925,7 @@ function checkLocation(){
                     revertTextModule();
                     })
 
-            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].used = true;
+            room_list[curr_floor][curr_room].room_map[avY][avX].used = true;
             }
         )
 
@@ -898,36 +934,36 @@ function checkLocation(){
     })
     }
 
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'charDialogue'){
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'charDialogue'){
         canMove = false;
 
-        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].dialogue(dialogues[room_list[curr_floor][curr_room].room_map[avatarY][avatarX].charId], 0);
+        room_list[curr_floor][curr_room].room_map[avY][avX].dialogue(dialogues[room_list[curr_floor][curr_room].room_map[avY][avX].charId], 0);
 
 
     }
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'door'){
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'door'){
             canMove = false;
-            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].nextRoom();
+            room_list[curr_floor][curr_room].room_map[avY][avX].nextRoom();
 
     }
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'lockedDoor'){
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'lockedDoor'){
         canMove = false;
-        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].interact();
+        room_list[curr_floor][curr_room].room_map[avY][avX].interact();
     }
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === 'merchant'){
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'merchant'){
         canMove = false;
         $("#text-module").show();
         $("#enter").hide();
         $("#descend").show();
         $("#stay").show();
 
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avatarY][avatarX].message);
+        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
         document.getElementById("descend").innerHTML = "Shop";
         document.getElementById("stay").innerHTML = "Leave";
 
         $("#descend").click(function(){
             revertTextModule();
-            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].openModule(true);
+            room_list[curr_floor][curr_room].room_map[avY][avX].openModule(true);
         })
         $("#stay").click(function(){
             revertTextModule();
@@ -963,6 +999,7 @@ function descend(descend){
             curr_room = 0;
             avatarY = room_list[curr_floor][curr_room].room_entry[0];
             avatarX = room_list[curr_floor][curr_room].room_entry[1];
+            update_loc_facing(last_key_press);
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 
 
