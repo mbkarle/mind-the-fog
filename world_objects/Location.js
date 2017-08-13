@@ -227,6 +227,12 @@ class Pit extends Location{
     }
 }
 
+class Dog extends Location {
+    constructor(rowID, colID){
+        super(rowID, colID, 'dog', 'dog', 'd', 'what a puppaluppagus', false)
+    }
+}
+
 class NPC extends Location {
     constructor(rowID, colID, name){
         super(rowID, colID, name, 'npc', NPCList[name]['symbol'], NPCList[name]['description'], false);

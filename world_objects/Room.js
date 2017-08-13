@@ -116,6 +116,9 @@ class Room {
                 var gateKeeper = new CharDialogue(9, 30, "gatekeeper", 'the gatekeeper');
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
+                var dog = new Dog(9, 29);
+                map[dog.rowID][dog.colID] = dog;
+
 
                 //after creating all special locations, turn fog off!
                 clearAllFog(map);
