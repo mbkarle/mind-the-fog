@@ -80,7 +80,7 @@ class Chest extends Location {
             $("#enter").hide();
             $("#open").show();
             canMove = false;
-            msg = print("message", this.message);
+            print("message", this.message);
             this.message = "the chest lays smashed by your blade, its treasures still there."
             this.openChest(true);
         }
@@ -167,7 +167,29 @@ class Chest extends Location {
 
 class Trapdoor extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, 'Trapdoor', 'trapdoor','ø',  'A gaping black hole stares at you from the floor of the dungeon... you wonder what is on the other side',true);
+        super(rowID, colID, 'Trapdoor', 'trapdoor','ø',  'A gaping black hole stares at you from the floor of the dungeon... you wonder what is on the other side',true, true);
+    }
+    hero_interact(){
+        $("#text-module").show();
+        $("#enter").hide();
+        $("#stay").show();
+
+        canMove = false;
+        print("message", this.message);
+
+        $("#descend").show();
+        $("#descend").click(
+            function() {
+                console.log("Enter new floor")
+                descend(true)
+            }
+        );
+        $("#stay").click(
+            function() {
+                console.log("Stay on this floor")
+                descend(false)
+            }
+        )
     }
 }
 
@@ -179,35 +201,209 @@ class Tile extends Location {
 
 class Statue extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, 'Statue', 'statue', 's', 'A mysterious statue stands impassively in front of you. It clutches a steel blade in its stony fingers which glimmers with a menacing edge.',false);
+        super(rowID, colID, 'Statue', 'statue', 's', 'A mysterious statue stands impassively in front of you. It clutches a steel blade in its stony fingers which glimmers with a menacing edge.',false, true);
         this.destroyed_statue = false;
+    }
+    hero_interact(){
+        if(!this.destroyed_statue){
+            $("#text-module").show();
+            $("#enter").hide();
+            //using descend buttons for position and convenience
+            $("#descend").show();
+            $("#stay").show();
+
+            canMove = false;
+            var msg = print("message", this.message);
+            $("#descend").html('Take Sword');
+            $("#stay").html("Leave");
+            var statue = this;
+            $("#descend").click(
+                function() {
+                    revertTextModule();
+                    canMove = false;
+                    print("message", "The statue springs to life and raises its sword. There's no escape!");
+                    $("#text-module").show();
+                    enter_combat(room_list[curr_floor][curr_room], Golem);
+                    statue.destroyed_statue = true;
+                }
+            )
+            $("#stay").click(
+                function() {
+                    revertTextModule();
+                }
+            )
+        }
     }
 }
 
 class Cave extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, 'Cave', 'cave', 'o', "A small hole in the ground. It's dark inside but it's clear that danger lurks within.", true);
+        super(rowID, colID, 'Cave', 'cave', 'o', "A small hole in the ground. It's dark inside but it's clear that danger lurks within.", true, true);
         this.empty = false;
+    }
+    hero_interact(){
+        if(!this.empty){
+            canMove = false;
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#descend").show();
+            $("#stay").show();
+
+            var msg = print("message", this.message);
+            $("#descend").html("Enter");
+            var cave = this;
+            $("#descend").click(
+                function(){
+                    revertTextModule();
+                    canMove = false;
+                    print("message", "The occupant of the cave awakes. A massive frost giant looms before you!");
+                    $("#text-module").show();
+                    enter_combat(room_list[curr_floor][curr_room], frostGiant);
+                    cave.empty = true;
+                }
+            )
+            $("#stay").click(
+                function(){
+                    revertTextModule();
+                }
+            )
+        }
     }
 }
 
 class Fountain extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, "Fountain", 'fountain', 'f', "A beautiful fountain, flowing with divine grace.", false);
+        super(rowID, colID, "Fountain", 'fountain', 'f', "A beautiful fountain, flowing with divine grace.", false, true);
         this.used = false;
+    }
+    hero_interact(){
+        if(!this.used){
+            canMove = false;
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#descend").show();
+            $("#stay").show();
+
+            var msg = print("message", this.message);
+            $("#descend").html("Use");
+            $("#stay").html("Leave");
+            var fountain = this;
+            $("#descend").click(
+                function(){
+                    revertTextModule();
+                    if(Math.random() <= .5){
+                        hero.maxVitality += 5;
+                        hero.vitality = hero.maxVitality;
+                        refreshInfo();
+                        print("message", "The gods have smiled upon you. Your vitality is improved.");
+                        $("#text-module").show();
+                        $("#enter").hide();
+                        $("#open").show().click(function(){
+                            $("#open").off('click');
+                            $("#open").hide();
+                            revertTextModule();
+                        })
+                    }
+                    else{
+                        print("message", "The gods do not hear your prayers. Nothing happens.");
+                        $("#text-module").show();
+                        $("#enter").hide();
+                        $("#open").show().click(function(){
+                            $("#open").off('click').hide();
+
+                            revertTextModule();
+                        })
+                    }
+                fountain.used = true;
+                }
+            )
+        $("#stay").click(function(){
+            revertTextModule();
+        })
+        }
     }
 }
 
 class Altar extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, "Altar", 'altar', 'a', "A blood-stained altar. Sacrifice here might make the gods of death smile upon you.", false);
+        super(rowID, colID, "Altar", 'altar', 'a', "A blood-stained altar. Sacrifice here might make the gods of death smile upon you.", false, true);
         this.used = false;
+    }
+    hero_interact(){
+        if(!this.used){
+            canMove = false;
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#descend").show();
+            $("#stay").show();
+
+            var msg = print("message", this.message);
+            $("#descend").html('Use');
+            $("#stay").html('Leave');
+            var altar = this;
+            $("#descend").click(
+                function(){
+                    revertTextModule();
+                    hero.maxVitality -= 5;
+                    hero.vitality -= 5;
+                    if(hero.vitality <= 0){
+                        hero.vitality = 1;
+                    }
+                    var statToImprove = Math.random();
+                    if(statToImprove <= .5){
+                        hero.strength += Math.ceil(Math.random() * 2);
+                        statToImprove = "strength";
+                    }
+                    else{
+                        hero.dexterity += Math.ceil(Math.random() * 2);
+                        statToImprove = "dexterity";
+                    }
+                    print("message", "The gods of death accept your blood sacrifice. Your " + statToImprove + " has improved.");
+                    refreshInfo();
+                    $("#text-module").show();
+                    $("#enter").hide();
+                    $("#open").show().click(function(){
+                        $("#open").off('click');
+                        $("#open").hide();
+                        revertTextModule();
+                        })
+
+                altar.used = true;
+                }
+            )
+
+        $("#stay").click(function(){
+            revertTextModule();
+        })
+        }
     }
 }
 
 class DungeonEntrance extends Location{
     constructor(rowID,colID){
-        super(rowID, colID, 'Dungeon Entrance', 'entrance', 'D', 'The entrance to the dungeon stands, forboding and dark.',false);
+        super(rowID, colID, 'Dungeon Entrance', 'entrance', 'D', 'The entrance to the dungeon stands, forboding and dark.',false, true);
+    }
+    hero_interact(){
+        $("#text-module").show();
+        $("#enter").hide();
+        $("#stay").show();
+
+        canMove = false;
+        print("message", this.message);
+
+        $("#descend").show();
+        $("#descend").click(
+            function() {
+                console.log("Enter new floor")
+                descend(true)
+            }
+        );
+        $("#stay").click(
+            function() {
+                console.log("Stay on this floor")
+                descend(false)
+            }
+        )
     }
 }
 
@@ -225,7 +421,7 @@ class EmptyTile extends Location{
 
 class CharDialogue extends Location{
     constructor(rowID, colID, charId, charDisplay){
-        super(rowID, colID, 'Character Dialogue', 'charDialogue', 'C', "", false);
+        super(rowID, colID, 'Character Dialogue', 'charDialogue', 'C', "", false, true);
         this.charId = charId;
         this.charDisplay = charDisplay;
         var self = this;
@@ -253,12 +449,18 @@ class CharDialogue extends Location{
                 }
             }
         )
-    }}
+        }
+    }
+    hero_interact(){
+        canMove = false;
+        this.dialogue(dialogues[this.charId], 0);
+    }
+
 }
 
 class Pit extends Location{
     constructor(rowID, colID, charID, charDisplay){
-        super(rowID, colID, "Pit", 'pit', 'p', 'A pitfall, once covered with crumbled stone. Someone appears trapped within.', true)
+        super(rowID, colID, "Pit", 'pit', 'p', 'A pitfall, once covered with crumbled stone. Someone appears trapped within.', true, true)
         this.charID = charID;
         this.charDisplay = charDisplay;
         this.empty = false;
@@ -290,6 +492,11 @@ class Pit extends Location{
                     self.interact(self, dialogues['trapped'][self.charID], 0);
                 })
             })
+        }
+    }
+    hero_interact(){
+        if(!this.used){
+            this.encounter();
         }
     }
     interact(self, stringArray, thisMessage){
@@ -326,7 +533,7 @@ class Dog extends Location {
     constructor(rowID, colID){
         super(rowID, colID, 'dog', 'dog', 'd', 'what a puppaluppagus', false, true)
     }
-    hero_interact(avX, avY){
+    hero_interact(){
         // $("#text-module").show();
         // print('message','Woof!')
         console.log('woof!')
@@ -335,7 +542,7 @@ class Dog extends Location {
 
 class NPC extends Location {
     constructor(rowID, colID, name){
-        super(rowID, colID, name, 'npc', NPCList[name]['symbol'], NPCList[name]['description'], false);
+        super(rowID, colID, name, 'npc', NPCList[name]['symbol'], NPCList[name]['description'], false, true);
         this.onSale = NPCList[name]['merchandise'];
         var self = this;
         this.interact = function(){
@@ -350,6 +557,11 @@ class NPC extends Location {
               top: '175px'
             })
           })
+        }
+    }
+    hero_interact(){
+        if(this.onSale.length > 0){
+            this.interact();
         }
     }
     openNPCModule(self){
@@ -432,7 +644,7 @@ class NPC extends Location {
 
 class Door extends Location{ //highly experimental content at hand here
     constructor(rowID, colID, roomID, nextRoomID){
-        super(rowID, colID, 'Door', 'door', '□', 'Leave room?', true);
+        super(rowID, colID, 'Door', 'door', '□', 'Leave room?', true, true);
         this.roomID = roomID;
         this.nextRoomID = nextRoomID;
         var self = this;
@@ -443,7 +655,7 @@ class Door extends Location{ //highly experimental content at hand here
             $("#enter").hide();
             $("#descend").show();
             $("#stay").show();
-            document.getElementById('descend').innerHTML = "Leave";
+            $('#descend').html("Leave");
             $("#descend").click(
                 function(){
                     revertTextModule();
@@ -477,10 +689,15 @@ class Door extends Location{ //highly experimental content at hand here
 
         }
     }
+    hero_interact(){
+        canMove = false;
+        this.nextRoom();
+    }
 }
+
 class LockedDoor extends Location{
     constructor(rowID, colID){
-        super(rowID, colID, "Locked Door", 'lockedDoor', '□', "It appears to be the way out of here, but it's locked. If only you had a key...", true);
+        super(rowID, colID, "Locked Door", 'lockedDoor', '□', "It appears to be the way out of here, but it's locked. If only you had a key...", true, true);
         this.interact = function(){
             print('message', this.message);
             $("#text-module").show();
@@ -491,11 +708,15 @@ class LockedDoor extends Location{
             })
         }
     }
+    hero_interact(){
+        canMove = false;
+        this.interact();
+    }
 }
 
 class Merchant extends Location{ // problems with selling: page needs to refresh when items are equipped in the inventory (equipped items shouldn't be sold)
     constructor(rowID, colID, itemList){
-        super(rowID, colID, "Merchant", "merchant", "m", "Another wanderer has set up shop here, vending his wares – for a price.", false);
+        super(rowID, colID, "Merchant", "merchant", "m", "Another wanderer has set up shop here, vending his wares – for a price.", false, true);
         this.itemList = itemList;
         this.onSale = [];
         this.excludedItems = 0;
@@ -644,6 +865,25 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
             })
         }
 
+    }
+    hero_interact(){
+        canMove = false;
+        $("#text-module").show();
+        $("#enter").hide();
+        $("#descend").show();
+        $("#stay").show();
+
+        var msg = print("message", this.message);
+        $("#descend").html("Shop");
+        $("#stay").html('Leave');
+        var merch = this;
+        $("#descend").click(function(){
+            revertTextModule();
+            merch.openModule(true);
+        })
+        $("#stay").click(function(){
+            revertTextModule();
+        })
     }
     buyItem(item){
         var successful_transaction = false;
