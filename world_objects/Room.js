@@ -85,7 +85,7 @@ class Room {
 
             case 'VertHallNorm':
                 width = 12;
-                height = 40;
+                height = 30;
                 map = makeNormalRoom(height, width, map, locations, itemList, tier);
                 break;
 
