@@ -743,232 +743,229 @@ function move(e) {
 }
 
 function checkLocation(avX, avY){
-    //check if on a chest
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === "treasure" && !room_list[curr_floor][curr_room].room_map[avY][avX].emptied_chest){ //if both coords of same chest and its a match
-        $("#text-module").show();
-        $("#enter").hide();
-        $("#open").show();
-        canMove = false;
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
-        room_list[curr_floor][curr_room].room_map[avY][avX].message = "the chest lays smashed by your blade, its treasures still there."
-        openChest(true);
-    };
 
-    //check if on the trapdoor
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'trapdoor' || room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'entrance'){
-        $("#text-module").show();
-        $("#enter").hide();
-        $("#stay").show();
-
-        canMove = false;
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
-
-        $("#descend").show();
-        $("#descend").click(
-            function() {
-                console.log("Enter new floor")
-                descend(true)
-            }
-        );
-
-        $("#stay").click(
-            function() {
-                console.log("Stay on this floor")
-                descend(false)
-            }
-        )
-    }
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'pit' && !room_list[curr_floor][curr_room].room_map[avY][avX].used){
-        room_list[curr_floor][curr_room].room_map[avY][avX].encounter();
+    if(room_list[curr_floor][curr_room].room_map[avY][avX].is_interactive){
+        room_list[curr_floor][curr_room].room_map[avY][avX].hero_interact();
     }
 
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'npc' && NPCList[room_list[curr_floor][curr_room].room_map[avY][avX].name]['merchandise'].length > 0){
-      room_list[curr_floor][curr_room].room_map[avY][avX].interact();
-    }
+    else{
+        //check if on the trapdoor
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'trapdoor' || room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'entrance'){
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#stay").show();
 
-    //check if on statue
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'statue' && !room_list[curr_floor][curr_room].room_map[avY][avX].destroyed_statue){
-        $("#text-module").show();
-        $("#enter").hide();
-        //using descend buttons for position and convenience
-        $("#descend").show();
-        $("#stay").show();
+            canMove = false;
+            msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
 
-        canMove = false;
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
-        document.getElementById("descend").innerHTML = "Take Sword";
-        document.getElementById("stay").innerHTML = "Leave";
+            $("#descend").show();
+            $("#descend").click(
+                function() {
+                    console.log("Enter new floor")
+                    descend(true)
+                }
+            );
 
-        $("#descend").click(
-            function() {
-                revertTextModule();
-                canMove = false;
-                print("message", "The statue springs to life and raises its sword. There's no escape!");
-                $("#text-module").show();
-                enter_combat(room_list[curr_floor][curr_room], Golem);
-                room_list[curr_floor][curr_room].room_map[avY][avX].destroyed_statue = true;
-            }
-        )
-        $("#stay").click(
-            function() {
-                revertTextModule();
-            }
-        )
-    }
+            $("#stay").click(
+                function() {
+                    console.log("Stay on this floor")
+                    descend(false)
+                }
+            )
+        }
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'pit' && !room_list[curr_floor][curr_room].room_map[avY][avX].used){
+            room_list[curr_floor][curr_room].room_map[avY][avX].encounter();
+        }
 
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid == 'cave' && !room_list[curr_floor][curr_room].room_map[avY][avX].empty){
-        canMove = false;
-        $("#text-module").show();
-        $("#enter").hide();
-        $("#descend").show();
-        $("#stay").show();
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'npc' && NPCList[room_list[curr_floor][curr_room].room_map[avY][avX].name]['merchandise'].length > 0){
+          room_list[curr_floor][curr_room].room_map[avY][avX].interact();
+        }
 
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
-        document.getElementById("descend").innerHTML = "Enter";
+        //check if on statue
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'statue' && !room_list[curr_floor][curr_room].room_map[avY][avX].destroyed_statue){
+            $("#text-module").show();
+            $("#enter").hide();
+            //using descend buttons for position and convenience
+            $("#descend").show();
+            $("#stay").show();
 
-        $("#descend").click(
-            function(){
-                revertTextModule();
-                canMove = false;
-                print("message", "The occupant of the cave awakes. A massive frost giant looms before you!");
-                $("#text-module").show();
-                enter_combat(room_list[curr_floor][curr_room], frostGiant);
-                room_list[curr_floor][curr_room].room_map[avY][avX].empty = true;
-            }
-        )
-        $("#stay").click(
-            function(){
-                revertTextModule();
-            }
-        )
-    }
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'fountain' && !room_list[curr_floor][curr_room].room_map[avY][avX].used){
-        canMove = false;
-        $("#text-module").show();
-        $("#enter").hide();
-        $("#descend").show();
-        $("#stay").show();
+            canMove = false;
+            msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
+            document.getElementById("descend").innerHTML = "Take Sword";
+            document.getElementById("stay").innerHTML = "Leave";
 
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
-        document.getElementById("descend").innerHTML = "Use";
-        document.getElementById("stay").innerHTML = "Leave";
+            $("#descend").click(
+                function() {
+                    revertTextModule();
+                    canMove = false;
+                    print("message", "The statue springs to life and raises its sword. There's no escape!");
+                    $("#text-module").show();
+                    enter_combat(room_list[curr_floor][curr_room], Golem);
+                    room_list[curr_floor][curr_room].room_map[avY][avX].destroyed_statue = true;
+                }
+            )
+            $("#stay").click(
+                function() {
+                    revertTextModule();
+                }
+            )
+        }
 
-        $("#descend").click(
-            function(){
-                revertTextModule();
-                if(Math.random() <= .5){
-                    hero.maxVitality += 5;
-                    hero.vitality = hero.maxVitality;
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid == 'cave' && !room_list[curr_floor][curr_room].room_map[avY][avX].empty){
+            canMove = false;
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#descend").show();
+            $("#stay").show();
+
+            msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
+            document.getElementById("descend").innerHTML = "Enter";
+
+            $("#descend").click(
+                function(){
+                    revertTextModule();
+                    canMove = false;
+                    print("message", "The occupant of the cave awakes. A massive frost giant looms before you!");
+                    $("#text-module").show();
+                    enter_combat(room_list[curr_floor][curr_room], frostGiant);
+                    room_list[curr_floor][curr_room].room_map[avY][avX].empty = true;
+                }
+            )
+            $("#stay").click(
+                function(){
+                    revertTextModule();
+                }
+            )
+        }
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'fountain' && !room_list[curr_floor][curr_room].room_map[avY][avX].used){
+            canMove = false;
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#descend").show();
+            $("#stay").show();
+
+            msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
+            document.getElementById("descend").innerHTML = "Use";
+            document.getElementById("stay").innerHTML = "Leave";
+
+            $("#descend").click(
+                function(){
+                    revertTextModule();
+                    if(Math.random() <= .5){
+                        hero.maxVitality += 5;
+                        hero.vitality = hero.maxVitality;
+                        refreshInfo();
+                        print("message", "The gods have smiled upon you. Your vitality is improved.");
+                        $("#text-module").show();
+                        $("#enter").hide();
+                        $("#open").show().click(function(){
+                            $("#open").off('click');
+                            $("#open").hide();
+                            revertTextModule();
+                        })
+                    }
+                    else{
+                        print("message", "The gods do not hear your prayers. Nothing happens.");
+                        $("#text-module").show();
+                        $("#enter").hide();
+                        $("#open").show().click(function(){
+                            $("#open").off('click').hide();
+
+                            revertTextModule();
+                        })
+                    }
+                room_list[curr_floor][curr_room].room_map[avY][avX].used = true;
+                }
+            )
+        $("#stay").click(function(){
+            revertTextModule();
+        })
+        }
+
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'altar' && !room_list[curr_floor][curr_room].room_map[avY][avX].used){
+            canMove = false;
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#descend").show();
+            $("#stay").show();
+
+            msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
+            document.getElementById("descend").innerHTML = "Use";
+            document.getElementById("stay").innerHTML = "Leave";
+
+            $("#descend").click(
+                function(){
+                    revertTextModule();
+                    hero.maxVitality -= 5;
+                    hero.vitality -= 5;
+                    if(hero.vitality <= 0){
+                        hero.vitality = 1;
+                    }
+                    statToImprove = Math.random();
+                    if(statToImprove <= .5){
+                        hero.strength += Math.ceil(Math.random() * 2);
+                        statToImprove = "strength";
+                    }
+                    else{
+                        hero.dexterity += Math.ceil(Math.random() * 2);
+                        statToImprove = "dexterity";
+                    }
+                    print("message", "The gods of death accept your blood sacrifice. Your " + statToImprove + " has improved.");
                     refreshInfo();
-                    print("message", "The gods have smiled upon you. Your vitality is improved.");
                     $("#text-module").show();
                     $("#enter").hide();
                     $("#open").show().click(function(){
                         $("#open").off('click');
                         $("#open").hide();
                         revertTextModule();
-                    })
+                        })
+
+                room_list[curr_floor][curr_room].room_map[avY][avX].used = true;
                 }
-                else{
-                    print("message", "The gods do not hear your prayers. Nothing happens.");
-                    $("#text-module").show();
-                    $("#enter").hide();
-                    $("#open").show().click(function(){
-                        $("#open").off('click').hide();
+            )
 
-                        revertTextModule();
-                    })
-                }
-            room_list[curr_floor][curr_room].room_map[avY][avX].used = true;
-            }
-        )
-    $("#stay").click(function(){
-        revertTextModule();
-    })
-    }
-
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'altar' && !room_list[curr_floor][curr_room].room_map[avY][avX].used){
-        canMove = false;
-        $("#text-module").show();
-        $("#enter").hide();
-        $("#descend").show();
-        $("#stay").show();
-
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
-        document.getElementById("descend").innerHTML = "Use";
-        document.getElementById("stay").innerHTML = "Leave";
-
-        $("#descend").click(
-            function(){
-                revertTextModule();
-                hero.maxVitality -= 5;
-                hero.vitality -= 5;
-                if(hero.vitality <= 0){
-                    hero.vitality = 1;
-                }
-                statToImprove = Math.random();
-                if(statToImprove <= .5){
-                    hero.strength += Math.ceil(Math.random() * 2);
-                    statToImprove = "strength";
-                }
-                else{
-                    hero.dexterity += Math.ceil(Math.random() * 2);
-                    statToImprove = "dexterity";
-                }
-                print("message", "The gods of death accept your blood sacrifice. Your " + statToImprove + " has improved.");
-                refreshInfo();
-                $("#text-module").show();
-                $("#enter").hide();
-                $("#open").show().click(function(){
-                    $("#open").off('click');
-                    $("#open").hide();
-                    revertTextModule();
-                    })
-
-            room_list[curr_floor][curr_room].room_map[avY][avX].used = true;
-            }
-        )
-
-    $("#stay").click(function(){
-        revertTextModule();
-    })
-    }
-
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'charDialogue'){
-        canMove = false;
-
-        room_list[curr_floor][curr_room].room_map[avY][avX].dialogue(dialogues[room_list[curr_floor][curr_room].room_map[avY][avX].charId], 0);
-
-
-    }
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'door'){
-            canMove = false;
-            room_list[curr_floor][curr_room].room_map[avY][avX].nextRoom();
-
-    }
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'lockedDoor'){
-        canMove = false;
-        room_list[curr_floor][curr_room].room_map[avY][avX].interact();
-    }
-    if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'merchant'){
-        canMove = false;
-        $("#text-module").show();
-        $("#enter").hide();
-        $("#descend").show();
-        $("#stay").show();
-
-        msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
-        document.getElementById("descend").innerHTML = "Shop";
-        document.getElementById("stay").innerHTML = "Leave";
-
-        $("#descend").click(function(){
-            revertTextModule();
-            room_list[curr_floor][curr_room].room_map[avY][avX].openModule(true);
-        })
         $("#stay").click(function(){
             revertTextModule();
         })
+        }
+
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'charDialogue'){
+            canMove = false;
+
+            room_list[curr_floor][curr_room].room_map[avY][avX].dialogue(dialogues[room_list[curr_floor][curr_room].room_map[avY][avX].charId], 0);
+
+
+        }
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'door'){
+                canMove = false;
+                room_list[curr_floor][curr_room].room_map[avY][avX].nextRoom();
+
+        }
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'lockedDoor'){
+            canMove = false;
+            room_list[curr_floor][curr_room].room_map[avY][avX].interact();
+        }
+        if(room_list[curr_floor][curr_room].room_map[avY][avX].objid === 'merchant'){
+            canMove = false;
+            $("#text-module").show();
+            $("#enter").hide();
+            $("#descend").show();
+            $("#stay").show();
+
+            msg = print("message", room_list[curr_floor][curr_room].room_map[avY][avX].message);
+            document.getElementById("descend").innerHTML = "Shop";
+            document.getElementById("stay").innerHTML = "Leave";
+
+            $("#descend").click(function(){
+                revertTextModule();
+                room_list[curr_floor][curr_room].room_map[avY][avX].openModule(true);
+            })
+            $("#stay").click(function(){
+                revertTextModule();
+            })
+        }
     }
+
 }
 
 function descend(descend){
@@ -1285,7 +1282,7 @@ function Damage(source, target) {
                 function(e) {
                     e.stopPropagation();
                     print("item", [mobDrops[target.lootId]]);
-                    drop_items([mobDrops[target.lootId]])
+                    mob_drop_items([mobDrops[target.lootId]])
                     // $("#open").off('click');
                     $("#open").click(function(){$("#open").off('click'); exit_combat(room, customCombat); })
                 }
@@ -1299,7 +1296,7 @@ function Damage(source, target) {
                     console.log(enemy);
                     e.stopPropagation();
                     print("item", [target.loot]);
-                    drop_items([target.loot])
+                    mob_drop_items([target.loot])
                     // $("#open").off('click');
                     $("#open").click(function(){exit_combat(room, customCombat)})
                 }
@@ -1346,45 +1343,7 @@ function refillChests(){ //rebuilds floors so that chests can be filled with new
   console.log(room_list[1][0]);
 }
 
-function openChest(stage) {
-    $("#open").click(
-        function() {
-            treasureIDs = room_list[curr_floor][curr_room].room_map[avatarY][avatarX].treasureIDs;
-            gold.amount = Math.floor(Math.random() * 50) * 10;
-            torch.torch_count = Math.ceil(Math.random() * 3);
-            // console.log(treasureIDs)
-            if (stage) {
-                items_in_chest = []
-                for(var i = 0; i < treasureIDs.length; i++){
-                    if(typeof treasureIDs[i] == 'number'){
-                    items_in_chest.push(room_list[curr_floor][curr_room].itemList[treasureIDs[i]])
-                } else {
-                    items_in_chest.push(treasureIDs[i]);
-                }
-                }
-
-                print('item', items_in_chest) //handles HTML
-                drop_items(items_in_chest) //handles take clicks, etc
-                stage = !stage;
-
-            } else {
-                for(var i = 0; i < treasureIDs.length; i++){
-                    takeID = "#take"+i
-                    $(takeID).hide();
-                    $(takeID).off("click")
-                }
-                $("#open").hide();
-                $("#open").off("click")
-                $("#enter").show();
-                $("#text-module").hide();
-                canMove = true;
-                print("lastMessage", "enemy-message");
-                return;
-            }
-        });
-}
-
-function take_item(item){
+function take_item(item, chest_to_take_from){
     if(item.constructorName == 'Currency'){
         item.walletCheck();
         equip(hero, item);
@@ -1400,16 +1359,14 @@ function take_item(item){
         inventory.carried.push(item)
     }
     refreshInfo();
-    if(room_list[curr_floor][curr_room].room_map[avatarY][avatarX].objid === "treasure"){ //not applicable for mobdrops
-        var indexToRemove = room_list[curr_floor][curr_room].room_map[avatarY][avatarX].treasureIDs.indexOf(item);
-        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].treasureIDs.splice(indexToRemove, 1); //removes item from treasureIDs so that it will not appear on next visit of chest
+    if(typeof chest_to_take_from != 'undefined'){
+        var indexToRemove = chest_to_take_from.treasureIDs.indexOf(item);
+        chest_to_take_from.treasureIDs.splice(indexToRemove, 1); //removes item from treasureIDs so that it will not appear on next visit of chest
     }
+
 }
 
-function drop_items(items){
-    console.log(items)
-    console.log(items.length)
-    var itemsTaken = 0;
+function mob_drop_items(items){
     for(var i = 0; i < items.length; i++){
         takeID = '#take'+i;
         item = $().extend({}, items[i])
@@ -1417,12 +1374,7 @@ function drop_items(items){
         $(takeID).click(
             function() {
                 if(inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency" || items[$(this).attr('item_id')].constructorName == "Torch"){
-                    itemsTaken ++;
-                    if(itemsTaken == items.length){
-                        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].emptied_chest = true;
-                    }
                     item_to_take = items[$(this).attr('item_id')];
-                    // equip(hero, item_to_take);
                     if(item_to_take.constructorName != 'Consumable'){
                         take_item($().extend({},item_to_take))
                     }
@@ -1440,6 +1392,7 @@ function drop_items(items){
         )
     }
 }
+
 function openAlert(message){
   var cached_html = '<div id="ok" class="interact" style="z-index:6;">––&#62;</div>';
   $('#alertBox').show().append(message + "<br>");
