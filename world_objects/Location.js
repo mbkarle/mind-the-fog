@@ -624,7 +624,7 @@ class Dog extends Location {
 
         // console.log(this.path_to_hero.toString())
     }
-    spawn_dog(avX, avY, map){
+    spawn_dog(avX, avY, oldmap, newmap){
         //Upon changing a room / descending, the dog should:
         //1) spawn on the character
         //2) move one to the left/right, etc
@@ -633,9 +633,20 @@ class Dog extends Location {
         this.path_to_hero = [];
         this.clearMoveInterval();
 
+        oldmap[this.rowID][this.colID] = this.loc_sitting_on; //restore old map
+
+        //spawn dog on new map at [avX, avY]
+        this.loc_sitting_on = newmap[avY][avX];
+        this.rowID = avY;
+        this.colID = avX;
+        this.refreshDerivedProperties();
+        newmap[avY][avX] = this;
+
+
         //just find any position available thats not the hero's loc...
-        var newloc = this.get_avail_dog_loc('w', avX, avY, map);
-        this.move_dog_restore_map(newloc, map)
+        var newloc = this.get_avail_dog_loc('w', avX, avY, newmap);
+        this.move_dog_restore_map(newloc, newmap)
+        $('#' + String(avY) + 'x' + String(avX)).html('x')
     }
 
     move_dog_restore_map(newloc, map){
@@ -705,7 +716,7 @@ class Dog extends Location {
                 poss_locs = [[x, y-1], [x-1,y], [x,y+1]]
                 break;
             case 'd':
-                poss_locs = [[x+1, y], [x,y-1], [x,y+1]]
+                poss_locs = [[x, y-1], [x+1,y], [x,y+1]]
                 break;
 
             default:
@@ -848,6 +859,7 @@ class Door extends Location{ //highly experimental content at hand here
                     revertTextModule();
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                     room_list[curr_floor][curr_room].clearAllFogTimeouts();
+                    var old_map = room_list[curr_floor][curr_room].room_map;
                     curr_room = self.nextRoomID;
                     // var oldRoomID = self.roomID;
                     // self.roomID = self.nextRoomID;
@@ -865,7 +877,7 @@ class Door extends Location{ //highly experimental content at hand here
 
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                     room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY,torchlight, fog_radius);
-                    doge.spawn_dog(avatarX, avatarY, room_list[curr_floor][curr_room].room_map)
+                    doge.spawn_dog(avatarX, avatarY, old_map, room_list[curr_floor][curr_room].room_map)
 
                     canMove = true;
                 }
