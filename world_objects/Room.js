@@ -116,8 +116,7 @@ class Room {
                 var gateKeeper = new CharDialogue(9, 30, "gatekeeper", 'the gatekeeper');
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
-                var dog = new Dog(9, 29);
-                map[dog.rowID][dog.colID] = dog;
+                map[doge.rowID][doge.colID] = doge;
 
 
                 //after creating all special locations, turn fog off!
@@ -232,8 +231,8 @@ class Room {
     }
 
     updateRoomHTML(oldPos, newPos, torchlight, fog_rad) { //in [x,y] format
-        //If you cleared the room (or are in a safe room), you REALLY only need
-        //to update the character position (no fog updates necessary!)
+        // If you cleared the room (or are in a safe room), you REALLY only need
+        // to update the character position (no fog updates necessary!)
         if(this.fog_free_room){
             var oldX = oldPos[0];
             var oldY = oldPos[1];
@@ -445,7 +444,8 @@ function rollLocations(num_locs, height, width){
         var loc = [-1,-1];
         found = false;
         while(!found){
-            loc = [Math.floor((height-2)*Math.random())+1, Math.floor((width-2)*Math.random())+1] //new random location
+            //NOTE: as of doge update, items don't spawn adjacent to walls so that you can't 'trap' the dog!
+            loc = [Math.floor((height-4)*Math.random())+2, Math.floor((width-4)*Math.random())+2] //new random location
             passed = true;
             for(var i = 0; i < locs.length; i++){ //check it really is unique as per 8 rooks problem
                 if(locs[i].indexOf(loc[0]) >= 0 || locs[i].indexOf(loc[1]) >= 0){ //if row or col not unique...
