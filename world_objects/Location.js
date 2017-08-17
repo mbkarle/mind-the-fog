@@ -26,11 +26,38 @@ class Location {
         }
     }
 
-    refreshDerivedProperties(){
+    updateRowColIDsAndDerivedProperties(newColID, newRowID, room){
+        //if room is passed in, then the room has changed (due to a spawn). In this case
+        //we know the yoff and xoff and can use that offset.
+        if(typeof room != 'undefined'){
+            //update row/colIDs
+            this.rowID = newRowID;
+            this.colID = newColID;
+
+            this.computeCoordsWithOffset(room.yoff, room.xoff)
+        }
+
+        else{
+            //if its not passed in, we can simply increment / decrement the appropriate coords by delta(id)
+            var oldRowID = this.rowID;
+            var oldColID = this.colID;
+
+            //update row/colIDs
+            this.rowID = newRowID;
+            this.colID = newColID;
+
+            var deltaRowID = oldRowID - newRowID;
+            var deltaColID = oldColID - newColID;
+
+            //use deltas to update the xCoord and yCoord properties
+            //the offset hasn't changed since last room build SO,
+            //simply use the deltas to modify the current coords
+            this.xCoord = this.xCoord - deltaColID * 15;
+            this.yCoord = this.yCoord - deltaRowID * 15;
+        }
+
         //A function to call for moving Locations (currently only dog)
         this.htmlID = '#' + String(this.rowID) + 'x' + String(this.colID);
-        this.xCoord = this.colID * 15; //pixel coords
-        this.yCoord = this.rowID * 15;
     }
 
     addFogBackAfterTimeout(tier){
@@ -544,7 +571,7 @@ class Dog extends Location {
         this.dog_item = null; //TODO: dog carries over an item?
         this.path_to_hero = [];
         this.move_interval = -1;
-        this.loc_sitting_on = new Tile(rowID,colID);
+        this.loc_sitting_on;
         this.dog_speed = 100;
     }
     hero_interact(){
@@ -624,7 +651,8 @@ class Dog extends Location {
 
         // console.log(this.path_to_hero.toString())
     }
-    spawn_dog(avX, avY, oldmap, newmap){
+    spawn_dog(avX, avY, oldmap, room){
+        var newmap = room.room_map;
         //Upon changing a room / descending, the dog should:
         //1) spawn on the character
         //2) move one to the left/right, etc
@@ -634,12 +662,11 @@ class Dog extends Location {
         this.clearMoveInterval();
 
         oldmap[this.rowID][this.colID] = this.loc_sitting_on; //restore old map
+        $(this.htmlID).html(this.loc_sitting_on.symbol);
 
         //spawn dog on new map at [avX, avY]
         this.loc_sitting_on = newmap[avY][avX];
-        this.rowID = avY;
-        this.colID = avX;
-        this.refreshDerivedProperties();
+        this.updateRowColIDsAndDerivedProperties(avX, avY, room); //false = no need to update
         newmap[avY][avX] = this;
 
 
@@ -654,13 +681,16 @@ class Dog extends Location {
         map[this.rowID][this.colID] = this.loc_sitting_on;
         $(this.htmlID).html(this.loc_sitting_on.symbol)
 
-        //update the dog's coords
-        this.rowID = newloc[1];
-        this.colID = newloc[0];
+
+        //move the dogs row/col IDs and update xCoord/yCoord/htmlID
+        this.updateRowColIDsAndDerivedProperties(newloc[0],newloc[1]); //refresh properties like htmlID
+
         //store the new location you're on
         this.loc_sitting_on = map[this.rowID][this.colID];
+
+        //update map with dog
         map[this.rowID][this.colID] = this;
-        this.refreshDerivedProperties(); //refresh properties like htmlID
+
         $(this.htmlID).html('d');
     }
 
@@ -877,7 +907,7 @@ class Door extends Location{ //highly experimental content at hand here
 
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                     room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY,torchlight, fog_radius);
-                    doge.spawn_dog(avatarX, avatarY, old_map, room_list[curr_floor][curr_room].room_map)
+                    doge.spawn_dog(avatarX, avatarY, old_map, room_list[curr_floor][curr_room])
 
                     canMove = true;
                 }

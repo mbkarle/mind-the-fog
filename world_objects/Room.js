@@ -116,6 +116,7 @@ class Room {
                 var gateKeeper = new CharDialogue(9, 30, "gatekeeper", 'the gatekeeper');
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
+                doge.loc_sitting_on = map[doge.rowID][doge.colID];
                 map[doge.rowID][doge.colID] = doge;
 
 
@@ -595,6 +596,9 @@ function tier_to_boss(tier){
 function center_map(map, yoff, xoff){
     for(var i = 0; i < map.length; i++){
         for(var j = 0; j < map[0].length; j++){
+            if(map[i][j].objid === 'dog'){
+                map[i][j].loc_sitting_on.computeCoordsWithOffset(yoff,xoff)
+            }
             map[i][j].computeCoordsWithOffset(yoff,xoff)
         }
     }

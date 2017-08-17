@@ -803,7 +803,7 @@ function descend(descend){
             checkLocation(); */
 
             room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight, fog_radius);
-            doge.spawn_dog(avatarX, avatarY, oldmap, room_list[curr_floor][curr_room].room_map)
+            doge.spawn_dog(avatarX, avatarY, oldmap, room_list[curr_floor][curr_room])
 
 
             // combat(hero, "default");
