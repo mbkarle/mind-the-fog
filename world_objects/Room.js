@@ -43,6 +43,20 @@ class Room {
         center_map(this.room_map, this.yoff, this.xoff)
     }
 
+    howManyHeroPresents(){
+        //This is a function that should NEVER be called, but is useful for debugging
+        var map = this.room_map;
+        var count = 0;
+        for(var i = 0; i < this.room_height; i++){
+            for(var j = 0; j < this.room_width; j++){
+                if(map[i][j].hero_present){
+                    count++
+                }
+            }
+        }
+        console.log(count)
+    }
+
     buildRoom(type, locations, itemList, tier){
         var map;
         var width;

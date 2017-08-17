@@ -726,6 +726,8 @@ class Dog extends Location {
             var newloc = this.get_avail_dog_loc(hero_move_dir,avX, avY, map)
             this.move_dog_restore_map(newloc, map)
             this.clearMoveInterval();
+            map[avY][avX].hero_present = true;
+            this.hero_present = false;
         }
     }
 
@@ -733,6 +735,7 @@ class Dog extends Location {
         clearInterval(this.move_interval)
         this.move_interval = -1;
     }
+
     get_avail_dog_loc(hero_move_dir, x, y, map){
         var poss_locs;
         switch (hero_move_dir) {
