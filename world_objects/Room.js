@@ -43,6 +43,20 @@ class Room {
         center_map(this.room_map, this.yoff, this.xoff)
     }
 
+    howManyHeroPresents(){
+        //This is a function that should NEVER be called, but is useful for debugging
+        var map = this.room_map;
+        var count = 0;
+        for(var i = 0; i < this.room_height; i++){
+            for(var j = 0; j < this.room_width; j++){
+                if(map[i][j].hero_present){
+                    count++
+                }
+            }
+        }
+        console.log(count)
+    }
+
     buildRoom(type, locations, itemList, tier){
         var map;
         var width;
@@ -116,8 +130,7 @@ class Room {
                 var gateKeeper = new CharDialogue(9, 30, "gatekeeper", 'the gatekeeper');
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
-                var dog = new Dog(9, 29);
-                map[dog.rowID][dog.colID] = dog;
+                map[doge.dogY][doge.dogX].dog_present = true;
 
 
                 //after creating all special locations, turn fog off!
@@ -169,13 +182,7 @@ class Room {
         //Build the worldContents HTML string
         for (var i = 0; i < this.room_map.length; i++) {
             for (var j = 0; j < this.room_map[0].length; j++) {
-                var symbol = this.room_map[i][j].symbol;
-                if (this.room_map[i][j].fog) {
-                    symbol = '';
-                }
-                if (this.room_map[i][j].hero_present) {
-                    symbol = 'x';
-                }
+                var symbol = this.room_map[i][j].getSymbol(); //accounts for fog, dog, hero
                 worldContents += "<div id='" + this.room_map[i][j].htmlID.substring(1) + "' style='top:" + this.room_map[i][j].yCoord + "px; left:" + this.room_map[i][j].xCoord + "px; position: absolute;'>" + symbol + "</div>";
             }
         }
@@ -232,10 +239,10 @@ class Room {
     }
 
     updateRoomHTML(oldPos, newPos, torchlight, fog_rad) { //in [x,y] format
-        //If you cleared the room (or are in a safe room), you REALLY only need
-        //to update the character position (no fog updates necessary!)
+        // If youre in a special room that has no fog (GreatHall), you REALLY only need
+        // to update the character position (no fog updates necessary!)
         if(this.fog_free_room){
-            var oldX = oldPos[0];
+            var oldX = oldPos[0]; //checkme
             var oldY = oldPos[1];
             $(this.room_map[oldY][oldX].htmlID).html(this.room_map[oldY][oldX].symbol);
 
@@ -445,7 +452,8 @@ function rollLocations(num_locs, height, width){
         var loc = [-1,-1];
         found = false;
         while(!found){
-            loc = [Math.floor((height-2)*Math.random())+1, Math.floor((width-2)*Math.random())+1] //new random location
+            //NOTE: as of doge update, items don't spawn adjacent to walls so that you can't 'trap' the dog!
+            loc = [Math.floor((height-4)*Math.random())+2, Math.floor((width-4)*Math.random())+2] //new random location
             passed = true;
             for(var i = 0; i < locs.length; i++){ //check it really is unique as per 8 rooks problem
                 if(locs[i].indexOf(loc[0]) >= 0 || locs[i].indexOf(loc[1]) >= 0){ //if row or col not unique...

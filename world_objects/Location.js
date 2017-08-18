@@ -5,6 +5,7 @@ class Location {
         this.objid = objid; //object id
         this.symbol = symbol; //symbol to display on map
         this.hero_present = false; //whether or not the hero is on this Location
+        this.dog_present = false; //whether the dog is on this spot
         this.xCoord = colID * 15; //pixel coords
         this.yCoord = rowID * 15;
         this.rowID = rowID; //row index in world_map
@@ -26,12 +27,66 @@ class Location {
         }
     }
 
+    getSymbol(){
+        if(this.fog){
+            return '';
+        }
+        else if(this.hero_present){
+            return 'x';
+        }
+        else if(this.dog_present){
+            return 'd';
+        }
+        else{
+            return this.symbol;
+        }
+    }
+
+    refreshInnerHTML(){
+        var symbol = this.getSymbol();
+        $(this.htmlID).html(symbol);
+    }
+
+//Originally implemented for the original dog implementation, not currently used.
+//Possibly useful if moving locations ever become a thing. (They shouldn't, its hell)
+/*    updateRowColIDsAndDerivedProperties(newColID, newRowID, room){
+        //if room is passed in, then the room has changed (due to a spawn). In this case
+        //we know the yoff and xoff and can use that offset.
+        if(typeof room != 'undefined'){
+            //update row/colIDs
+            this.rowID = newRowID;
+            this.colID = newColID;
+
+            this.computeCoordsWithOffset(room.yoff, room.xoff)
+        }
+
+        else{
+            //if its not passed in, we can simply increment / decrement the appropriate coords by delta(id)
+            var oldRowID = this.rowID;
+            var oldColID = this.colID;
+
+            //update row/colIDs
+            this.rowID = newRowID;
+            this.colID = newColID;
+
+            var deltaRowID = oldRowID - newRowID;
+            var deltaColID = oldColID - newColID;
+
+            //use deltas to update the xCoord and yCoord properties
+            //the offset hasn't changed since last room build SO,
+            //simply use the deltas to modify the current coords
+            this.xCoord = this.xCoord - deltaColID * 15;
+            this.yCoord = this.yCoord - deltaRowID * 15;
+        }
+
+        //A function to call for moving Locations (currently only dog)
+        this.htmlID = '#' + String(this.rowID) + 'x' + String(this.colID);
+    }
+    */
+
     addFogBackAfterTimeout(tier){
         this.fog = false;
-        var symbol = this.symbol;
-        if(this.hero_present){
-            symbol = 'x';
-        }
+        var symbol = this.getSymbol();
         $(this.htmlID).html(symbol);
 
         clearTimeout(this.fogTimeout);
@@ -46,10 +101,7 @@ class Location {
 
     removeFogBecauseHeroPresent(){
         this.fog = false;
-        var symbol = this.symbol;
-        if(this.hero_present){
-            symbol = 'x';
-        }
+        var symbol = this.getSymbol();
         clearTimeout(this.fogTimeout)
         $(this.htmlID).html(symbol);
     }
@@ -195,7 +247,15 @@ class Trapdoor extends Location {
 
 class Tile extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, 'Tile', "tile", '.', '',true)//style preference? '·' instead??
+        super(rowID, colID, 'Tile', "tile", '.', '',true, true)//style preference? '·' instead??
+    }
+    hero_interact(){
+        //You can interact with a tile if the dog is present!
+        //Note that this should be the only way to interact with the dog--dog should
+        //only move on tiles
+        if(this.dog_present){
+            doge.hero_interact()
+        }
     }
 }
 
@@ -529,17 +589,6 @@ class Pit extends Location{
     }
 }
 
-class Dog extends Location {
-    constructor(rowID, colID){
-        super(rowID, colID, 'dog', 'dog', 'd', 'what a puppaluppagus', false, true)
-    }
-    hero_interact(){
-        // $("#text-module").show();
-        // print('message','Woof!')
-        console.log('woof!')
-    }
-}
-
 class NPC extends Location {
     constructor(rowID, colID, name){
         super(rowID, colID, name, 'npc', NPCList[name]['symbol'], NPCList[name]['description'], false, true);
@@ -661,23 +710,26 @@ class Door extends Location{ //highly experimental content at hand here
                     revertTextModule();
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
                     room_list[curr_floor][curr_room].clearAllFogTimeouts();
+                    var old_map = room_list[curr_floor][curr_room].room_map;
                     curr_room = self.nextRoomID;
                     // var oldRoomID = self.roomID;
                     // self.roomID = self.nextRoomID;
                     // self.nextRoomID = oldRoomID;
                     if(avatarX == 0){
-                        avatarX = room_list[curr_floor][curr_room].room_width - 1;
+                        avatarX = room_list[curr_floor][curr_room].room_width - 2;
                         avatarY = room_list[curr_floor][curr_room].room_exit[0];
                         update_loc_facing(last_key_press);
                     }
                     else{
-                        avatarX = 1;
+                        avatarX = 2;
                         avatarY = room_list[curr_floor][curr_room].room_entry[0];
                         update_loc_facing(last_key_press);
                     }
 
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
                     room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY,torchlight, fog_radius);
+                    doge.spawn_dog(avatarX, avatarY, old_map, room_list[curr_floor][curr_room])
+
                     canMove = true;
                 }
             )

@@ -38,6 +38,12 @@ var initial_fog_radius;
 var fog_radius;
 var inventory;
 
+//dog related variables! mans best friend :)
+//NOTE: these are initialized here bc the dog should NOT be created from scratch
+//every time game is restarted! In fact, Dog's properties should be persistant
+//(such as if its carrying a weapon).
+var doge = new Dog(6,8);
+
 var channelDivSpell;// new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);
 var fireball;// new ActiveSpell('fireball', 'fireball', hero, null, 2, 5000, 1);
 var lightningStrike;// new ActiveSpell('lightning strike', 'lightningS', hero, null, 30, 15000, 2);
@@ -117,35 +123,35 @@ var torch = new Torch(1)
 //------------------------------------------------------
 //              Initialize Characters
 //------------------------------------------------------
-var hero;// new Hero("The Hero", 5, 3, 20, "hero");
-var tutorial;// new Enemy("tutorial", 1, 5, 15);
-var Troglodyte;// new Enemy("Troglodyte", 3, 2, 30);
-var DireRat;// new Enemy("Dire Rat", 1, 15, 20);
-var DireRat2;// new Enemy("Dire Rat", 1.5, 15, 20);
-var Ogre;// new Enemy("Ogre", 9, 1, 60);
-var Sorcerer;// new Enemy("Sorcerer", 6, 4, 20);
-var Vagrant;// new Enemy("Wandering Vagrant", 5, 4, 35);
-var HellHound;// new Boss("Hell Hound", 5, 6, 50, fireSword.items[0]);
-var Golem;// new Boss("Golem", 7, 3, 50, GreatSword.items[0]);
-var Werewolf;// new Enemy("werewolf", 6, 4, 40);
-var slime;// new Enemy("slime", 8, 2, 50);
-var frostGiant;// new Boss("frost giant", 8, 5, 100, icyShell.items[0]);
-var ferBeast;// new Enemy("feral beast", 9, 3, 20);
-var smallWyrm;// new Enemy("young wyrm", 10, 4, 300);
-var pillager;// new Enemy("pillager", 6, 6, 80);
-var Bandit;// new Enemy("Bandit", 3, 5, 40);
-var DarkSquire;// new Enemy("Dark Squire", 5, 3, 35);
-var Cultist;// new Enemy("Cultist", 2, 5, 30);
-var CultMaster;// new Enemy("Cult Master", 4, 5, 40);
-var DarkKnight;// new Enemy("Dark Knight", 7, 7, 100);
-var CrimsonRider;// new Enemy("Crimson Rider", 9, 5, 250);
-var DisOfMoranos;// new Enemy("Disciple of Moranos", 11, 3, 200);
-var DreadPirate;// new Enemy("Dread Pirate Williams", 15, 4, 300);
-var AncientWyrm;// new Enemy("Ancient Wyrm", 14, 8, 500);
-var Moranos;// new Boss("Moranos", 10, 15, 100, bladeMor.items[0]);
-var DarkLord;// new Enemy("Dark Lord", 9, 9, 300);
-var Reaper;// new Boss("Reaper", 20, 2, 200, scythe.items[0]);
-
+//As of start_game's introduction, initialization happens in start_game;
+var hero;
+var tutorial;
+var Troglodyte;
+var DireRat;
+var DireRat2;
+var Ogre;
+var Sorcerer;
+var Vagrant;
+var HellHound;
+var Golem;
+var Werewolf;
+var slime;
+var frostGiant;
+var ferBeast;
+var smallWyrm;
+var pillager;
+var Bandit;
+var DarkSquire;
+var Cultist;
+var CultMaster;
+var DarkKnight;
+var CrimsonRider;
+var DisOfMoranos;
+var DreadPirate;
+var AncientWyrm;
+var Moranos;
+var DarkLord;
+var Reaper;
 
 
 //------------------------------------------------------
@@ -156,9 +162,9 @@ var GreatHall = new SafeRoom('Great Hall', 'GreatHall', 0, 0);
 var TutRoom = new SafeRoom('TutRoom', 'tutRoom', 0, 0);
 var exitRoom = new SafeRoom('exitRoom', 'exitRoom', 0, 0);
 
-var num_floors;// = 6;
+var num_floors;
 
-var room_list;// = []
+var room_list;
 
 
 
@@ -212,6 +218,7 @@ function start_game(){
 
     //character stats must reset
     hero = new Hero("The Hero", 5, 3, 20, "hero");
+    // Dog = new Dog() ---> GETS INITIALIZED IN ROOM!
     tutorial = new Enemy("tutorial", 1, 5, 15);
     Troglodyte = new Enemy("Troglodyte", 3, 2, 30);
     DireRat = new Enemy("Dire Rat", 1, 15, 20);
@@ -295,6 +302,10 @@ function start_game(){
     var Floor3 = new Floor(3, 6, [2], null);
     var Floor4 = new Floor(4, 5, [2, 3], null);
     var Floor5 = new Floor(5, 4, [3], null);
+
+    doge.dogY = 8; //reset from last game
+    doge.dogX = 6;
+    doge.dog_radius = fog_radius;
 
     room_list[0] = Floor0.build_floor();
     room_list[1] = Floor1.build_floor();
@@ -707,6 +718,10 @@ function move(e) {
         }
         update_loc_facing(last_key_press);
 
+        if(didMove){
+            doge.hero_move_update_dog(last_key_press,avatarX, avatarY, room_list[curr_floor][curr_room].room_map);
+        }
+
         if(didMove || activatedTorch){
             var newPos = [avatarX,avatarY];
             room_list[curr_floor][curr_room].updateRoomHTML(oldPos,newPos,torchlight,fog_radius);
@@ -773,6 +788,7 @@ function descend(descend){
 
             }}
             room_list[curr_floor][curr_room].clearAllFogTimeouts();
+            oldmap = room_list[curr_floor][curr_room].room_map;
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
             curr_floor++;
             curr_room = 0;
@@ -781,13 +797,14 @@ function descend(descend){
             update_loc_facing(last_key_press);
             room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
 
-
             /*var gatekeep = new CharDialogue(room_list[curr_floor][curr_room].room_entry[0], room_list[curr_floor][curr_room].room_entry[1], 'gatekeeper' + curr_floor, 'the gatekeeper');
             room_list[curr_floor][curr_room].room_map[gatekeep.rowID][gatekeep.colID] = gatekeep;
             room_list[curr_floor][curr_room].room_map[gatekeep.rowID][gatekeep.colID].computeCoordsWithOffset(room_list[curr_floor][curr_room].yoff, room_list[curr_floor][curr_room].xoff);
             checkLocation(); */
 
             room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight, fog_radius);
+            doge.spawn_dog(avatarX, avatarY, oldmap, room_list[curr_floor][curr_room])
+
 
             // combat(hero, "default");
             heroShield.vitality = heroShield.maxVitality;
