@@ -5,6 +5,7 @@ class Location {
         this.objid = objid; //object id
         this.symbol = symbol; //symbol to display on map
         this.hero_present = false; //whether or not the hero is on this Location
+        this.dog_present = false; //whether the dog is on this spot
         this.xCoord = colID * 15; //pixel coords
         this.yCoord = rowID * 15;
         this.rowID = rowID; //row index in world_map
@@ -26,7 +27,29 @@ class Location {
         }
     }
 
-    updateRowColIDsAndDerivedProperties(newColID, newRowID, room){
+    getSymbol(){
+        if(this.fog){
+            return '';
+        }
+        else if(this.hero_present){
+            return 'x';
+        }
+        else if(this.dog_present){
+            return 'd';
+        }
+        else{
+            return this.symbol;
+        }
+    }
+
+    refreshInnerHTML(){
+        var symbol = this.getSymbol();
+        $(this.htmlID).html(symbol);
+    }
+
+//Originally implemented for the original dog implementation, not currently used.
+//Possibly useful if moving locations ever become a thing. (They shouldn't, its hell)
+/*    updateRowColIDsAndDerivedProperties(newColID, newRowID, room){
         //if room is passed in, then the room has changed (due to a spawn). In this case
         //we know the yoff and xoff and can use that offset.
         if(typeof room != 'undefined'){
@@ -59,13 +82,11 @@ class Location {
         //A function to call for moving Locations (currently only dog)
         this.htmlID = '#' + String(this.rowID) + 'x' + String(this.colID);
     }
+    */
 
     addFogBackAfterTimeout(tier){
         this.fog = false;
-        var symbol = this.symbol;
-        if(this.hero_present){
-            symbol = 'x';
-        }
+        var symbol = this.getSymbol();
         $(this.htmlID).html(symbol);
 
         clearTimeout(this.fogTimeout);
@@ -80,10 +101,7 @@ class Location {
 
     removeFogBecauseHeroPresent(){
         this.fog = false;
-        var symbol = this.symbol;
-        if(this.hero_present){
-            symbol = 'x';
-        }
+        var symbol = this.getSymbol();
         clearTimeout(this.fogTimeout)
         $(this.htmlID).html(symbol);
     }
@@ -229,7 +247,15 @@ class Trapdoor extends Location {
 
 class Tile extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, 'Tile', "tile", '.', '',true)//style preference? '·' instead??
+        super(rowID, colID, 'Tile', "tile", '.', '',true, true)//style preference? '·' instead??
+    }
+    hero_interact(){
+        //You can interact with a tile if the dog is present!
+        //Note that this should be the only way to interact with the dog--dog should
+        //only move on tiles
+        if(this.dog_present){
+            doge.hero_interact()
+        }
     }
 }
 
@@ -560,214 +586,6 @@ class Pit extends Location{
                 }
             }
         )
-    }
-}
-
-class Dog extends Location {
-    constructor(rowID, colID){
-        super(rowID, colID, 'dog', 'dog', 'd', 'what a puppaluppagus', true, true)
-        this.following = false;
-        this.dog_radius = -1; //should be set each time fog changes to fog_radius
-        this.dog_item = null; //TODO: dog carries over an item?
-        this.path_to_hero = [];
-        this.move_interval = -1;
-        this.loc_sitting_on;
-        this.dog_speed = 100;
-    }
-    hero_interact(){
-        this.following = !this.following;
-        console.log('following = ' + this.following);
-    }
-
-    compute_path_to_hero(avX,avY, map){
-        //Takes in the hero's pos and updates the path_to_hero variable to be
-        //an array of locations needed to travel to reach the hero.
-
-        //First, lets get the x and y positions needed to travel
-        var x_pos = [];
-        if(avX > this.colID){
-            for(var i = 0; i < Math.abs(avX - this.colID); i++){
-                x_pos.push(this.colID+i)
-            }
-        }
-        else if(avX < this.colID){
-            for(var i = 0; i < Math.abs(avX - this.colID); i++){
-                x_pos.push(this.colID-i)
-            }
-        }
-
-        var y_pos = [];
-        if(avY > this.rowID){
-            for(var i = 0; i < Math.abs(avY - this.rowID); i++){
-                y_pos.push(this.rowID+i)
-            }
-        }
-        else if(avY < this.rowID){
-            for(var i = 0; i < Math.abs(avY - this.rowID); i++){
-                y_pos.push(this.rowID-i)
-            }
-        }
-
-        //Alright, so BASICALLY, btw x_pos and y_pos one array has to be greater
-        // than or equal to the other in length
-        //Soooo... we find which one is bigger, and we establish a ratio.
-        //If we have that there is twice as much in x dir than y, then we interleave the
-
-        this.path_to_hero = [];
-        var manhattan_dist = this.manhat_dist_from_hero(avX, avY)
-        for(var i = 0; i < manhattan_dist -1; i++){
-            var curX;
-            var curY;
-
-            if(i % 2 === 0){
-                curX = x_pos.shift();
-                if(typeof curX === 'undefined'){ //nothing left in x list
-                    curX = avX;
-                    curY = y_pos.shift(); //note this should have something left...
-                }
-                else{
-                    curY = y_pos[0];
-                    if(typeof curY === 'undefined'){curY = avY}
-                }
-            }
-            else{
-                curY = y_pos.shift();
-                if(typeof curY === 'undefined'){ //nothing left in y list
-                    curY = avY;
-                    curX = x_pos.shift();
-                }
-                else{
-                    curX = x_pos[0];
-                    if(typeof curX === 'undefined'){curX = avX}
-                }
-            }
-
-
-            if(typeof curY === 'undefined'){curY = avY}
-
-            this.path_to_hero.push([curX, curY])
-        }
-
-
-        // console.log(this.path_to_hero.toString())
-    }
-    spawn_dog(avX, avY, oldmap, room){
-        var newmap = room.room_map;
-        //Upon changing a room / descending, the dog should:
-        //1) spawn on the character
-        //2) move one to the left/right, etc
-        //3) all move intervals should be reset...
-
-        this.path_to_hero = [];
-        this.clearMoveInterval();
-
-        oldmap[this.rowID][this.colID] = this.loc_sitting_on; //restore old map
-        $(this.htmlID).html(this.loc_sitting_on.symbol);
-
-        //spawn dog on new map at [avX, avY]
-        this.loc_sitting_on = newmap[avY][avX];
-        this.updateRowColIDsAndDerivedProperties(avX, avY, room); //false = no need to update
-        newmap[avY][avX] = this;
-
-
-        //just find any position available thats not the hero's loc...
-        var newloc = this.get_avail_dog_loc('w', avX, avY, newmap);
-        this.move_dog_restore_map(newloc, newmap)
-        $('#' + String(avY) + 'x' + String(avX)).html('x')
-    }
-
-    move_dog_restore_map(newloc, map){
-        //revert the current location you're on to the loc_sitting_on
-        map[this.rowID][this.colID] = this.loc_sitting_on;
-        $(this.htmlID).html(this.loc_sitting_on.symbol)
-
-
-        //move the dogs row/col IDs and update xCoord/yCoord/htmlID
-        this.updateRowColIDsAndDerivedProperties(newloc[0],newloc[1]); //refresh properties like htmlID
-
-        //store the new location you're on
-        this.loc_sitting_on = map[this.rowID][this.colID];
-
-        //update map with dog
-        map[this.rowID][this.colID] = this;
-
-        $(this.htmlID).html('d');
-    }
-
-    move_along_path(map){
-        // console.log(this.path_to_hero.toString())
-        if(this.path_to_hero.length > 0){
-            //The new location to move to is the first on path_to_hero
-            var newloc = this.path_to_hero.shift();
-            this.move_dog_restore_map(newloc, map)
-        }
-        else{
-            this.clearMoveInterval();
-        }
-    }
-
-    hero_move_update_dog(hero_move_dir, avX, avY, map){
-        if(2 <= this.manhat_dist_from_hero(avX, avY)){
-            //You moved: recompute path_to_hero
-            this.compute_path_to_hero(avX, avY, map)
-
-            //Now, if you arent in motion already, start hoppin along
-            //that path!
-            if(this.move_interval === -1){
-                // console.log('starting move_interval')
-                var self = this;
-                this.move_interval = setInterval(function(){
-                    self.move_along_path(map)
-                }, this.dog_speed)
-            }
-        }
-
-        if(this.colID === avX && this.rowID === avY){
-            var newloc = this.get_avail_dog_loc(hero_move_dir,avX, avY, map)
-            this.move_dog_restore_map(newloc, map)
-            this.clearMoveInterval();
-            map[avY][avX].hero_present = true;
-            this.hero_present = false;
-        }
-    }
-
-    clearMoveInterval(){
-        clearInterval(this.move_interval)
-        this.move_interval = -1;
-    }
-
-    get_avail_dog_loc(hero_move_dir, x, y, map){
-        var poss_locs;
-        switch (hero_move_dir) {
-            case 'w':
-                poss_locs = [[x+1, y], [x-1,y], [x,y-1]]
-                break;
-            case 's':
-                poss_locs = [[x+1, y], [x-1,y], [x,y+1]]
-                break;
-            case 'a':
-                poss_locs = [[x, y-1], [x-1,y], [x,y+1]]
-                break;
-            case 'd':
-                poss_locs = [[x, y-1], [x+1,y], [x,y+1]]
-                break;
-
-            default:
-                console.log('unknown hero_move_dir, Dog location get_avail_dog_loc');
-        }
-
-        var loc_to_return;
-        for(var i = 0; i < poss_locs.length; i++){
-            loc_to_return = poss_locs[i];
-            if(map[loc_to_return[1]][loc_to_return[0]].passable){
-                // console.log(loc_to_return)
-                return loc_to_return;
-            }
-        }
-    }
-
-    manhat_dist_from_hero(avX, avY){
-        return Math.abs(avY - this.rowID) + Math.abs(avX - this.colID);
     }
 }
 

@@ -130,8 +130,7 @@ class Room {
                 var gateKeeper = new CharDialogue(9, 30, "gatekeeper", 'the gatekeeper');
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
-                doge.loc_sitting_on = map[doge.rowID][doge.colID];
-                map[doge.rowID][doge.colID] = doge;
+                map[doge.dogY][doge.dogX].dog_present = true;
 
 
                 //after creating all special locations, turn fog off!
@@ -183,13 +182,7 @@ class Room {
         //Build the worldContents HTML string
         for (var i = 0; i < this.room_map.length; i++) {
             for (var j = 0; j < this.room_map[0].length; j++) {
-                var symbol = this.room_map[i][j].symbol;
-                if (this.room_map[i][j].fog) {
-                    symbol = '';
-                }
-                if (this.room_map[i][j].hero_present) {
-                    symbol = 'x';
-                }
+                var symbol = this.room_map[i][j].getSymbol(); //accounts for fog, dog, hero
                 worldContents += "<div id='" + this.room_map[i][j].htmlID.substring(1) + "' style='top:" + this.room_map[i][j].yCoord + "px; left:" + this.room_map[i][j].xCoord + "px; position: absolute;'>" + symbol + "</div>";
             }
         }
@@ -246,10 +239,10 @@ class Room {
     }
 
     updateRoomHTML(oldPos, newPos, torchlight, fog_rad) { //in [x,y] format
-        // If you cleared the room (or are in a safe room), you REALLY only need
+        // If youre in a special room that has no fog (GreatHall), you REALLY only need
         // to update the character position (no fog updates necessary!)
         if(this.fog_free_room){
-            var oldX = oldPos[0];
+            var oldX = oldPos[0]; //checkme
             var oldY = oldPos[1];
             $(this.room_map[oldY][oldX].htmlID).html(this.room_map[oldY][oldX].symbol);
 
@@ -610,9 +603,6 @@ function tier_to_boss(tier){
 function center_map(map, yoff, xoff){
     for(var i = 0; i < map.length; i++){
         for(var j = 0; j < map[0].length; j++){
-            if(map[i][j].objid === 'dog'){
-                map[i][j].loc_sitting_on.computeCoordsWithOffset(yoff,xoff)
-            }
             map[i][j].computeCoordsWithOffset(yoff,xoff)
         }
     }

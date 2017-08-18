@@ -42,7 +42,7 @@ var inventory;
 //NOTE: these are initialized here bc the dog should NOT be created from scratch
 //every time game is restarted! In fact, Dog's properties should be persistant
 //(such as if its carrying a weapon).
-var doge = new Dog(8,6);
+var doge = new Dog(6,8);
 
 var channelDivSpell;// new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);
 var fireball;// new ActiveSpell('fireball', 'fireball', hero, null, 2, 5000, 1);
@@ -303,8 +303,8 @@ function start_game(){
     var Floor4 = new Floor(4, 5, [2, 3], null);
     var Floor5 = new Floor(5, 4, [3], null);
 
-    doge.rowID = 8; //reset from last game
-    doge.colID = 6;
+    doge.dogY = 8; //reset from last game
+    doge.dogX = 6;
     doge.dog_radius = fog_radius;
 
     room_list[0] = Floor0.build_floor();
