@@ -16,9 +16,11 @@ class Dog {
     }
 
     hero_interact(){
-        // this.following = !this.following;
-        // console.log('following = ' + this.following);
-        console.log('woof!')
+        this.following = !this.following;
+        console.log('following = ' + this.following);
+        // console.log('woof!')
+        // $('#text-module').show();
+        // print('message', 'Give Dog an Item?')
     }
 
     compute_path_to_hero(avX,avY, map){
@@ -149,7 +151,7 @@ class Dog {
     }
 
     hero_move_update_dog(hero_move_dir, avX, avY, map){
-        if(2 <= this.manhat_dist_from_hero(avX, avY)){
+        if(2 <= this.manhat_dist_from_hero(avX, avY) && this.following){
             //You moved: recompute path_to_hero
             this.compute_path_to_hero(avX, avY, map)
 
