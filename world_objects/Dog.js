@@ -96,34 +96,36 @@ class Dog {
         // console.log(this.path_to_hero.toString())
     }
     spawn_dog(avX, avY, oldmap, room){
-        var newmap = room.room_map;
-        //Upon changing a room / descending, the dog should:
-        //1) spawn on the character
-        //2) move one to the left/right, etc
-        //3) all move intervals should be reset...
+        if(this.following){
+            var newmap = room.room_map;
+            //Upon changing a room / descending, the dog should:
+            //1) spawn on the character
+            //2) move one to the left/right, etc
+            //3) all move intervals should be reset...
 
-        this.path_to_hero = [];
-        this.clearMoveInterval();
+            this.path_to_hero = [];
+            this.clearMoveInterval();
 
-        // oldmap[this.dogY][this.dogX] = this.loc_sitting_on; //restore old map
-        // $(this.htmlID).html(this.loc_sitting_on.symbol);
+            // oldmap[this.dogY][this.dogX] = this.loc_sitting_on; //restore old map
+            // $(this.htmlID).html(this.loc_sitting_on.symbol);
 
-        //Remove the dog from the old map...
-        oldmap[this.dogY][this.dogX].dog_present = false;
-        oldmap[this.dogY][this.dogX].refreshInnerHTML();
+            //Remove the dog from the old map...
+            oldmap[this.dogY][this.dogX].dog_present = false;
+            oldmap[this.dogY][this.dogX].refreshInnerHTML();
 
-        //Spawn the dog in the new map
-        this.dogX = avX;
-        this.dogY = avY;
-        newmap[this.dogY][this.dogX].dog_present = true;
-        // newmap[this.dogY][this.dogX].refreshInnerHTML();
+            //Spawn the dog in the new map
+            this.dogX = avX;
+            this.dogY = avY;
+            newmap[this.dogY][this.dogX].dog_present = true;
+            // newmap[this.dogY][this.dogX].refreshInnerHTML();
 
-        //just find any position available thats not the hero's loc then move the dog!
-        var newloc = this.get_avail_dog_loc('w', avX, avY, newmap);
-        this.move_dog_restore_map(newloc, newmap)
+            //just find any position available thats not the hero's loc then move the dog!
+            var newloc = this.get_avail_dog_loc('w', avX, avY, newmap);
+            this.move_dog_restore_map(newloc, newmap)
 
-        //redraw hero since we spawned dog on top
-        // newmap[avY][avX].refreshInnerHTML();
+            //redraw hero since we spawned dog on top
+            // newmap[avY][avX].refreshInnerHTML();
+        }
     }
 
     move_dog_restore_map(newloc, map){
