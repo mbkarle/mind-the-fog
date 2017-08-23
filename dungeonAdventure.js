@@ -1,3 +1,4 @@
+//Note: shield not working??
 //------------------------------------------------------------------------------------------------
 // This script should be the game runner. Other classes should live in the
 // ./world_objects/ folder,although this script can have helper methods and global variables.
@@ -367,6 +368,17 @@ function enter_combat(room, custom_enemy) {
 
     enemy.vitality = enemy.maxVitality; //bc we use same objects across mult. fights
     console.log(enemy);
+    enemyHealthPCent = enemy.vitality / enemy.maxVitality * 100;
+    $("#enemyHealthBar").html(
+        enemy.vitality + " / " + enemy.maxVitality +
+        "<div id='" + enemy.objid + "HealthSlider' class='statusSlider' style='width: " + enemyHealthPCent + "%'></div>"
+    );
+    var healthFraction = hero.vitality / hero.maxVitality;
+    $("#heroHealthBar").html(
+        hero.vitality + " / " + hero.maxVitality +
+        "<div id='heroHealthSlider' class='statusSlider' style='width: " + healthFraction * 100 + "%'></div>"
+    );
+
     //set spell targets:
     for(var i = 0; i < hero.spells.length; i++){
         hero.spells[i].target = enemy;
@@ -414,13 +426,13 @@ function enter_combat(room, custom_enemy) {
                 Damage(enemy, hero)
                 print("combat start", "The enemy strikes!");
             }
-            $("#enemy").animate({
-                top: '125px',
-                left: '325px'
+            $("#enemySymbol").animate({
+                top: '25px',
+                left: '-25px'
             }, 1, function(){
-                $("#enemy").animate({
-                    top: '100px',
-                    left: '350px'
+                $("#enemySymbol").animate({
+                    top: '0',
+                    left: '0'
                 }, 10000 / (2 * enemy.dexterity))
             })
             if (hero.vitality <= 0) {
@@ -454,8 +466,6 @@ function enter_combat(room, custom_enemy) {
         }, 10000 / enemy.dexterity);
     }
 
-    document.getElementById("hero").innerHTML = hero.vitality;
-    document.getElementById("enemy").innerHTML = enemy.vitality;
     document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
     refreshInfo();
 
@@ -485,13 +495,13 @@ function enter_combat(room, custom_enemy) {
             print("damageDealt", hitprint);
         }
             //jquery animations:
-            $("#hero").animate({
-                top: '175px',
-                left: '225px'
+            $("#heroSymbol").animate({
+                top: '-25px',
+                left: '25px'
             }, 1, function(){
-                $("#hero").animate({
-                    top: '200px',
-                    left: '200px'
+                $("#heroSymbol").animate({
+                    top: '0',
+                    left: '0'
                 }, 10000 / (2 * hero.dexterity));
             })
             $("#attackSlider").show();
@@ -735,7 +745,6 @@ function move(e) {
 
         if(hero.vitality + 2 <= hero.maxVitality && didMove) {
             hero.vitality += 2;
-            document.getElementById("hero").innerHTML = hero.vitality;
             refreshInfo();
         } else if(hero.vitality + 1 <= hero.maxVitality && didMove){
           hero.vitality += 1;
@@ -857,7 +866,7 @@ function refreshInfo() {
     document.getElementById('xp').innerHTML = "<div id='xpBar' class='statusBar' style='width: 60px'>Level: " +
     hero.level + "<div id='xpSlider' class='statusSlider'></div></div>"
 
-    document.getElementById('gold').innerHTML = hero.wallet + " gold"
+    document.getElementById('gold').innerHTML = hero.wallet + " gold";
 
     var torchtext = '';
     if(hero.num_torches > 0){
@@ -1037,7 +1046,10 @@ function refreshInfo() {
 
 
     //refresh for combat-module:
-    document.getElementById("hero").innerHTML = hero.vitality;
+    $("#heroHealthBar").html(
+        hero.vitality + " / " + hero.maxVitality +
+        "<div id='heroHealthSlider' class='statusSlider' style='width: " + healthFraction * 100 + "%'></div>"
+    );
     document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
 
 }
@@ -1051,9 +1063,16 @@ function Damage(source, target) {
     hit = Math.floor(Math.random() * source.strength + source.strength);
     target.vitality -= hit;
 
-    document.getElementById(target.objid).innerHTML = target.vitality /*+ target.name */ ;
-    document.getElementById("hero").innerHTML = hero.vitality;
     document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
+
+    if(target.objid != "defendText"){
+        var targetHealthFrac = target.vitality / target.maxVitality * 100;
+        var targetHealthObjid = "#" + target.objid + "HealthBar";
+        $(targetHealthObjid).html(
+            target.vitality + " / " + target.maxVitality +
+            "<div id='" + target.objid + "HealthSlider' class='statusSlider' style='width: " + targetHealthFrac + "%'></div>"
+        )
+    }
     refreshInfo();
 
     //if the source was a hero (check based on if target is enemy or boss), and target dead
@@ -1123,7 +1142,6 @@ function Shield() {
       hero.vitality = hero.maxVitality;
     }
     refreshInfo();
-    document.getElementById("hero").innerHTML = hero.vitality;
     hero_protected = true;
 }
 
@@ -1159,7 +1177,7 @@ function take_item(item, chest_to_take_from){
     }
     refreshInfo();
     if(typeof chest_to_take_from != 'undefined'){
-        var indexToRemove = chest_to_take_from.treasureIDs.indexOf(item);
+        var indexToRemove = chest_to_take_from.treasureIDs.indexOf(item.ogIdx);
         chest_to_take_from.treasureIDs.splice(indexToRemove, 1); //removes item from treasureIDs so that it will not appear on next visit of chest
     }
 

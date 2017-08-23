@@ -1,13 +1,14 @@
 var effectList = [];
 
 class Effect {
-    constructor(name, target, duration, attributes, quantity){
+    constructor(name, target, duration, attributes, quantity, symbol){
         this.name = name;
         this.target = target;
         this.duration = duration; //pass in milliseconds
         this.attributes = attributes; //pass an array containing attributes to facilitate buffs with multiple
         this.quantity = quantity; //pass an array with quantities that matches the attributes array
         this.active = false;
+        this.symbol = symbol;
         effectList.push(this);
     }
     displayEffects(target){
@@ -19,13 +20,7 @@ class Effect {
             objid = 'EnemyEffects';
         }
         for(var i = 0; i < target.effects.length; i++){
-            if(target.effects[i].constructorName == "Buff"){
-                effectBoxes += "<div id='effect" + i + target.objid + "' class='effect' style='left: " + 20 * i + "px'>▲</div>";
-            }
-            else if(target.effects[i].constructorName == "Debuff"){
-                effectBoxes += "<div id='effect" + i + target.objid + "' class = 'effect' style='left: " + 20 * i + "px'>▼</div>";
-            }
-
+            effectBoxes += "<div id='effect" + i + target.objid + "' class='effect' style='left: " + 20 * i + "px'>" + target.effects[i].symbol + "</div>";
         }
         document.getElementById(objid).innerHTML = effectBoxes;
         if(target.effects.length > 0){
@@ -49,8 +44,8 @@ class Effect {
 }
 
 class Buff extends Effect {
-    constructor(name, target, duration, attributes, quantity){
-        super(name, target, duration, attributes, quantity);
+    constructor(name, target, duration, attributes, quantity, symbol){
+        super(name, target, duration, attributes, quantity, symbol);
         var self = this;
         this.constructorName = "Buff";
         this.applyBuff = function(character){
@@ -84,8 +79,8 @@ class Buff extends Effect {
 }
 
 class Debuff extends Effect {
-    constructor(name, target, duration, attributes, quantity ){
-        super(name, target, duration, attributes, quantity);
+    constructor(name, target, duration, attributes, quantity, symbol){
+        super(name, target, duration, attributes, quantity, symbol);
         var self = this;
         this.cached_stats = [];
         this.constructorName = "Debuff";
@@ -125,8 +120,8 @@ class Debuff extends Effect {
 //classes for specific effect debuffs and buffs:
 
 class Exhaustion extends Debuff {
-    constructor(name, target, duration){
-        super(name, target, duration);
+    constructor(name, target, duration, symbol){
+        super(name, target, duration, null, null, symbol);
         var self = this;
         this.applyDebuff = function(){
             if(!self.active){
@@ -147,8 +142,8 @@ class Exhaustion extends Debuff {
 }
 
 class damageDebuff extends Debuff {
-    constructor(name, target, duration, interval, damage){
-        super(name, target, duration);
+    constructor(name, target, duration, interval, damage, symbol){
+        super(name, target, duration, null, null, symbol);
         this.interval = interval;
         this.damage = damage;
         this.source = {strength: this.damage};
@@ -187,17 +182,17 @@ class damageDebuff extends Debuff {
 //------------------------------------------------------
 //              Initialize Buffs and Debuffs
 //------------------------------------------------------
-var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1]);
-var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20]);
-var supStrength = new Buff("super strength", null, 10000, ['strength', 'dexterity'], [4, 1]);
-var fire = new damageDebuff("fire", null, 16000, 4000, 3);
-var divine = new Buff("divinity", null, 8000, ['strength', 'dexterity', 'vitality', 'maxVitality'], [5, 5, 50, 50]);
-var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2]);
-var exhaust = new Exhaustion('magic exhaust', null, 15000);
-var asphyxiation = new damageDebuff('asphyxiation', null, 12000, 4000, 2);
-var blocked = new Debuff('blocked', null, 10000, ['strength'], [200]);
-var suppressed = new Debuff('suppressed', null, 8000, ['strength'], [200]);
-var dominated = new damageDebuff('dominated', null, 8000, 2000, 3);
-var sponge = new Buff('sponge', null, 10000, ['vitality', 'maxVitality'], [100, 100]);
-var slow = new Debuff('slow', null, 10000, ['dexterity'], [1]);
-var supSpeed = new Buff('super speed', null, 10000, ['dexterity'], [4]);
+var adrenaline = new Buff("adrenaline", null, 5000, ["strength", "dexterity"], [1, 1], 'a');
+var indestructible = new Buff("indestructibility", null, 10000, ["vitality", "maxVitality"], [20, 20], 'i');
+var supStrength = new Buff("super strength", null, 10000, ['strength', 'dexterity'], [4, 1], 'ss');
+var fire = new damageDebuff("fire", null, 16000, 4000, 3, 'f');
+var divine = new Buff("divinity", null, 8000, ['strength', 'dexterity', 'vitality', 'maxVitality'], [5, 5, 50, 50], 'd');
+var ice = new Debuff("frozen", null, 10000, ["dexterity"], [2], 'fr');
+var exhaust = new Exhaustion('magic exhaust', null, 15000, 'e');
+var asphyxiation = new damageDebuff('asphyxiation', null, 12000, 4000, 2, 'as');
+var blocked = new Debuff('blocked', null, 10000, ['strength'], [200], 'b');
+var suppressed = new Debuff('suppressed', null, 8000, ['strength'], [200], 's');
+var dominated = new damageDebuff('dominated', null, 8000, 2000, 3, 'd');
+var sponge = new Buff('sponge', null, 10000, ['vitality', 'maxVitality'], [100, 100], 'sp');
+var slow = new Debuff('slow', null, 10000, ['dexterity'], [1], 'sl');
+var supSpeed = new Buff('super speed', null, 10000, ['dexterity'], [4], 'sd');
