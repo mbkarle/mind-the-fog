@@ -12,6 +12,9 @@ class Item {
         this.equipped = false;
         this.value = null;
         this.constructorName = "Item";
+        this.getOgIdx = function(room){
+            return room.itemList.indexOf(this);
+        }
 
         if(toList){
             for(var i = 0; i < items.length; i++){
@@ -60,6 +63,9 @@ class Currency extends Item {
             return this.wallet = this.amount * this.value;
         }
         this.constructorName = "Currency";
+        this.getOgIdx = function(room){
+            return this;
+        }
     }
 }
 
@@ -84,6 +90,9 @@ class Torch extends Item {
         super('torch')
         this.torch_count = num_torches;
         this.constructorName = "Torch";
+        this.getOgIdx = function(room){
+            return this;
+        }
     }
 
 }
@@ -199,6 +208,9 @@ class Consumable {
         this.constructorName = 'Consumable';
         this.value = ConsumableList[name]['value'];
         this.prototyped = false;
+        this.getOgIdx = function(room){
+            return room.itemList.indexOf(this);
+        }
     }
     useConsumable(consumable){
         for(var i = 0; i < ConsumableList[consumable.name]['characteristics'].length; i++){

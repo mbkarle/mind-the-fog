@@ -181,13 +181,13 @@ class Chest extends Location {
 
 
     chest_drop_items(items){
-        // console.log(items)
+        //console.log(items);
         // console.log(items.length)
         var itemsTaken = 0;
         var chest = this;
         for(var i = 0; i < items.length; i++){
             var takeID = '#take'+i;
-            var item = $().extend({}, items[i])
+            var item = $().extend({}, items[i]);
             $(takeID).attr('item_id', i)
             $(takeID).click(
                 function() {
@@ -197,12 +197,14 @@ class Chest extends Location {
                             chest.emptied_chest = true;
                         }
                         var item_to_take = items[$(this).attr('item_id')];
+                        item_to_take.ogIdx = items[$(this).attr('item_id')].getOgIdx(room_list[curr_floor][curr_room]);
                         // equip(hero, item_to_take);
                         if(item_to_take.constructorName != 'Consumable'){
                             take_item($().extend({},item_to_take), chest)
                         }
                         else{
                           var temp = new Consumable(item_to_take.name, 'lul');
+                          temp.ogIdx = item_to_take.ogIdx;
                           take_item(temp, chest);
                         }
 
@@ -534,6 +536,7 @@ class Pit extends Location{
                 revertTextModule();
             })
             $("#descend").show().html('Rescue').click(function(){
+                revertTextModule();
                 if(Math.random() < .4){
                     self.message = 'You descend carefully and reach the bottom unscathed.';
                 }

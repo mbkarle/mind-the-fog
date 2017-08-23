@@ -55,11 +55,17 @@
         <div id="close" class="interact">Close</div>
     </div>
     <div id="combat-module" style="margin:0 auto">
-      <div id="hero"></div>
+      <div id="hero">
+          <div id="heroSymbol" style="position: relative">X</div>
+          <div id="heroHealthBar" class="statusBar" style="left: -14%"></div>
+      </div>
       <div id="HeroEffects" style="left: 150px"></div>
       <div id="EnemyEffects" style="left: 320px"></div>
       <div id="effectsHover" style="top:75px;left:220px;display:none;"></div>
-      <div id="enemy"></div>
+      <div id="enemy">
+          <div id="enemyHealthBar" class="statusBar" style="left: -85px;top:-20px"></div>
+          <div id="enemySymbol" style="position: relative">E</div>
+      </div>
       <div id="attack">Melee
         <div id="attackSlider" class="coolDown"></div>
       </div>

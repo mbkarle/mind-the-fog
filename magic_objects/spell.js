@@ -207,15 +207,17 @@ class ActiveSpell extends Spell {
             console.log("#" + this.objid);
             $(thisID).click(function(){
                 self.castSpell();
-                $(thisSlider).show().animate({
-                    width: '0%'
-                }, self.spellCooldown, function(){
-                    $(thisSlider).hide();
-                    $(thisSlider).animate({
-                        width: '100%'
-                    }, 1);
-                })
-                console.log('casting ' + self);
+                if(magicReady){
+                    $(thisSlider).show().animate({
+                        width: '0%'
+                    }, self.spellCooldown, function(){
+                        $(thisSlider).hide();
+                        $(thisSlider).animate({
+                            width: '100%'
+                        }, 1);
+                    })
+                    console.log('casting ' + self);
+            }
             })
         }
         spellTree[this.name]['active spell'] = this;
