@@ -131,6 +131,7 @@ class Room {
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
                 map[doge.dogY][doge.dogX].dog_present = true;
+                map[doge.dogY][doge.dogX].passable = false;
 
 
                 //after creating all special locations, turn fog off!
