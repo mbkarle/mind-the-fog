@@ -693,7 +693,7 @@ class NPC extends Location {
 
 class Door extends Location{ //highly experimental content at hand here
     constructor(rowID, colID, roomID, nextRoomID){
-        super(rowID, colID, 'Door', 'door', '□', 'Leave room?', true, true);
+        super(rowID, colID, 'Door', 'door', '□', 'Leave room?', false, true);
         this.roomID = roomID;
         this.nextRoomID = nextRoomID;
         var self = this;
@@ -715,7 +715,7 @@ class Door extends Location{ //highly experimental content at hand here
                     // var oldRoomID = self.roomID;
                     // self.roomID = self.nextRoomID;
                     // self.nextRoomID = oldRoomID;
-                    if(avatarX == 0){
+                    if(avatarX == 1){
                         avatarX = room_list[curr_floor][curr_room].room_width - 2;
                         avatarY = room_list[curr_floor][curr_room].room_exit[0];
                         update_loc_facing(last_key_press);
@@ -749,7 +749,7 @@ class Door extends Location{ //highly experimental content at hand here
 
 class LockedDoor extends Location{
     constructor(rowID, colID){
-        super(rowID, colID, "Locked Door", 'lockedDoor', '□', "It appears to be the way out of here, but it's locked. If only you had a key...", true, true);
+        super(rowID, colID, "Locked Door", 'lockedDoor', '□', "It appears to be the way out of here, but it's locked. If only you had a key...", false, true);
         this.interact = function(){
             print('message', this.message);
             $("#text-module").show();
