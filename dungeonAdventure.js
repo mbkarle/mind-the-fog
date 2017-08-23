@@ -758,7 +758,7 @@ function move(e) {
 }
 
 function checkLocation(avX, avY){
-
+    //If whatever you try to interact with is interactive, call its interact function
     if(room_list[curr_floor][curr_room].room_map[avY][avX].is_interactive){
         room_list[curr_floor][curr_room].room_map[avY][avX].hero_interact();
     }

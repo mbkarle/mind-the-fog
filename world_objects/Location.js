@@ -254,7 +254,7 @@ class Tile extends Location {
         //Note that this should be the only way to interact with the dog--dog should
         //only move on tiles
         if(this.dog_present){
-            doge.hero_interact()
+            doge.hero_interact(this)
         }
     }
 }

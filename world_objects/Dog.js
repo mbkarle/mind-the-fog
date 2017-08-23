@@ -15,9 +15,11 @@ class Dog {
         this.dog_speed = 100;
     }
 
-    hero_interact(){
+    hero_interact(tile){
         this.following = !this.following;
         console.log('following = ' + this.following);
+
+        tile.passable = !tile.passable;
         // console.log('woof!')
         // $('#text-module').show();
         // print('message', 'Give Dog an Item?')
@@ -210,7 +212,7 @@ class Dog {
         var loc_to_return;
         for(var i = 0; i < poss_locs.length; i++){
             loc_to_return = poss_locs[i];
-            if(map[loc_to_return[1]][loc_to_return[0]].passable){
+            if(map[loc_to_return[1]][loc_to_return[0]].objid === 'tile'){
                 // console.log(loc_to_return)
                 return loc_to_return;
             }
@@ -317,7 +319,7 @@ function a_star_search(start_loc, end_loc, map){
     }
 }
 
-//Helper function to get the passable neighbors of a current location.
+//Helper function to get the tile neighbors of a current location.
 function get_valid_neighs_from_htmlID(current, map){
     //Parse the current htmlID:
     var strsplit = current.split('x');
@@ -329,32 +331,32 @@ function get_valid_neighs_from_htmlID(current, map){
     var width = map[0].length;
 
     neigh = [];
-    //Neighbors are all htmlID's of adjacent positions that are passable...
+    //Neighbors are all htmlID's of adjacent positions that are tiles...
     if(rowID > 0){
-        if(map[rowID-1][colID].passable){neigh.push(String(rowID - 1) + 'x' + String(colID))}
+        if(map[rowID-1][colID].objid === 'tile'){neigh.push(String(rowID - 1) + 'x' + String(colID))}
     }
     if(colID > 0){
-        if(map[rowID][colID-1].passable){neigh.push(String(rowID) + 'x' + String(colID - 1))}
+        if(map[rowID][colID-1].objid === 'tile'){neigh.push(String(rowID) + 'x' + String(colID - 1))}
     }
     if(rowID < height - 1){
-        if(map[rowID+1][colID].passable){neigh.push(String(rowID + 1) + 'x' + String(colID))}
+        if(map[rowID+1][colID].objid === 'tile'){neigh.push(String(rowID + 1) + 'x' + String(colID))}
     }
     if(colID < width - 1){
-        if(map[rowID][colID+1].passable){neigh.push(String(rowID) + 'x' + String(colID + 1))}
+        if(map[rowID][colID+1].objid === 'tile'){neigh.push(String(rowID) + 'x' + String(colID + 1))}
     }
 
     //Diagonals
     if(rowID > 0 && colID > 0){
-        if(map[rowID-1][colID-1].passable){neigh.push(String(rowID - 1) + 'x' + String(colID-1))}
+        if(map[rowID-1][colID-1].objid === 'tile'){neigh.push(String(rowID - 1) + 'x' + String(colID-1))}
     }
     if(colID > 0 && rowID < height -1){
-        if(map[rowID+1][colID-1].passable){neigh.push(String(rowID+1) + 'x' + String(colID - 1))}
+        if(map[rowID+1][colID-1].objid === 'tile'){neigh.push(String(rowID+1) + 'x' + String(colID - 1))}
     }
     if(rowID < height - 1 && colID < width - 1){
-        if(map[rowID+1][colID+1].passable){neigh.push(String(rowID + 1) + 'x' + String(colID+1))}
+        if(map[rowID+1][colID+1].objid === 'tile'){neigh.push(String(rowID + 1) + 'x' + String(colID+1))}
     }
     if(colID < width - 1 && rowID > 0){
-        if(map[rowID-1][colID+1].passable){neigh.push(String(rowID-1) + 'x' + String(colID + 1))}
+        if(map[rowID-1][colID+1].objid === 'tile'){neigh.push(String(rowID-1) + 'x' + String(colID + 1))}
     }
 
     return neigh;
