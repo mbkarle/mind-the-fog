@@ -274,6 +274,7 @@ function start_game(){
     ready = true;
     clearInterval(shielded);
     clearTimeout(shieldUp);
+    shieldUp = -1;
     magicReady = true;
     torchlight = false;
     initial_fog_radius = 5;
@@ -443,6 +444,7 @@ function enter_combat(room, custom_enemy) {
                 window.clearInterval(enemyAttack);
                 window.clearInterval(shielded);
                 window.clearTimeout(shieldUp);
+                shieldUp = -1;
                 hero.vitality = 0;
                 cached_gold = Math.floor(hero.wallet / 10);
                 $("#descend").show().html('Restart').click(function(){
@@ -458,6 +460,7 @@ function enter_combat(room, custom_enemy) {
             if (heroShield.vitality <= 0) {
                 window.clearInterval(shielded);
                 window.clearTimeout(shieldUp);
+                shieldUp = -1;
                 hero_protected = false;
                 heroShield.shieldReady();
                 //jquery animation:
@@ -516,32 +519,26 @@ function enter_combat(room, custom_enemy) {
         }
     };
     document.getElementById("defend").onclick = function() {
-        if (hero_protected == false && heroShield.vitality > 0) {
+        if (hero_protected == false && heroShield.vitality > 0 && heroShield.shield_ready) {
             //  $("#defend").off('click');
             $("#defendSlider").show(heroShield.weight * 1000);
-            shieldReadyup = setTimeout(function() {
-                heroShield.shield_ready = false;
-            }, heroShield.weight * 1000);
-            //    console.log("shield clicked")
-            if (heroShield.shield_ready) {
                 heroShield.shield_ready = false;
                 shieldUp = setTimeout(function(){
                     Shield();
                     shielded = setInterval(function() {
-                        // console.log("shielding");
                         Shield()
                     }, heroShield.recovery * 1000);
                 }, heroShield.weight * 1000);
 
-            }
         }
     }
 
     document.getElementById('combat-module').onclick = function() {
-        console.log('combat-module clicked')
+        console.log(hero_protected);
         if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
             window.clearInterval(shielded);
             window.clearTimeout(shieldUp);
+            shieldUp = -1;
             heroShield.shieldReady();
             hero_protected = false;
             //jquery animation:

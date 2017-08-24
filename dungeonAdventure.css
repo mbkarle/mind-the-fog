@@ -51,8 +51,7 @@
 
 #attackSlider {
   position: absolute;
-  padding-top: 10px;
-  padding-bottom: 15px;
+  height: 100%;
   top: 0;
   left: 0;
   width: 110px;
@@ -61,11 +60,10 @@
 
 #defendSlider {
   position: absolute;
-  padding-top: 10px;
-  padding-bottom: 15px;
+  height: 100%;
   top: 0;
   left: 0;
-  width: 112px;
+  width: 100%;
   display: none;
 }
 
