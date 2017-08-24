@@ -271,6 +271,7 @@ function start_game(){
     //hero globals
     canMove = true;
     hero_protected = false
+    heroShield.shield_ready = true;
     ready = true;
     clearInterval(shielded);
     clearTimeout(shieldUp);
