@@ -522,7 +522,7 @@ class CharDialogue extends Location{
 
 class Pit extends Location{
     constructor(rowID, colID, charID, charDisplay){
-        super(rowID, colID, "Pit", 'pit', 'p', 'A pitfall, once covered with crumbled stone. Someone appears trapped within.', true, true)
+        super(rowID, colID, "Pit", 'pit', 'p', 'A pitfall, once covered with crumbled stone. Someone appears trapped within.', false, true)
         this.charID = charID;
         this.charDisplay = charDisplay;
         this.empty = false;
@@ -546,6 +546,8 @@ class Pit extends Location{
                     refreshInfo();
                 }
                 print('message', self.message);
+                $("#text-module").show();
+                $("#enter").hide();
                 $("#descend").off('click').hide();
                 $("#stay").off('click').hide();
                 $("#open").show().click(function(){

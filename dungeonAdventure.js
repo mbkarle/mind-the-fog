@@ -283,12 +283,12 @@ function start_game(){
 
     //hero start inventory
     inventory = {
-        weapon: startWeapon,
+        weapon: null,
         headgear: null,
         armor: null,
-        carried: [startWeapon]
+        carried: []
     }
-    startWeapon.equipped = true;
+
 
     //Build room_list
     num_floors = 6;
@@ -477,7 +477,7 @@ function enter_combat(room, custom_enemy) {
         if (ready) {
             ready = false;
             window.setTimeout(readyUp, 10000 / hero.dexterity);
-            if (inventory.weapon.constructorName == 'effectItem') {
+            if (inventory.weapon != null && inventory.weapon.constructorName == 'effectItem') {
                 console.log("buffing up")
                 inventory.weapon.buffUp(hero);
                 inventory.weapon.debuffUp(enemy);
@@ -889,7 +889,7 @@ function refreshInfo() {
     items_carried = inventory['carried'];
     for(var i = 0; i < items_carried.length; i++){
         if (items_carried[i].equipped){
-            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact' style='display:none;'> Equip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
+            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact'> Unequip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
         }
         else{
             inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name +
@@ -948,10 +948,18 @@ function refreshInfo() {
         $(invCarID).attr('item_to_print', item_to_print)
         $(invCarID).attr('inv_idx', i);
         if(items_carried[$(carriedID).attr('inv_idx')].constructorName != 'Consumable'){
-            $(carriedID).click(function(){
-                equip(hero,items_carried[$(this).attr('inv_idx')])
-                refreshInfo()
-            })
+            if(!items_carried[$(carriedID).attr('inv_idx')].equipped){
+                $(carriedID).click(function(){
+                    equip(hero,items_carried[$(this).attr('inv_idx')])
+                    refreshInfo()
+                })
+            }
+            else{
+                $(carriedID).click(function(){
+                    Unequip(hero, items_carried[$(this).attr('inv_idx')]);
+                    refreshInfo();
+                })
+            }
         }
         else{
             $(carriedID).html('Use').click(function(){
@@ -1003,7 +1011,14 @@ function refreshInfo() {
         else{
             left = 35 + '%';
         }
-        $("#tree-module").append("<div id='" + spellTree[this_spell]['objid'] + "' class='treeBox' style='left:" + left + ";top:" + top + "px;'>" + Object.getOwnPropertyNames(spellTree)[spell] + "</div>")
+        var toDisplay;
+        if(hero.level < spellTree[this_spell]['level']){
+          toDisplay = "?";
+        }
+        else{
+          toDisplay = Object.getOwnPropertyNames(spellTree)[spell];
+        }
+        $("#tree-module").append("<div id='" + spellTree[this_spell]['objid'] + "' class='treeBox' style='left:" + left + ";top:" + top + "px;'>" + toDisplay + "</div>")
         if(spellTree[this_spell]['learned']){
             $(objid).css({'background-color': 'white', 'color': 'black'});
         }
@@ -1395,7 +1410,7 @@ function equip(target, equipment) {
     equipment.equipped = true;
     if(inventory[equipment.type] != null && equipment.constructorName != "Currency"){
         temp_item = inventory[equipment.type];
-        Unequip(hero, temp_item);
+        Unequip(hero, temp_item, true);
     }
     if(equipment.constructorName != "Currency"){
         inventory[equipment.type] = equipment;
@@ -1428,15 +1443,31 @@ function equip(target, equipment) {
     refreshInfo();
 }
 
-function Unequip(target, equipment) {
+function Unequip(target, equipment, replace) {
     // console.log(target.name + " unequipped " + equipment.name) // finish inventory
 
     //go through and update stats
     equipment.equipped = false;
+    inventory[equipment.type] = null;
     var attribute;
     for (attribute in equipment) {
         if (typeof equipment[attribute] == "number") {
             target[attribute] -= equipment[attribute];
         }
     }
+    if(!replace){
+        for(var i = 0; i < inventory['carried'].length; i++){
+            if(!inventory['carried'][i].equipped){
+                console.log(inventory['carried'].indexOf(equipment) + " to " + i);
+                inventory['carried'].move(inventory['carried'].indexOf(equipment), i);
+                break;
+            }
+        }
+        for(var i = 1; i < inventory['carried'].length; i++){
+            if(inventory['carried'][i].equipped && !inventory['carried'][i - 1].equipped){
+                inventory['carried'].move(i, (i-1));
+            }
+        }
+    }
+
 }

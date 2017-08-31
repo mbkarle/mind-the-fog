@@ -290,7 +290,7 @@ background-color: white;
 
 #HeroEffects, #EnemyEffects, #effectsHover{
     position: absolute;
-    top: 40px;
+    top: 20px;
     height: 20px;
     width: 150px;
     border-style: solid;

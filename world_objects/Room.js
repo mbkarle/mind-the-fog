@@ -539,7 +539,7 @@ function tier_to_locations(tier, maxLocs){
 
     }
     else if(maxLocs == 2 || maxLocs == 3){
-        var locationList = ['chest', 'pit'];
+        var locationList = ['chest'];
 
     }
 
