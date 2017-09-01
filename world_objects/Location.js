@@ -488,7 +488,7 @@ class CharDialogue extends Location{
         this.charDisplay = charDisplay;
         var self = this;
 
-        this.dialogue = function(stringArray, thisMessage){
+        this.dialogue = function(stringArray, thisMessage, promResolve){
         print("message", "<div style='font-size:12px;position:absolute;top:0;left:10px;'>" + this.charDisplay + "</div>" + stringArray[thisMessage]);
         $("#text-module").show();
         $("#enter").hide();
@@ -499,9 +499,13 @@ class CharDialogue extends Location{
                 if(thisMessage + 1 < stringArray.length){
                     console.log("next panel");
                     thisMessage++;
-                    self.dialogue(stringArray, thisMessage);
+                    self.dialogue(stringArray, thisMessage, promResolve);
                 }
                 else{
+                    if(typeof promResolve != "undefined"){
+                        console.log("resolving promise");
+                        promResolve();
+                    }
                     console.log("dialogue over");
                     $("#open").hide();
                     $("#enter").show();

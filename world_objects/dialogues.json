@@ -8,16 +8,18 @@ var dialogues = {
     "Mind the fog!"
     ],
 
-    "instructor": ["Hello there. You must be a newcomer.",
-        "You have many adventures ahead of you, but you must know some things first.",
-        "Combat will be unavoidable in the dungeon. I see you have a weapon already, and you'll need to be prepared to use it." +
-        "With your shield, you'll be able to block enemy attacks, and over time regain some health.",
-        "Be warned, however, your shield is heavy, and you won't always be able to raise it immediately in time to block an attack.",
-        "You'll have some time to get the hang of it, as the shallow parts of the dungeon contain weaker creatures. However, it gets much more " +
-        "dangerous further down, and you'll need to find better gear to face the enemy.",
-        "You'll need to learn to manage your inventory, which can be toggled by pressing 'i'."
+    "instructor": ["Hello there!",
+        "In the dungeon, you'll face many enemies, and fighting will be inevitable.",
+        "Down there, the monsters can be very strong... sometimes stronger than you.",
+        "In the beginning you may be able to slay them with only melee attacks, but as they grow more powerful, you'll begin to sustain heavy damage.",
+        "The key to avoiding this is using a shield. Shields are heavy and will take time to raise, but once you are behind it, it will defend you and even allow you to recover some health over time.",
+        "However, while time will heal you, your shield cannot regenerate, so use it wisely.",
+        "The dungeon contains great treasures, many of which will serve to aid you in your adventures.",
+        "In order to take advantage of your discoveries, you'll need to manage your inventory, which can be togged by pressing 'i'.",
+        "Before you descend, I recommend exploring this floor. You'll be safe up here, and you may find something of use, or maybe even a way out of this forsaken place."
     ],
-
+    "tutVoice1": ["You're awake at last!", "Welcome to the dungeon. I've been trapped down here for millenia, and have learned a few tricks along the way."],
+    "tutVoice2": ["Great, I'll show you the ropes.", "First, start by walking over to me. I'm about 7 steps up and 16 paces to the left."],
     "gatekeeper1": ["It's a bit darker down here, so you'll need to find better equipment as soon as possible.", "Mind the fog!"],
     "gatekeeper2": ["You'll see a mix of enemies down here, I'd recommend you prepare for the worst.", "Mind the fog!"],
     "gatekeeper3": ["We're nearly halfway to floor 7.", "Mind the fog!"],
