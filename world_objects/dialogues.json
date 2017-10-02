@@ -34,7 +34,7 @@ var dialogues = {
         ],
         "shieldMaker": ["The trapped is a tall woman with a large shield strapped to her back.",
             "I'm fine, thanks. The shield took away most of the impact.",
-            "If you get me out I might be able to do something about yours."
+            "If you get me out, I might be able to do something about yours."
         ]
     }
 }

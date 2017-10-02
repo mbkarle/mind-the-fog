@@ -17,7 +17,7 @@ Array.prototype.move = function(old_index, new_index){
 //------------------------------------------------------
 //          Some magical game variables...
 //------------------------------------------------------
-var game_duration = 300000; //how long before the fog closes in totally
+var game_duration = 1800000; //how long before the fog closes in totally
 
 //variables to track printed messages
 var messageArray;
@@ -37,13 +37,14 @@ var enemyAttack;
 var torchlight;
 var initial_fog_radius;
 var fog_radius;
+var fogDeath = -1;
 var inventory;
 
 //dog related variables! mans best friend :)
 //NOTE: these are initialized here bc the dog should NOT be created from scratch
 //every time game is restarted! In fact, Dog's properties should be persistant
 //(such as if its carrying a weapon).
-var doge = new Dog(6,8);
+var doge = new Dog(6,9);
 
 var channelDivSpell;// new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);
 var fireball;// new ActiveSpell('fireball', 'fireball', hero, null, 2, 5000, 1);
@@ -114,6 +115,15 @@ var ImpenetrableArm = new Item("Impenetrable Armor", 'armor', 6, -5, 200, true, 
 var MasterHelm = new Item("Master's Helmet", 'headgear', 4, 4, 40, true, null, [itemList4]);
 var enchantedHelm = new effectItem("enchanted helmet", 'headgear', 2, 2, 20, [adrenaline, indestructible], [.4, .4], [fire, ice], [.4, .4], true, null, [itemList4]);
 var unbreakHelm = new Item("Unbreakable helmet", 'headgear', 5, -3, 100, true, null, [itemList4]);
+var ironSword = new exoticItem("iron sword", 'weapon', 1, 2, 10, 30, [itemList1, itemList2]);
+var tungstenSword = new exoticItem("tungsten sword", "weapon", 3, 2, null, 50, [itemList2]);
+var tungstenMail = new exoticItem("tungsten chainmail", "armor", 2, null, 20, 80, [itemList2]);
+var tungstenHelm = new exoticItem("tungsten helmet", "headgear", 1, 1, 10, 70, [itemList2]);
+var titanSword = new exoticItem("titanium sword", "weapon", 5, 2, 10, 100, [itemList3]);
+var titanMail = new exoticItem("titanium chainmail", "armor", 2, 1, 50, 120, [itemList3]);
+var titanHelm = new exoticItem("titanium helmet", "headgear", null, null, 40, 100,  [itemList3]);
+var Leeroy = new exoticItem("Leeroy", "weapon", 30, null, null, 200, [itemList3, itemList4]);
+var Gloria = new exoticItem("Gloria", 'weapon', 20, 10, null, 250, [itemList4]);
 
 
 
@@ -292,7 +302,7 @@ function start_game(){
 
 
     //Build room_list
-    num_floors = 6;
+    num_floors = 8;
     room_list = []
 
     //have an array of rooms per floor
@@ -306,6 +316,8 @@ function start_game(){
     var Floor3 = new Floor(3, 6, [2], null);
     var Floor4 = new Floor(4, 5, [2, 3], null);
     var Floor5 = new Floor(5, 4, [3], null);
+    var Floor6 = new Floor(6, 4, [3, 4], null);
+    var Floor7 = new Floor(7, 5, [4], null);
 
     doge.dogY = 8; //reset from last game
     doge.dogX = 6;
@@ -317,6 +329,8 @@ function start_game(){
     room_list[3] = Floor3.build_floor();
     room_list[4] = Floor4.build_floor();
     room_list[5] = Floor5.build_floor();
+    room_list[6] = Floor6.build_floor();
+    room_list[7] = Floor7.build_floor();
 
     curr_room = 1;
     curr_floor = 0;
@@ -337,6 +351,7 @@ function start_game(){
     for(var i = 0; i < activeNPCs.length; i++){
         addNPC(activeNPCs[i]['charID'], room_list[0][activeNPCs[i]['roomIdx']].room_map, activeNPCs[i]['coords'][0], activeNPCs[i]['coords'][1]);
         room_list[0][activeNPCs[i]['roomIdx']].room_map[activeNPCs[i]['coords'][0]][activeNPCs[i]['coords'][1]].computeCoordsWithOffset(room_list[0][activeNPCs[i]['roomIdx']].yoff, room_list[0][activeNPCs[i]['roomIdx']].xoff);
+        clearAllFog(room_list[0][1].room_map);
     }
 
     //get ready to start...
@@ -351,6 +366,7 @@ function tutorialStart(){ //TODO: add fight simulation; make more interactive
     curr_room = 2;
     avatarX = 21;
     avatarY = 10;
+    canMove = false;
     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
     room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY, torchlight, fog_radius);
     $("#worldMap").fadeOut(1).fadeIn(4000, function(){
@@ -832,6 +848,21 @@ function move(e) {
     else if(e.keyCode == 77){
         $("#tree-module").toggle(100);
         refreshInfo();
+    }
+    if(fog_radius == 1 && fogDeath == -1){
+      fogDeath = setInterval(function(){
+         if(fog_radius == 1 && hero.vitality > 0){
+             Damage({strength: 5}, hero);
+         }
+         else if(hero.vitality <= 0){
+             clearInterval(fogDeath);
+             fogDeath = -1;
+         }
+         else{
+             clearInterval(fogDeath);
+             fogDeath = -1;
+         }
+         }, 1000);
     }
 }
 

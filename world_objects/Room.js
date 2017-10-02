@@ -6,7 +6,7 @@
 * The boss, if applicable
 */
 class Room {
-    constructor(name, room_type, tier, floor, roomCleared, boss, fightChance, maxLocs) {
+    constructor(name, room_type, tier, floor, roomCleared, boss, fightChance, maxLocs, npcRoom) {
         this.name = name;
         this.maxLocs = maxLocs;
         if(typeof this.maxLocs === "undefined"){
@@ -18,6 +18,7 @@ class Room {
 
         }
         this.itemList = tier_to_items(tier);
+        this.npcRoom = npcRoom;
         this.room_type = room_type;
         this.roomCleared = roomCleared;
         this.enemy_list = tier_to_enemies(tier);
@@ -31,8 +32,7 @@ class Room {
         this.fog_free_room = (tier == 0);
 
 
-        this.room_map = this.buildRoom(room_type, this.locations, this.itemList, this.tier)
-
+        this.room_map = this.buildRoom(room_type, this.locations, this.itemList, this.tier, floor, npcRoom);
         this.room_width = this.room_map[0].length;
         this.room_height = this.room_map.length;
         this.room_entry = [Math.floor(this.room_height/ (1 + Math.ceil(Math.random() * 7))), Math.floor(this.room_width/(1 + Math.ceil(Math.random()* 7)))];
@@ -57,7 +57,7 @@ class Room {
         console.log(count)
     }
 
-    buildRoom(type, locations, itemList, tier){
+    buildRoom(type, locations, itemList, tier, floor, npcRoom){
         var map;
         var width;
         var height;
@@ -88,25 +88,25 @@ class Room {
             case 'MidNorm':
                 width = 30;
                 height = 30;
-                map = makeNormalRoom(height, width, map, locations, itemList, tier);
+                map = makeNormalRoom(height, width, map, locations, itemList, tier, floor, npcRoom);
                 break;
 
             case 'HorizHallNorm':
                 width = 40;
                 height = 12;
-                map = makeNormalRoom(height, width, map, locations, itemList, tier);
+                map = makeNormalRoom(height, width, map, locations, itemList, tier, floor, npcRoom);
                 break;
 
             case 'VertHallNorm':
                 width = 12;
                 height = 30;
-                map = makeNormalRoom(height, width, map, locations, itemList, tier);
+                map = makeNormalRoom(height, width, map, locations, itemList, tier, floor, npcRoom);
                 break;
 
             case 'SmallNorm':
                 width = 20;
                 height = 20;
-                map = makeNormalRoom(height, width, map, locations, itemList, tier);
+                map = makeNormalRoom(height, width, map, locations, itemList, tier, floor, npcRoom);
                 break;
 
             case 'Exit':
@@ -142,7 +142,7 @@ class Room {
             default:
                 width = 40;
                 height = 30;
-                map = makeNormalRoom(height, width, map, locations, itemList, tier);
+                map = makeNormalRoom(height, width, map, locations, itemList, tier, floor, npcRoom);
                 //end switch on room type
         }
         return map;
@@ -353,9 +353,12 @@ class Room {
 
 }
 
-function makeNormalRoom(height, width, map, locations, itemList, tier){
+function makeNormalRoom(height, width, map, locations, itemList, tier, floor, npcRoom){
     map = buildRoomOfSize(height,width);
 
+    if(room_list[floor].length == npcRoom && floor % 2 == 1){
+        locations.push('pit');
+    }
 
     var locs = rollLocations(locations.length, height, width) //locs of locations
 
@@ -390,8 +393,24 @@ function makeNormalRoom(height, width, map, locations, itemList, tier){
                 break;
 
             case 'pit':
-                var thisNPC = NPCList[Object.keys(NPCList)[Math.floor(Math.random() * Object.keys(NPCList).length)]];
-                map[locs[i][0]][locs[i][1]] = new Pit(locs[i][0], locs[i][1], thisNPC['charID'], thisNPC['charDisplay']);
+                var thisNPC;
+                var npcDiscoverable = true;
+                if(floor == 1 && !NPCList['shieldMaker']['active']){
+                    thisNPC = NPCList['shieldMaker'];
+                }
+                else if(floor == 3 && !NPCList['alchemist']['active']){
+                    thisNPC = NPCList['alchemist'];
+                }
+                //floor 5 dog trainer
+                //floor 7 rare item blacksmith
+                //chance encounter npc "Winston"
+                else{
+                    locations.splice(locations.length - 1, 1);
+                    npcDiscoverable = false;
+                }
+                if(npcDiscoverable){
+                    map[locs[i][0]][locs[i][1]] = new Pit(locs[i][0], locs[i][1], thisNPC['charID'], thisNPC['charDisplay']);
+                }
                 break;
 
 
@@ -403,14 +422,14 @@ function makeNormalRoom(height, width, map, locations, itemList, tier){
 }
 
 class SafeRoom extends Room {
-    constructor(name, room_type, tier, floor, maxLocs) {
-        super(name, room_type, tier, floor, true, null, 0, maxLocs)
+    constructor(name, room_type, tier, floor, maxLocs, npcRoom) {
+        super(name, room_type, tier, floor, true, null, 0, maxLocs, npcRoom)
     }
 }
 
 class FightRoom extends Room {
-    constructor(name, room_type, tier, floor, maxLocs) {
-        super(name, room_type, tier, floor, false, tier_to_boss(tier), tier_to_fightChance(tier), maxLocs)
+    constructor(name, room_type, tier, floor, maxLocs, npcRoom) {
+        super(name, room_type, tier, floor, false, tier_to_boss(tier), tier_to_fightChance(tier), maxLocs, npcRoom)
     }
 
 }
@@ -553,11 +572,11 @@ function tier_to_locations(tier, maxLocs){
         poss_addedLocs = ['chest', 'cave', 'altar', 'merchant', 'trapdoor'];
     }
     else {
-        poss_addedLocs = [];
+        poss_addedLocs = ['chest', 'cave', 'altar', 'merchant', 'trapdoor'];
     }
-    if(Math.random() < .2 - activeNPCs.length/50 && !pitActive){
-        poss_addedLocs.push('pit');
-    }
+    // if(Math.random() < .2 - activeNPCs.length/50 && !pitActive){
+    //     poss_addedLocs.push('pit');
+    // }
     if(typeof maxLocs == 'undefined'){
         var num_added_locs = Math.ceil(Math.random() * 3);
     }
@@ -569,10 +588,10 @@ function tier_to_locations(tier, maxLocs){
     for(var i = 0; i < num_added_locs; i++){
         locToAdd = Math.floor(Math.random() * poss_addedLocs.length);
         added_locs.push(poss_addedLocs[locToAdd]);
-        if(poss_addedLocs[locToAdd] == 'pit'){
-          pitActive = true;
-          console.log("pit is present");
-        }
+        // if(poss_addedLocs[locToAdd] == 'pit'){
+        //   pitActive = true;
+        //   console.log("pit is present");
+        // }
         for(var j = 0; j < i; j++){ //no repeats in added_locs !
             if(added_locs[i] == added_locs[j]){
                 added_locs.splice(i, 1);

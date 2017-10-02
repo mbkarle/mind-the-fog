@@ -4,6 +4,7 @@ class Floor {
         this.num_rooms = num_rooms;
         this.tierList = tierList;
         this.custom = custom;
+        this.npcRoom = Math.floor(Math.random() * num_rooms);
         this.fightRoomTypes = ['MidNorm', 'HorizHallNorm', 'VertHallNorm', 'SmallNorm', 'norm'];
         this.safeRoomTypes = ['MidNorm', 'HorizHallNorm', 'VertHallNorm', 'SmallNorm', 'Exit'];
         this.build_floor = function(){
@@ -28,7 +29,7 @@ class Floor {
                         maxLocs = undefined;
 
                     }
-                    room_list[this.floor_num][i] = new FightRoom("", type, this.tierList[Math.floor(Math.random()*this.tierList.length)], this.floor_num, maxLocs);
+                    room_list[this.floor_num][i] = new FightRoom("", type, this.tierList[Math.floor(Math.random()*this.tierList.length)], this.floor_num, maxLocs, this.npcRoom);
                 }
                 else{
                     type = this.safeRoomTypes[Math.floor(Math.random()*this.safeRoomTypes.length)]
@@ -42,7 +43,7 @@ class Floor {
                         maxLocs = undefined;
                     }
                     room_list[this.floor_num][i] = new SafeRoom("", type,
-                this.tierList[Math.floor(Math.random()*this.tierList.length)], this.floor_num, maxLocs);
+                this.tierList[Math.floor(Math.random()*this.tierList.length)], this.floor_num, maxLocs, this.npcRoom);
             }
                 build_doors(this, room_list, i, num_rooms)
                 center_map(room_list[this.floor_num][i].room_map, room_list[this.floor_num][i].yoff, room_list[this.floor_num][i].xoff);
@@ -59,7 +60,7 @@ class Floor {
             return room_list[this.floor_num];
 
             function build_doors(self, room_list, i, num_rooms){
-                if(!room_list[self.floor_num][num_rooms-1]){
+                if(i <  num_rooms - 1){
                     var nextRoomDoor = new Door(Math.floor(room_list[self.floor_num][i].room_exit[0]), room_list[self.floor_num][i].room_width - 1, i, i + 1);
                     if(room_list[self.floor_num][i].constructor.name == 'SafeRoom'){
                         nextRoomDoor.fog = false;

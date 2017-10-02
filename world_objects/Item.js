@@ -53,6 +53,49 @@ class effectItem extends Item {
     }
 }
 
+class exoticItem extends Item {
+    constructor(name, type, strength, dexterity, vitality, value, protoLists){
+        super(name, type, strength, dexterity, vitality, true, null, [NPCList['blacksmith']['merchandise']]);
+        this.constructorName = "exoticItem";
+        this.getListIdx = function(){
+            return NPCList['blacksmith']['merchandise'].indexOf(this);
+        }
+        this.value = value;
+        this.protoLists = protoLists;
+    }
+    buyItem(item){
+        var successful_transaction = false;
+        if(hero.wallet >= item.value){
+            hero.wallet -= item.value;
+            successful_transaction = true;
+            for(var i = 0; i < item.protoLists.length; i++){
+                item.protoLists[i].push(item);
+            }
+            NPCList['blacksmith']['merchandise'].splice(item.getListIdx(), 1);
+            refillChests();
+            refreshInfo();
+        }
+        else{
+            openAlert("You can't afford this item");
+        }
+        return successful_transaction;
+    }
+    drop_onSale(self){
+        for(var i = 0; i < self.onSale.length; i++){
+            var buyID = "#buy" + i;
+            $(buyID).attr("buy_id", i);
+            $(buyID).html(self.onSale[$(buyID).attr('buy_id')].value + 'gold');
+            $(buyID).click(function(){
+                console.log('buying item');
+                if(self.onSale[$(this).attr('buy_id')].buyItem(self.onSale[$(this).attr('buy_id')])){
+                $(this).off('click');
+                self.openNPCModule(self); //updates window
+            }
+            })
+        }
+    }
+}
+
 class Currency extends Item {
     constructor(name, value, amount){
         super(name);
@@ -253,6 +296,7 @@ class Consumable {
     }
     drop_onSale(self){
         for(var i = 0; i < self.onSale.length; i++){
+            self.onSale[i].value = ConsumableList[self.onSale[i].name]['value'];
             var buyID = "#buy" + i;
             $(buyID).attr("buy_id", i);
             $(buyID).html(self.onSale[$(buyID).attr('buy_id')].value + 'gold');

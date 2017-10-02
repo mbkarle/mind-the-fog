@@ -669,7 +669,10 @@ class NPC extends Location {
         itemMessage += "<div class='itemInfo' id='onSale" + i + "' style='border-width:2px;'>" + self.onSale[i].name + "<div id='buy" + i + "' class='interact'>" +  "</div></div>";
       }
       $('#vendor-contents').html(itemMessage);
-      self.onSale[0].drop_onSale(self);
+      if(self.onSale.length > 0){
+          self.onSale[0].drop_onSale(self);
+      }
+
 
       for(var i = 0; i < self.onSale.length; i++){
           var item_to_print =  (' ' + itemInfos[i]).slice(1)
@@ -785,7 +788,16 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
             this.num_items = 3 + Math.floor(Math.random() * 6);
             for(var i = 0; i < this.num_items; i++){
                 var thisItem = Math.floor(Math.random() * this.itemList.length);
-                var itemListfor_idx = this.itemList[thisItem].items[0];
+                var itemListfor_idx;
+                if(this.itemList[thisItem].constructorName == "exoticItem"){
+                    itemListfor_idx = this.itemList[thisItem].protoLists[0];               
+                 }
+                else if(this.itemList[thisItem].constructorName == "Consumable"){
+                    itemListfor_idx = itemListMeta[ConsumableList[this.itemList[thisItem].name]['itemlists'][0]];
+                }
+                else{
+                    itemListfor_idx = this.itemList[thisItem].items[0];
+                }
                 this.itemList[thisItem].value = Math.floor(Math.random() * 10 * (itemListMeta.indexOf(itemListfor_idx) + 1)) * 10;
             //    console.log(itemListMeta.indexOf[this.itemList[thisItem].items[0]]);
                 this.onSale.push(this.itemList[thisItem])
