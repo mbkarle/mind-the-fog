@@ -557,7 +557,7 @@ function enter_combat(room, custom_enemy) {
         }, 10000 / enemy.dexterity);
     }
 
-    document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
+    $("#defendText").html( "Shield: " + heroShield.vitality );
     refreshInfo();
 
     document.getElementById("attack").onclick = function() {
@@ -657,7 +657,7 @@ function exit_combat(room, customCombat) {
         $("#open").click(
             function() {
                 canMove = true;
-                document.getElementById("enter").innerHTML = "Engage";
+                $('#enter').html('Engage')
                 $("#open").hide();
                 $("#enter").show();
                 $("#text-module").hide();
@@ -945,8 +945,8 @@ function revertTextModule(){
     print("lastMessage", "enemy-message");
 
     //in case innerHTMl was changed; resets to default
-    document.getElementById("descend").innerHTML = "Descend"
-    document.getElementById("stay").innerHTML = "Stay"
+    $('#descend').html("Descend")
+    $('#stay').html("Stay")
 }
 
 function refreshInfo() {
@@ -956,17 +956,21 @@ function refreshInfo() {
     hero.levelCheck();
     var xpFraction = (hero.xp - hero.level * 1000) / 1000;
 
-    document.getElementById("characterInfo").innerHTML = "Health: <br><div id='healthBar' class='statusBar'>" +
-    hero.vitality + " / " + hero.maxVitality +
-    "<div id='healthSlider' class='statusSlider'></div></div><br><br><hr style='width: 80%'><br>" +
-    "Shield Health: <br><div id='shieldHealthBar' class='statusBar'>" +
-    heroShield.vitality + " / " + heroShield.maxVitality +
-    "<div id='shieldHealthSlider' class='statusSlider'></div></div><br>";
+    var charInfoHTML = "Health: <br><div id='healthBar' class='statusBar'>" +
+        hero.vitality + " / " + hero.maxVitality +
+        "<div id='healthSlider' class='statusSlider'></div></div><br><br><hr style='width: 80%'><br>" +
+        "Shield Health: <br><div id='shieldHealthBar' class='statusBar'>" +
+        heroShield.vitality + " / " + heroShield.maxVitality +
+        "<div id='shieldHealthSlider' class='statusSlider'></div></div><br>";
 
-    document.getElementById('xp').innerHTML = "<div id='xpBar' class='statusBar' style='width: 60px'>Level: " +
-    hero.level + "<div id='xpSlider' class='statusSlider'></div></div>"
+    $('#characterInfo').html(charInfoHTML)
 
-    document.getElementById('gold').innerHTML = hero.wallet + " gold";
+    var xpHTML = "<div id='xpBar' class='statusBar' style='width: 60px'>Level: " +
+        hero.level + "<div id='xpSlider' class='statusSlider'></div></div>";
+
+    $("#xp").html(xpHTML)
+
+    $("#gold").html(hero.wallet + " gold")
 
     var torchtext = '';
     if(hero.num_torches > 0){
@@ -998,7 +1002,7 @@ function refreshInfo() {
             "<div id='carried" + i + "' class='interact'> Equip </div><div id='invDrop" + i + "' class='interact small'>x</div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
         }
     }
-    document.getElementById("inventory").innerHTML = inventoryMessage;
+    $("#inventory").html(inventoryMessage);
 
     itemInfos = []
     var item_to_compare;
@@ -1076,7 +1080,7 @@ function refreshInfo() {
           refreshInfo();
         })
         $(invCarID).mouseenter(function(){
-            document.getElementById("inv_hoverInfo").innerHTML = $(this).attr('item_to_print');
+            $("inv_hoverInfo").html($(this).attr('item_to_print'));
             $("#inv_hoverInfo").show();
             if(inventory[items_carried[$(this).attr('inv_idx')].type] != null && inventory[items_carried[$(this).attr('inv_idx')].type].name != items_carried[$(this).attr('inv_idx')].name){
 
@@ -1165,7 +1169,7 @@ function refreshInfo() {
         hero.vitality + " / " + hero.maxVitality +
         "<div id='heroHealthSlider' class='statusSlider' style='width: " + healthFraction * 100 + "%'></div>"
     );
-    document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
+    $("#defendText").html( "Shield: " + heroShield.vitality );
 
 }
 
@@ -1178,7 +1182,7 @@ function Damage(source, target) {
     hit = Math.floor(Math.random() * source.strength + source.strength);
     target.vitality -= hit;
 
-    document.getElementById("defendText").innerHTML = "Shield: " + heroShield.vitality;
+    $("#defendText").html( "Shield: " + heroShield.vitality );
 
     if(target.objid != "defendText"){
         var targetHealthFrac = target.vitality / target.maxVitality * 100;
@@ -1420,7 +1424,7 @@ function openPrompt(prompt, res2){
 function print(messageType, message) { //TODO: change so that multiple items can appear in chests: sub-divs inside textbox, etc.
     $(".itemInfo").off('mouseenter').off('mouseleave');
     if (messageType == "damageDealt") {
-        document.getElementById("textBox").innerHTML = "You strike for " + message + " damage!"
+        $("#textBox").html( "You strike for " + message + " damage!");
         messageArray.push([messageType, "You strike for " + message + " damage!"])
     }
     else if (messageType == "lastMessage") {
@@ -1432,7 +1436,7 @@ function print(messageType, message) { //TODO: change so that multiple items can
                 break;
             }
         }
-        document.getElementById("textBox").innerHTML = prevMessage;
+        $("#textBox").html( prevMessage );
         messageArray.push([message, prevMessage]); //was messageType, prevMessage-- want to push that its an enemy-message, not a 'lastMessage', right?
     }
     else if (messageType == "item") {
@@ -1478,7 +1482,7 @@ function print(messageType, message) { //TODO: change so that multiple items can
 
         }
         console.log(itemInfos)
-        document.getElementById("textBox").innerHTML = itemMessage;
+        $("#textBox").html( itemMessage );
 
         //need mouse listeners after itemMessage printed...
         for(var i = 0; i < items.length; i++){
@@ -1486,7 +1490,7 @@ function print(messageType, message) { //TODO: change so that multiple items can
             var id = '#itemInfo'+i;
             $(id).attr('item_to_print', item_to_print)
             $(id).mouseenter(function(){
-                document.getElementById("hoverInfo").innerHTML = $(this).attr('item_to_print');
+                $("#hoverInfo").html( $(this).attr('item_to_print') );
                 $("#hoverInfo").show();
             })
             $(id).mouseleave(function(){
@@ -1498,7 +1502,7 @@ function print(messageType, message) { //TODO: change so that multiple items can
         messageCount--; //NEED TO DECREMENT BC ITEM NOT PUSHED
     }
     else {
-        document.getElementById("textBox").innerHTML = message;
+        $("#textBox").html( message );
         messageArray.push([messageType, message]);
     }
     messageCount++

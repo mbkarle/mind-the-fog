@@ -679,7 +679,7 @@ class NPC extends Location {
           var id = '#onSale'+i;
           $(id).attr('item_to_print', item_to_print)
           $(id).mouseenter(function(){
-              document.getElementById("vendor-hover").innerHTML = $(this).attr('item_to_print');
+              $("#vendor-hover").html( $(this).attr('item_to_print') );
               $("#vendor-hover").show();
           })
           $(id).mouseleave(function(){
@@ -839,8 +839,8 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
 
                     itemMessage += "<div class='itemInfo' id='onSale" + i + "' style='border-width:2px;'>" + this.onSale[i].name + "<div id='buy" + i + "' class='interact'>" + this.onSale[i].value + "gold </div></div>";
                 }
-                document.getElementById("vendor-contents").innerHTML = itemMessage;
-                document.getElementById("tab").innerHTML = "Sell";
+                $("#vendor-contents").html( itemMessage );
+                $("#tab").html( "Sell" );
                 this.drop_onSale(self);
 
                 for(var i = 0; i < this.onSale.length; i++){
@@ -848,7 +848,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
                     var id = '#onSale'+i;
                     $(id).attr('item_to_print', item_to_print)
                     $(id).mouseenter(function(){
-                        document.getElementById("vendor-hover").innerHTML = $(this).attr('item_to_print');
+                        $("#vendor-hover").html( $(this).attr('item_to_print') );
                         $("#vendor-hover").show();
                     })
                     $(id).mouseleave(function(){
@@ -910,8 +910,8 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
 
                     }
 
-                document.getElementById('vendor-contents').innerHTML = itemMessage;
-                document.getElementById('tab').innerHTML = "Buy";
+                $('#vendor-contents').html( itemMessage );
+                $('#tab').html( "Buy" );
                 this.drop_forSale(self);
 
                 for(var i = 0; i < inventoryForSale.length; i++){
@@ -919,7 +919,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
                     var id = '#forSale'+i;
                     $(id).attr('item_to_print', item_to_print)
                     $(id).mouseenter(function(){
-                        document.getElementById("vendor-hover").innerHTML = $(this).attr('item_to_print');
+                        $("#vendor-hover").html( $(this).attr('item_to_print') );
                         $("#vendor-hover").show();
                     })
                     $(id).mouseleave(function(){

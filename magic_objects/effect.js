@@ -22,7 +22,7 @@ class Effect {
         for(var i = 0; i < target.effects.length; i++){
             effectBoxes += "<div id='effect" + i + target.objid + "' class='effect' style='left: " + 20 * i + "px'>" + target.effects[i].symbol + "</div>";
         }
-        document.getElementById(objid).innerHTML = effectBoxes;
+        $(objid).html( effectBoxes );
         if(target.effects.length > 0){
             $("#" + objid).show();
         }
@@ -33,7 +33,7 @@ class Effect {
             $(effectID).attr('eff_to_print', effect_to_print);
             $(effectID).mouseenter(function(){
                 console.log("entered");
-                document.getElementById('effectsHover').innerHTML = $(this).attr('eff_to_print');
+                $('#effectsHover').html( $(this).attr('eff_to_print') );
                 $("#effectsHover").show();
             })
             $(effectID).mouseleave(function(){

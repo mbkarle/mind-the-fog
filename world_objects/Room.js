@@ -187,7 +187,7 @@ class Room {
                 worldContents += "<div id='" + this.room_map[i][j].htmlID.substring(1) + "' style='top:" + this.room_map[i][j].yCoord + "px; left:" + this.room_map[i][j].xCoord + "px; position: absolute;'>" + symbol + "</div>";
             }
         }
-        document.getElementById("worldContent").innerHTML = worldContents;
+        $("#worldContent").html( worldContents );
     }
 
     addFogWhenTorchBurnsOut(avX, avY, fog_rad){
