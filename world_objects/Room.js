@@ -92,13 +92,13 @@ class Room {
                 break;
 
             case 'HorizHallNorm':
-                width = 40;
-                height = 12;
+                width = 30;
+                height = 10;
                 map = makeNormalRoom(height, width, map, locations, itemList, tier, floor, npcRoom);
                 break;
 
             case 'VertHallNorm':
-                width = 12;
+                width = 10;
                 height = 30;
                 map = makeNormalRoom(height, width, map, locations, itemList, tier, floor, npcRoom);
                 break;
