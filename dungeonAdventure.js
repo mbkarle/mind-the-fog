@@ -942,155 +942,9 @@ function revertTextModule(){
 }
 
 function refreshInfo() {
-    // updates info box
-    var healthFraction = hero.vitality/hero.maxVitality;
-    var shieldHealthFraction = heroShield.vitality/heroShield.maxVitality;
-    hero.levelCheck();
-    var xpFraction = (hero.xp - hero.level * 1000) / 1000;
+    //inventory
+    refreshInventoryHTML(hero, heroShield)
 
-    var charInfoHTML = "Health: <br><div id='healthBar' class='statusBar'>" +
-        hero.vitality + " / " + hero.maxVitality +
-        "<div id='healthSlider' class='statusSlider'></div></div><br><br><hr style='width: 80%'><br>" +
-        "Shield Health: <br><div id='shieldHealthBar' class='statusBar'>" +
-        heroShield.vitality + " / " + heroShield.maxVitality +
-        "<div id='shieldHealthSlider' class='statusSlider'></div></div><br>";
-
-    $('#characterInfo').html(charInfoHTML)
-
-    var xpHTML = "<div id='xpBar' class='statusBar' style='width: 60px'>Level: " +
-        hero.level + "<div id='xpSlider' class='statusSlider'></div></div>";
-
-    $("#xp").html(xpHTML)
-
-    $("#gold").html(hero.wallet + " gold")
-
-    var torchtext = '';
-    if(hero.num_torches > 0){
-        torchtext = 't'
-        for(var i = 0; i < hero.num_torches-1; i++){
-            torchtext += "    t"
-        }
-    }
-    $('#torchcount').html(torchtext)
-
-    document.getElementById("healthSlider").style.width = 180 * healthFraction + "px";
-    document.getElementById("shieldHealthSlider").style.width = 180 * shieldHealthFraction + "px";
-    document.getElementById("xpSlider").style.width = 60 * xpFraction + "px";
-
-    var inventoryMessage = "Equipped: <br><br>"
-    for(attribute in hero.inventory){
-        if(hero.inventory[attribute] != null && attribute !== 'carried'){
-            inventoryMessage += attribute + ": " + hero.inventory[attribute].name + "<br><br>";
-        }
-    }
-    inventoryMessage += "<hr style='width: 80%'> Carried: <br><br>"
-    items_carried = hero.inventory['carried'];
-    for(var i = 0; i < items_carried.length; i++){
-        if (items_carried[i].equipped){
-            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact'> Unequip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
-        }
-        else{
-            inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name +
-            "<div id='carried" + i + "' class='interact'> Equip </div><div id='invDrop" + i + "' class='interact small'>x</div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
-        }
-    }
-    $("#inventory").html(inventoryMessage);
-
-    itemInfos = []
-    var item_to_compare;
-    for(var i = 0; i < items_carried.length; i++){
-        //store all the item infos to be displayed upon hover...
-        itemInfos.push((items_carried[i].name + "<br>"))
-        for (attribute in items_carried[i]) {
-            if (typeof items_carried[i][attribute] == "number" && attribute != 'value') {
-                if(items_carried[i][attribute] >= 0){
-                    itemInfos[i] += attribute + ": +" + items_carried[i][attribute] + "<br>";
-                }
-                else{ // issue #49
-                    itemInfos[i] += attribute + ": " + items_carried[i][attribute] + "<br>";
-                }
-            }
-        }
-        if(items_carried[i].constructorName == 'effectItem'){
-
-            for(var j = 0; j < items_carried[i].buffArray.length; j++){
-
-                itemInfos[i] += "buffs: " + items_carried[i].buffArray[j].name + "<br>";
-            }
-            for(var k = 0; k < items_carried[i].debuffArray.length; k++){
-                itemInfos[i] += "debuffs: " + items_carried[i].debuffArray[k].name + "<br>";
-            }
-        }
-        if(items_carried[i].constructorName == 'Consumable'){
-
-            for(var j = 0; j < items_carried[i].buffArray.length; j++){
-
-                itemInfos[i] += "buffs: " + items_carried[i].buffArray[j]['buff'].name + "<br>";
-            }
-            for(var k = 0; k < items_carried[i].debuffArray.length; k++){
-                itemInfos[i] += "debuffs: " + items_carried[i].debuffArray[k]['debuff'].name + "<br>";
-            }
-        }
-    }
-
-    //set equip listeners to inventory
-    for(var i = 0; i < items_carried.length; i++){
-        carriedID = '#carried' + i;
-        invCarID = '#invInfo' + i;
-        dropID = "#invDrop" + i;
-        var item_to_print =  (' ' + itemInfos[i]).slice(1)
-        $(dropID).off('click');
-        $(carriedID).off('click') //turn old click listeners off
-        $(carriedID).attr('inv_idx', i)
-        $(dropID).attr('drop_idx', i);
-        $(invCarID).attr('item_to_print', item_to_print)
-        $(invCarID).attr('inv_idx', i);
-        if(items_carried[$(carriedID).attr('inv_idx')].constructorName != 'Consumable'){
-            if(!items_carried[$(carriedID).attr('inv_idx')].equipped){
-                $(carriedID).click(function(){
-                    equip(hero,items_carried[$(this).attr('inv_idx')])
-                    refreshInfo()
-                })
-            }
-            else{
-                $(carriedID).click(function(){
-                    Unequip(hero, items_carried[$(this).attr('inv_idx')]);
-                    refreshInfo();
-                })
-            }
-        }
-        else{
-            $(carriedID).html('Use').click(function(){
-                items_carried[$(this).attr('inv_idx')].useConsumable(items_carried[$(this).attr('inv_idx')]);
-                items_carried.splice($(this).attr('inv_idx'), 1);
-                refreshInfo();
-            })
-        }
-        $(dropID).click(function(){
-          console.log($(this).attr('drop_idx'));
-          items_carried.splice($(this).attr('drop_idx'), 1);
-          refreshInfo();
-        })
-        $(invCarID).mouseenter(function(){
-            $("#inv_hoverInfo").html($(this).attr('item_to_print'));
-            $("#inv_hoverInfo").show();
-            if(hero.inventory[items_carried[$(this).attr('inv_idx')].type] != null && hero.inventory[items_carried[$(this).attr('inv_idx')].type].name != items_carried[$(this).attr('inv_idx')].name){
-
-                for(var m = 0; m < items_carried.length; m++){
-                    if(items_carried[m].name == hero.inventory[items_carried[$(this).attr('inv_idx')].type].name){
-                        item_to_compare = (' ' + itemInfos[m]).slice(1);
-                        break;
-                    }
-                }
-                $("#hoverCompare").html(item_to_compare).show();
-            }
-
-        })
-        $(invCarID).mouseleave(function(){
-            $("#inv_hoverInfo").hide();
-            $("#hoverCompare").hide();
-        })
-    }
     //magic tree:
     $("#tree-module").html('')
     for(var spell in Object.getOwnPropertyNames(spellTree)){
@@ -1157,6 +1011,7 @@ function refreshInfo() {
 
 
     //refresh for combat-module:
+    var healthFraction = hero.vitality/hero.maxVitality;
     $("#heroHealthBar").html(
         hero.vitality + " / " + hero.maxVitality +
         "<div id='heroHealthSlider' class='statusSlider' style='width: " + healthFraction * 100 + "%'></div>"
