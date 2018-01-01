@@ -15,12 +15,14 @@ class Dog {
         this.dog_speed = 100;
     }
 
+    // A function all special Locations have upon a hero interacting
     hero_interact(tile){
         this.following = !this.following;
         console.log('following = ' + this.following);
 
         tile.passable = !tile.passable;
-        // console.log('woof!')
+    
+        //TODO: Dog Inventory?
         // $('#text-module').show();
         // print('message', 'Give Dog an Item?')
     }
@@ -29,80 +31,16 @@ class Dog {
         //Takes in the hero's pos and updates the path_to_hero variable to be
         //an array of locations needed to travel to reach the hero.
 
-        /*
-        //First, lets get the x and y positions needed to travel
-        var x_pos = [];
-        if(avX > this.dogX){
-            for(var i = 0; i < Math.abs(avX - this.dogX); i++){
-                x_pos.push(this.dogX+i)
-            }
-        }
-        else if(avX < this.dogX){
-            for(var i = 0; i < Math.abs(avX - this.dogX); i++){
-                x_pos.push(this.dogX-i)
-            }
-        }
-
-        var y_pos = [];
-        if(avY > this.dogY){
-            for(var i = 0; i < Math.abs(avY - this.dogY); i++){
-                y_pos.push(this.dogY+i)
-            }
-        }
-        else if(avY < this.dogY){
-            for(var i = 0; i < Math.abs(avY - this.dogY); i++){
-                y_pos.push(this.dogY-i)
-            }
-        }
-
-        //Alright, so BASICALLY, btw x_pos and y_pos one array has to be greater
-        // than or equal to the other in length
-        //Soooo... we find which one is bigger, and we establish a ratio.
-        //If we have that there is twice as much in x dir than y, then we interleave the
-
-        this.path_to_hero = [];
-        var manhattan_dist = this.manhat_dist_from_hero(avX, avY)
-        for(var i = 0; i < manhattan_dist -1; i++){
-            var curX;
-            var curY;
-
-            if(i % 2 === 0){
-                curX = x_pos.shift();
-                if(typeof curX === 'undefined'){ //nothing left in x list
-                    curX = avX;
-                    curY = y_pos.shift(); //note this should have something left...
-                }
-                else{
-                    curY = y_pos[0];
-                    if(typeof curY === 'undefined'){curY = avY}
-                }
-            }
-            else{
-                curY = y_pos.shift();
-                if(typeof curY === 'undefined'){ //nothing left in y list
-                    curY = avY;
-                    curX = x_pos.shift();
-                }
-                else{
-                    curX = x_pos[0];
-                    if(typeof curX === 'undefined'){curX = avX}
-                }
-            }
-
-
-            if(typeof curY === 'undefined'){curY = avY}
-
-            this.path_to_hero.push([curX, curY])
-        }
-        */
-
+        // compute the html tags of start and end locations
         var start_loc = String(this.dogY) + 'x' + String(this.dogX);
         var end_loc = String(avY) + 'x' + String(avX);
-        this.path_to_hero = a_star_search(start_loc, end_loc, map);
 
-        // console.log(this.path_to_hero.toString())
+        // set the path_to_hero to be the path from helper a* search
+        this.path_to_hero = a_star_search(start_loc, end_loc, map);
     }
+
     spawn_dog(avX, avY, oldmap, room){
+        // Called upon entering any room, spawn dog in new room
         if(this.following){
             var newmap = room.room_map;
             //Upon changing a room / descending, the dog should:
@@ -110,11 +48,8 @@ class Dog {
             //2) move one to the left/right, etc
             //3) all move intervals should be reset...
 
-            this.path_to_hero = [];
+            this.path_to_hero = []; //reset any old paths
             this.clearMoveInterval();
-
-            // oldmap[this.dogY][this.dogX] = this.loc_sitting_on; //restore old map
-            // $(this.htmlID).html(this.loc_sitting_on.symbol);
 
             //Remove the dog from the old map...
             oldmap[this.dogY][this.dogX].dog_present = false;
@@ -124,18 +59,16 @@ class Dog {
             this.dogX = avX;
             this.dogY = avY;
             newmap[this.dogY][this.dogX].dog_present = true;
-            // newmap[this.dogY][this.dogX].refreshInnerHTML();
 
             //just find any position available thats not the hero's loc then move the dog!
             var newloc = this.get_avail_dog_loc('w', avX, avY, newmap);
             this.move_dog_restore_map(newloc, newmap)
-
-            //redraw hero since we spawned dog on top
-            // newmap[avY][avX].refreshInnerHTML();
         }
     }
 
     move_dog_restore_map(newloc, map){
+        //Internal function to move dog between two locs on map
+
         //Remove the dog from its current tile and refresh its html
         map[this.dogY][this.dogX].dog_present = false;
         map[this.dogY][this.dogX].refreshInnerHTML();
@@ -148,7 +81,8 @@ class Dog {
     }
 
     move_along_path(map){
-        // console.log(this.path_to_hero.toString())
+        //internal function to move the dog one towards hero
+
         if(this.path_to_hero.length > 0){
             //The new location to move to is the first on path_to_hero
             var newloc = this.path_to_hero.shift();
@@ -160,6 +94,9 @@ class Dog {
     }
 
     hero_move_update_dog(hero_move_dir, avX, avY, map){
+        // external function called on every hero move
+
+        // only update dog pos if certain dist away + following
         if(3 <= this.manhat_dist_from_hero(avX, avY) && this.following){
             //You moved: recompute path_to_hero
             this.compute_path_to_hero(avX, avY, map)
@@ -167,14 +104,14 @@ class Dog {
             //Now, if you arent in motion already, start hoppin along
             //that path!
             if(this.move_interval === -1){
-                // console.log('starting move_interval')
-                var self = this;
+                var self = this; // needed to preserve variable on interval
                 this.move_interval = setInterval(function(){
                     self.move_along_path(map)
                 }, this.dog_speed)
             }
         }
 
+        // if hero collided with dog, get out tha way!
         if(this.dogX === avX && this.dogY === avY && map[avY][avX].dog_present){
             var newloc = this.get_avail_dog_loc(hero_move_dir,avX, avY, map)
             this.move_dog_restore_map(newloc, map)
@@ -185,11 +122,14 @@ class Dog {
     }
 
     clearMoveInterval(){
+        // internal function to clear move interval
         clearInterval(this.move_interval)
         this.move_interval = -1;
     }
 
     get_avail_dog_loc(hero_move_dir, x, y, map){
+        // internal function for getting available dog location
+        // upon hero collision based on hero's direction
         var poss_locs;
         switch (hero_move_dir) {
             case 'w':
@@ -213,13 +153,13 @@ class Dog {
         for(var i = 0; i < poss_locs.length; i++){
             loc_to_return = poss_locs[i];
             if(map[loc_to_return[1]][loc_to_return[0]].objid === 'tile'){
-                // console.log(loc_to_return)
                 return loc_to_return;
             }
         }
     }
 
     manhat_dist_from_hero(avX, avY){
+        // internal function for manhattan distance to hero
         return Math.abs(avY - this.dogY) + Math.abs(avX - this.dogX);
     }
 }
@@ -319,8 +259,9 @@ function a_star_search(start_loc, end_loc, map){
     }
 }
 
-//Helper function to get the tile neighbors of a current location.
 function get_valid_neighs_from_htmlID(current, map){
+    //Helper function to get the tile neighbors of a current location.
+
     //Parse the current htmlID:
     var strsplit = current.split('x');
     var rowID = parseInt(strsplit[0]);
