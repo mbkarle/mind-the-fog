@@ -1,7 +1,7 @@
 /*
  * This file should be for skill-tree (magic tree) related functions.
  */
-refreshSpellTreeHTML(hero){
+function refreshSpellTreeHTML(hero){
     $("#tree-module").html('')
     for(var spell in Object.getOwnPropertyNames(spellTree)){
         if(typeof Object.getOwnPropertyNames(spellTree)[spell] != 'function'){
