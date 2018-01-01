@@ -1,4 +1,3 @@
-//Note: shield not working??
 //------------------------------------------------------------------------------------------------
 // This script should be the game runner. Other classes should live in the
 // ./world_objects/ folder,although this script can have helper methods and global variables.
@@ -38,7 +37,6 @@ var torchlight;
 var initial_fog_radius;
 var fog_radius;
 var fogDeath = -1;
-var inventory;
 
 //dog related variables! mans best friend :)
 //NOTE: these are initialized here bc the dog should NOT be created from scratch
@@ -177,8 +175,6 @@ var num_floors;
 
 var room_list;
 
-
-
 var curr_room;
 var curr_floor;
 
@@ -291,15 +287,6 @@ function start_game(){
     torchlight = false;
     initial_fog_radius = 5;
     fog_radius = initial_fog_radius;
-
-    //hero start inventory
-    inventory = {
-        weapon: null,
-        headgear: null,
-        armor: null,
-        carried: []
-    }
-
 
     //Build room_list
     num_floors = 8;
@@ -566,21 +553,21 @@ function enter_combat(room, custom_enemy) {
         if (ready) {
             ready = false;
             window.setTimeout(readyUp, 10000 / hero.dexterity);
-            if (inventory.weapon != null && inventory.weapon.constructorName == 'effectItem') {
+            if (hero.inventory.weapon != null && hero.inventory.weapon.constructorName == 'effectItem') {
                 console.log("buffing up")
-                inventory.weapon.buffUp(hero);
-                inventory.weapon.debuffUp(enemy);
+                hero.inventory.weapon.buffUp(hero);
+                hero.inventory.weapon.debuffUp(enemy);
             }
-            if (inventory.armor != null) {
-                if (inventory.armor.constructorName == 'effectItem') {
-                    inventory.armor.buffUp(hero);
-                    inventory.armor.debuffUp(enemy);
+            if (hero.inventory.armor != null) {
+                if (hero.inventory.armor.constructorName == 'effectItem') {
+                    hero.inventory.armor.buffUp(hero);
+                    hero.inventory.armor.debuffUp(enemy);
                 }
             }
-            if (inventory.headgear != null) {
-                if (inventory.headgear.constructorName == 'effectItem') {
-                    inventory.headgear.buffUp(hero);
-                    inventory.headgear.debuffUp(enemy);
+            if (hero.inventory.headgear != null) {
+                if (hero.inventory.headgear.constructorName == 'effectItem') {
+                    hero.inventory.headgear.buffUp(hero);
+                    hero.inventory.headgear.debuffUp(enemy);
                 }
             }
             hitprint = Damage(hero, enemy);
@@ -991,13 +978,13 @@ function refreshInfo() {
     document.getElementById("xpSlider").style.width = 60 * xpFraction + "px";
 
     var inventoryMessage = "Equipped: <br><br>"
-    for(attribute in inventory){
-        if(inventory[attribute] != null && attribute !== 'carried'){
-            inventoryMessage += attribute + ": " + inventory[attribute].name + "<br><br>";
+    for(attribute in hero.inventory){
+        if(hero.inventory[attribute] != null && attribute !== 'carried'){
+            inventoryMessage += attribute + ": " + hero.inventory[attribute].name + "<br><br>";
         }
     }
     inventoryMessage += "<hr style='width: 80%'> Carried: <br><br>"
-    items_carried = inventory['carried'];
+    items_carried = hero.inventory['carried'];
     for(var i = 0; i < items_carried.length; i++){
         if (items_carried[i].equipped){
             inventoryMessage += "<div class='invCarry' id='invInfo" + i + "'>" + items_carried[i].name + "<div id='carried" + i + "' class='interact'> Unequip </div></div> <br><br>"; //style='top: " + (25 + takeID*25) + "px;'>
@@ -1087,10 +1074,10 @@ function refreshInfo() {
         $(invCarID).mouseenter(function(){
             $("#inv_hoverInfo").html($(this).attr('item_to_print'));
             $("#inv_hoverInfo").show();
-            if(inventory[items_carried[$(this).attr('inv_idx')].type] != null && inventory[items_carried[$(this).attr('inv_idx')].type].name != items_carried[$(this).attr('inv_idx')].name){
+            if(hero.inventory[items_carried[$(this).attr('inv_idx')].type] != null && hero.inventory[items_carried[$(this).attr('inv_idx')].type].name != items_carried[$(this).attr('inv_idx')].name){
 
                 for(var m = 0; m < items_carried.length; m++){
-                    if(items_carried[m].name == inventory[items_carried[$(this).attr('inv_idx')].type].name){
+                    if(items_carried[m].name == hero.inventory[items_carried[$(this).attr('inv_idx')].type].name){
                         item_to_compare = (' ' + itemInfos[m]).slice(1);
                         break;
                     }
@@ -1298,7 +1285,7 @@ function take_item(item, chest_to_take_from){
         }
     }
     else{
-        inventory.carried.push(item)
+        hero.inventory.carried.push(item)
     }
     refreshInfo();
     if(typeof chest_to_take_from != 'undefined'){
@@ -1315,7 +1302,7 @@ function mob_drop_items(items){
         $(takeID).attr('item_id', i)
         $(takeID).click(
             function() {
-                if(inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency" || items[$(this).attr('item_id')].constructorName == "Torch"){
+                if(hero.inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency" || items[$(this).attr('item_id')].constructorName == "Torch"){
                     item_to_take = items[$(this).attr('item_id')];
                     if(item_to_take.constructorName != 'Consumable'){
                         take_item($().extend({},item_to_take))
@@ -1519,6 +1506,7 @@ function print(messageType, message) { //TODO: change so that multiple items can
 function equip(target, equipment) {
 
     // console.log(target.name + " equipped " + equipment.name);
+    inventory = target.inventory
     equipment.equipped = true;
     if(inventory[equipment.type] != null && equipment.constructorName != "Currency"){
         temp_item = inventory[equipment.type];
@@ -1585,21 +1573,4 @@ function Unequip(target, equipment, replace) {
         }
     }
 
-}
-
-// function to debug the dog (call in console)
-function where_is_doge(){
-    var doge_locs = []
-    for(var i = 0; i < room_list.length; i++){
-        for(var j= 0; j < room_list[0].length; j++){
-            for(var r = 0; r < room_list[i][j].room_map.length; r++){
-                for(var c = 0; c < room_list[i][j].room_map[0].length; c++){
-                    if(room_list[i][j].room_map[r][c].dog_present){
-                        doge_locs.push([i, j, room_list[i][j].room_map[r][c]])
-                    }
-                }
-            }
-        }
-    }
-    return doge_locs;
 }
