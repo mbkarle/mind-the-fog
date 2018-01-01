@@ -175,7 +175,7 @@ class Dog {
             }
         }
 
-        if(this.dogX === avX && this.dogY === avY){
+        if(this.dogX === avX && this.dogY === avY && map[avY][avX].dog_present){
             var newloc = this.get_avail_dog_loc(hero_move_dir,avX, avY, map)
             this.move_dog_restore_map(newloc, map)
             this.clearMoveInterval();

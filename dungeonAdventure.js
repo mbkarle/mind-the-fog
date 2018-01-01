@@ -44,7 +44,7 @@ var inventory;
 //NOTE: these are initialized here bc the dog should NOT be created from scratch
 //every time game is restarted! In fact, Dog's properties should be persistant
 //(such as if its carrying a weapon).
-var doge = new Dog(6,9);
+var doge = new Dog(6,8);
 
 var channelDivSpell;// new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);
 var fireball;// new ActiveSpell('fireball', 'fireball', hero, null, 2, 5000, 1);
