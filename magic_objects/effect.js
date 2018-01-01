@@ -22,7 +22,7 @@ class Effect {
         for(var i = 0; i < target.effects.length; i++){
             effectBoxes += "<div id='effect" + i + target.objid + "' class='effect' style='left: " + 20 * i + "px'>" + target.effects[i].symbol + "</div>";
         }
-        $(objid).html( effectBoxes );
+        $("#" + objid).html( effectBoxes );
         if(target.effects.length > 0){
             $("#" + objid).show();
         }

@@ -1080,7 +1080,7 @@ function refreshInfo() {
           refreshInfo();
         })
         $(invCarID).mouseenter(function(){
-            $("inv_hoverInfo").html($(this).attr('item_to_print'));
+            $("#inv_hoverInfo").html($(this).attr('item_to_print'));
             $("#inv_hoverInfo").show();
             if(inventory[items_carried[$(this).attr('inv_idx')].type] != null && inventory[items_carried[$(this).attr('inv_idx')].type].name != items_carried[$(this).attr('inv_idx')].name){
 
