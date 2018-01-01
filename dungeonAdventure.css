@@ -43,6 +43,13 @@
   left: 320px;
 }
 
+#shieldascii {
+  top: 200px;
+  left: 470px;
+  position: absolute;
+  z-index: 2;
+}
+
 .coolDown {
   background-color: #e6e6e6;
   opacity: .5;

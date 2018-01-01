@@ -533,6 +533,7 @@ function enter_combat(room, custom_enemy) {
                 window.clearInterval(shielded);
                 window.clearTimeout(shieldUp);
                 shieldUp = -1;
+                $("#shieldascii").html("")
                 hero.vitality = 0;
                 cached_gold = Math.floor(hero.wallet / 10);
                 $("#descend").show().html('Restart').click(function(){
@@ -549,6 +550,7 @@ function enter_combat(room, custom_enemy) {
                 window.clearInterval(shielded);
                 window.clearTimeout(shieldUp);
                 shieldUp = -1;
+                $("#shieldascii").html("")
                 hero_protected = false;
                 heroShield.shieldReady();
                 //jquery animation:
@@ -613,6 +615,8 @@ function enter_combat(room, custom_enemy) {
                 heroShield.shield_ready = false;
                 shieldUp = setTimeout(function(){
                     Shield();
+                    // show the shield ascii
+                    $("#shieldascii").html(ASCII_SHIELD) //note ASCII_SHIELD loaded from asciiart/ dir
                     shielded = setInterval(function() {
                         Shield()
                     }, heroShield.recovery * 1000);
@@ -626,6 +630,7 @@ function enter_combat(room, custom_enemy) {
         if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
             window.clearInterval(shielded);
             window.clearTimeout(shieldUp);
+            $("#shieldascii").html("") // remove shield symbol
             shieldUp = -1;
             heroShield.shieldReady();
             hero_protected = false;
@@ -1201,6 +1206,7 @@ function Damage(source, target) {
 
         window.clearInterval(shielded);
         window.clearInterval(shieldUp)
+        $("#shieldascii").html("") // remove shield symbol
         hero_protected = false;
         heroShield.shieldReady();
 
