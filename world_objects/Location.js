@@ -191,7 +191,7 @@ class Chest extends Location {
             $(takeID).attr('item_id', i)
             $(takeID).click(
                 function() {
-                    if(inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency" || items[$(this).attr('item_id')].constructorName == "Torch"){
+                    if(hero.inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency" || items[$(this).attr('item_id')].constructorName == "Torch"){
                         itemsTaken ++;
                         if(itemsTaken == items.length){
                             chest.emptied_chest = true;
@@ -867,6 +867,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
                 var itemMessage = "";
                 var itemInfos = [];
                 var inventoryForSale = [];
+                var inventory = hero.inventory
 
                 self.getValueForList(inventory['carried']);
             //    var items_to_print = [];
