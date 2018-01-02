@@ -739,8 +739,8 @@ class Door extends Location{ //highly experimental content at hand here
                     }
 
                     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-                    room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY,torchlight, fog_radius);
                     doge.spawn_dog(avatarX, avatarY, old_map, room_list[curr_floor][curr_room])
+                    room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY,torchlight, fog_radius);
 
                     canMove = true;
                 }
