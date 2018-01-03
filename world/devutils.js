@@ -30,7 +30,7 @@ function textModBinTransFinalTest(){
     tm = new TextModule()
     tm.binaryDecision("wassup", "yee", "nay", function() {
         tm.transitText("in transit woooo", function(){
-            tm.finalText("bye felicia");
+            tm.finalText("bye felicia", 'Me');
         })
-    })
+    }, 'God')
 }

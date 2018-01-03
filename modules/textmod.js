@@ -25,13 +25,13 @@ class TextModule {
         // TODO
     }
 
-    binaryDecision(text, posBtnText, negBtnText, cb) {
+    binaryDecision(text, posBtnText, negBtnText, cb, speaker) {
         // A function for any time there is a binary decision
         // takes custom parameters for what text to show
         // and what function to execute if pos (neg = exit)
 
         // Update HTML
-        $(this.textID).html(text)
+        this.setTextBox(text, speaker)
         $(this.topBtn).html(posBtnText)
         $(this.botBtn).html(negBtnText)
 
@@ -49,13 +49,13 @@ class TextModule {
         $(this.botBtn).click(function(){self.revertTxtMd()})
     }
 
-    transitText(text, cb) {
+    transitText(text, cb, speaker) {
         // A function to show text with only one button which
         // calls func cb.
         // Intended for cb to be a decision or final text.
 
         // Update HTML
-        $(this.textID).html(text)
+        this.setTextBox(text, speaker)
         $(this.botBtn).html("-->")
 
         // Show module + needed buttons
@@ -70,11 +70,11 @@ class TextModule {
         });
     }
 
-    finalText(text) {
+    finalText(text, speaker) {
         // The final text, only one button showed, exit
 
         // Update HTML
-        $(this.textID).html(text)
+        this.setTextBox(text, speaker)
         $(this.botBtn).html(" X ")
 
         // Show module + needed buttons
@@ -110,5 +110,17 @@ class TextModule {
         // Show an inventory (chest, dog, monster, etc)
 
         // TODO
+    }
+    
+    setTextBox(text, speaker) {
+        // Custom helper for text box to handle speaker/lack of
+        if(typeof speaker == 'undefined'){
+            var spkrtext = ""
+        }
+        // Else build html
+        else{
+            var spkrtext = `<div style="font-size:12px;position:absolute;top:0;left:10px;">${speaker}</div>`
+        }
+        $(this.textID).html(spkrtext + text)
     }
 }
