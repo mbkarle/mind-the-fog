@@ -19,3 +19,18 @@ function where_is_doge(){
     }
     return doge_locs;
 }
+
+// ============================================
+// TEST FUNCTIONS
+// ============================================
+
+function textModBinTransFinalTest(){
+    // Test the binary choice, transit text, and final text
+    // of the text-module
+    tm = new TextModule()
+    tm.binaryDecision("wassup", "yee", "nay", function() {
+        tm.transitText("in transit woooo", function(){
+            tm.finalText("bye felicia");
+        })
+    })
+}
