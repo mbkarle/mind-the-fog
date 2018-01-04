@@ -87,6 +87,22 @@ class TextModule {
         $(this.botBtn).click(function(){self.revertTxtMd()})
     }
 
+    finalFunc(text, btnTxt, cb, speaker) {
+        // The final text, only one button showed, function
+        // Example use: Engage for combat
+
+        // Update HTML
+        this.setTextBox(text, speaker)
+        $(this.botBtn).html(btnTxt)
+
+        // Show module + needed buttons
+        $(this.modID).show()
+        $(this.botBtn).show()
+
+        // Set click listeners
+        $(this.botBtn).click(cb)
+    }
+
     parseTxtMdJSON(json) {
         // Given a text-mod json, parse into the appropriate nested
         // function calls
@@ -136,6 +152,9 @@ class TextModule {
             case "fin":
                 this.finalText(...args)
                 break;
+            case "finfunc":
+                this.finalFunc(...args)
+                break;
         }
     }
 
@@ -173,6 +192,9 @@ class TextModule {
         // Else build html
         else{
             var spkrtext = `<div style="font-size:12px;position:absolute;top:0;left:10px;">${speaker}</div>`
+        }
+        if(typeof text == 'function'){
+            text = text(); // execute function, needs to return the text to display in mod
         }
         $(this.textID).html(spkrtext + text)
     }

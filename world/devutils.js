@@ -24,10 +24,9 @@ function where_is_doge(){
 // TEST FUNCTIONS
 // ============================================
 
-function textModBinTransFinalTest(){
+function textModBinTransFinalTest(tm){
     // Test the binary choice, transit text, and final text
     // of the text-module
-    tm = new TextModule()
     tm.binaryDecision("wassup", "yee", "nay", function() {
         tm.transitText("in transit woooo", function(){
             tm.finalText("bye felicia", 'Me');
@@ -35,9 +34,8 @@ function textModBinTransFinalTest(){
     }, 'God')
 }
 
-function textModJSONTest(){
+function textModJSONTest(tm){
     // Test the JSON functionality...
-    var tm = new TextModule()
     var obj = {
         "speaker": "the hooded one",
         "msgs": [
@@ -50,3 +48,33 @@ function textModJSONTest(){
 
     tm.parseTxtMdJSON(obj)
 }
+
+function textModJSONTestWBinFunc(tm){
+    // Test the JSON functionality for things like Altar
+    var func = function(){ console.log("stuff done to hero"); return "Func complete" }
+    var obj = {
+        "speaker": "middle func",
+        "msgs": [
+            ["trans", "hello"],
+            ["dec", "act on hero?", "yee", "nah, G"],
+            ["trans", func], //the output of the above decision happens
+            ["fin", "cool stuff, man"]
+        ]}
+
+    tm.parseTxtMdJSON(obj)
+}
+
+function textModJSONTestWFinFunc(tm){
+    // Test the JSON functionality for things like Altar
+    var func = function(){ console.log("Enter the combat"); tm.revertTxtMd();}
+    var obj = {
+        "speaker": "monster",
+        "msgs": [
+            ["trans", "hello"],
+            ["dec", "engage hero?", "yee", "nah, G"],
+            ["finfunc", "this will be your downfall", "ENGAGE", func] //the output of the above decision happens
+        ]}
+
+    tm.parseTxtMdJSON(obj)
+}
+
