@@ -34,3 +34,19 @@ function textModBinTransFinalTest(){
         })
     }, 'God')
 }
+
+function textModJSONTest(){
+    // Test the JSON functionality...
+    var tm = new TextModule()
+    var obj = {
+        "speaker": "the hooded one",
+        "msgs": [
+            ["trans", "hello"],
+            ["dec", "Should I stay or should I go now?", "stay", "go"],
+            ["trans", "Im glad you stayed..."],
+            ["dec", "You SURE?", "STAY", "GO"],
+            ["fin", "you ded foo"]
+        ]}
+
+    tm.parseTxtMdJSON(obj)
+}

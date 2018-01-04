@@ -15,8 +15,9 @@ class TextModule {
         this.botBtn = "#tmbtn_bot"
         this.topBtn = "#tmbtn_top"
         console.log(this.modID)
+
     }
-    
+
     startDialogue(dialogID) {
         // A function for a character dialogue
         // Given @dialogID, starts the appropriate dialogue in
@@ -86,6 +87,58 @@ class TextModule {
         $(this.botBtn).click(function(){self.revertTxtMd()})
     }
 
+    parseTxtMdJSON(json) {
+        // Given a text-mod json, parse into the appropriate nested
+        // function calls
+        // ex:
+        // {
+        //      //speaker of all messages
+        //      "speaker": "hooded one",
+        //
+        //      //the array of messages, each msg an array of format
+        //      //[TYPE, arg0, arg1...]
+        //      //NOTE: the presence of another msg indicates the cb it to go to that msg
+        //      "msgs" : [
+        //           ["dec", "Stay or go now?", "stay", "go"],
+        //           ["transit", "Glad you stayed..."],
+        //           ["combat", "Now I will eat you! muahahaha"]
+        //      ]
+        //  }
+        //  This starts with a decision, shows transition text,
+        //  and ends with a custom combat
+
+        var speaker = json["speaker"]
+        var msgs = json["msgs"]
+
+        // go through all messages, build nested function
+        // easiest to do by recursively calling this function
+        if(msgs.length == 1){
+            // base case! no recursive cb
+            // execute the function in arg0 using type map with all else as args
+            var args = [...msgs[0].splice(1), speaker]
+        }
+        else{
+            // Assume cb is to the next tm display func
+            var newJson = {"speaker": speaker, "msgs": msgs.splice(1)} // create a new json 4 recursion
+            var self = this;
+            var cb = function() { self.parseTxtMdJSON(newJson) } // create cb
+            var args = [...msgs[0].splice(1), cb, speaker]
+        }
+
+        //switch case over the type of function.
+        switch(msgs[0][0]){
+            case "dec":
+                this.binaryDecision(...args)
+                break;
+            case "trans":
+                this.transitText(...args)
+                break;
+            case "fin":
+                this.finalText(...args)
+                break;
+        }
+    }
+
     revertTxtMd() {
         // Revert back to normal, make disappear
         // hide module
@@ -111,7 +164,7 @@ class TextModule {
 
         // TODO
     }
-    
+
     setTextBox(text, speaker) {
         // Custom helper for text box to handle speaker/lack of
         if(typeof speaker == 'undefined'){
