@@ -155,6 +155,9 @@ class TextModule {
             case "finfunc":
                 this.finalFunc(...args)
                 break;
+            default:
+                alert("UNKNOWN TEXTMOD CASE")
+                break;
         }
     }
 

@@ -188,65 +188,6 @@ function checkLocation(avX, avY){
 
 }
 
-function descend(descend){
-    if(descend){
-        $("#descend").off("click")
-        $("#stay").off("click")
-        $("#stay").hide();
-        $("#enter").hide();
-        $("#enter").show();
-        $("#text-module").hide();
-        $("#descend").hide();
-        canMove = true;
-        print("lastMessage", "enemy-message");
-
-        //rebuild the floor and make the new map!
-        if(curr_floor < num_floors - 1){
-
-            if(curr_floor > 0){
-            for(i = 0; i < room_list[curr_floor][curr_room].enemy_list.length; i++){ //scale recurring enemies
-                room_list[curr_floor][curr_room].enemy_list[i].maxVitality += 5;
-                room_list[curr_floor][curr_room].enemy_list[i].vitality = room_list[curr_floor][curr_room].enemy_list[i].maxVitality;
-                room_list[curr_floor][curr_room].enemy_list[i].strength += 1;
-
-            }}
-            room_list[curr_floor][curr_room].clearAllFogTimeouts();
-            oldmap = room_list[curr_floor][curr_room].room_map;
-            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false;
-            curr_floor++;
-            curr_room = 0;
-            avatarY = room_list[curr_floor][curr_room].room_entry[0];
-            avatarX = room_list[curr_floor][curr_room].room_entry[1];
-            update_loc_facing(last_key_press);
-            room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true;
-
-            /*var gatekeep = new CharDialogue(room_list[curr_floor][curr_room].room_entry[0], room_list[curr_floor][curr_room].room_entry[1], 'gatekeeper' + curr_floor, 'the gatekeeper');
-            room_list[curr_floor][curr_room].room_map[gatekeep.rowID][gatekeep.colID] = gatekeep;
-            room_list[curr_floor][curr_room].room_map[gatekeep.rowID][gatekeep.colID].computeCoordsWithOffset(room_list[curr_floor][curr_room].yoff, room_list[curr_floor][curr_room].xoff);
-            checkLocation(); */
-
-            room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight, fog_radius);
-            doge.spawn_dog(avatarX, avatarY, oldmap, room_list[curr_floor][curr_room])
-
-
-            // combat(hero, "default");
-            heroShield.vitality = heroShield.maxVitality;
-            refreshInfo();
-        }
-    }
-    else{
-        $("#descend").off("click")
-        $("#stay").off("click")
-        $("#stay").hide();
-        $("#enter").hide();
-        $("#enter").show();
-        $("#text-module").hide();
-        $("#descend").hide();
-        canMove = true;
-        print("lastMessage", "enemy-message");
-    }
-}
-
 function refillChests(){ 
     //rebuilds floors so that chests can be filled with newly introduced materials
     //used after interaction w certain npcs
