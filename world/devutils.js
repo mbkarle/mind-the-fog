@@ -26,6 +26,8 @@ function populateFirstRoom(){
     map = room_list[0][2].room_map
     map[2][2] = new Fountain(2,2)
     map[2][3] = new Altar(2,3)
+    map[2][4] = new Statue(2,4)
+    map[2][5] = new Cave(2,5)
 
     //clear all fog at end
     clearAllFog(map)
@@ -33,6 +35,8 @@ function populateFirstRoom(){
     //redraw
     map[2][2].refreshInnerHTML()
     map[2][3].refreshInnerHTML()
+    map[2][4].refreshInnerHTML()
+    map[2][5].refreshInnerHTML()
 }
 
 // ============================================
