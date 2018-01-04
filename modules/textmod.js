@@ -162,6 +162,7 @@ class TextModule {
         // Revert back to normal, make disappear
         // hide module
         console.log("reverting..." + this.modID)
+        canMove = true;
         this.revertBtns();
         $(this.modID).hide()
     }

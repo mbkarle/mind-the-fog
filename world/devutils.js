@@ -20,6 +20,21 @@ function where_is_doge(){
     return doge_locs;
 }
 
+function populateFirstRoom(){
+    //func to populate the training room w Locs for dev
+    //purposes
+    map = room_list[0][2].room_map
+    map[2][2] = new Fountain(2,2)
+    map[2][3] = new Altar(2,3)
+
+    //clear all fog at end
+    clearAllFog(map)
+
+    //redraw
+    map[2][2].refreshInnerHTML()
+    map[2][3].refreshInnerHTML()
+}
+
 // ============================================
 // TEST FUNCTIONS
 // ============================================
