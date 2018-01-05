@@ -18,7 +18,7 @@ class Statue extends Location {
             var enterFightFunc = function() {
                 statue.destroyed_statue = true;
                 txtmd.revertTxtMd();
-                enter_combat(room_list[curr_floor][curr_room], Golem);
+                fight_enemy(hero, Golem);
             }
             var txtmodmsg = { "msgs": [
                 ["dec", this.message, "Take Sword", "Leave"],
@@ -44,7 +44,7 @@ class Cave extends Location {
             var enterFightFunc = function() {
                 cave.empty = true;
                 txtmd.revertTxtMd();
-                enter_combat(room_list[curr_floor][curr_room], frostGiant);
+                fight_enemy(hero, frostGiant);
             }
             var txtmodmsg = { "msgs": [
                 ["dec", this.message, "Enter", "Leave"],

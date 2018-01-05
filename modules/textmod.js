@@ -17,7 +17,66 @@ class TextModule {
 
         //reset each parse, indicates whether player completed parse
         this.parseCompleted = false;
+
+        // position of text box (for animation)
+        this.posID = "norm"
     }
+
+    commentator(text, speaker) {
+        // Commentator style, no buttons, just updates text
+        // Ex: use in combat as hit done on fly
+
+        // Update HTML
+        this.setTextBox(text, speaker)
+        
+        // Show Module
+        $(this.modID).show()
+    }
+
+    setPosition(posID, hero) {
+        // animate the position of the textbox
+        if(posID === this.posID){
+            console.log("no animation done")
+            return;
+        }
+        switch(posID){
+            case "norm":
+                this.posID = "norm"
+                $(this.modID).animate({ top: "175px" }, 1000);
+                break;
+
+            case "high":
+                this.posID = "high"
+                $(this.modID).animate({top: "100px"}, 1000);
+                break;
+
+            case "combat":
+                this.posID = "combat"
+                // need to determine from hero how many spells
+                // to leave space for
+                if(hero.spells.length % 2 != 0){
+                    $(this.modID).animate({
+                        top: 300 + 50 * hero.spells.length + 'px'
+                    })
+                }
+                else if(hero.spells.length % 2 == 0 && hero.spells.length != 0){
+                    $(this.modID).animate({
+                        top: 300 + 50 * (hero.spells.length  - 1) + 'px'
+                    })
+                }
+                else{
+                    $(this.modID).animate({
+                        top: '300px'
+                    }, 500);
+                }
+                break;
+
+            default:
+                alert("UNKNOWN TXTMD ANIMATION")
+                break;
+        }
+    }
+
 
     startDialog(speakerID, dialogID, speakerName) {
         // A function for a character dialogue
@@ -182,6 +241,7 @@ class TextModule {
         // Revert back to normal, make disappear
         // hide module
         console.log("reverting..." + this.modID)
+        this.setPosition("norm")
         canMove = true;
         this.revertBtns();
         $(this.modID).hide()
