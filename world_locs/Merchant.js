@@ -166,23 +166,14 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
     }
     hero_interact(){
         canMove = false;
-        $("#text-module").show();
-        $("#enter").hide();
-        $("#descend").show();
-        $("#stay").show();
-
-        var msg = print("message", this.message);
-        $("#descend").html("Shop");
-        $("#stay").html('Leave');
         var merch = this;
-        $("#descend").click(function(){
-            revertTextModule();
+        var shopFunc = function(){
+            txtmd.revertTxtMd();
             merch.openModule(true);
-        })
-        $("#stay").click(function(){
-            revertTextModule();
-        })
+        }
+        txtmd.parseTxtMdJSON({"msgs": [["dec", merch.message, "Shop", "Leave", shopFunc]]})
     }
+
     buyItem(item){
         var successful_transaction = false;
         if(inventory['carried'].length < 10 && hero.wallet >= item.value){
@@ -214,6 +205,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
         }
     }
     drop_forSale(self){
+        var inventory = hero.inventory;
         for(var i = 0; i < inventory['carried'].length; i++){
             var sellID = "#sell" + i;
 

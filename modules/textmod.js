@@ -14,7 +14,6 @@ class TextModule {
         this.textID = "#textBox_";
         this.botBtn = "#tmbtn_bot"
         this.topBtn = "#tmbtn_top"
-        console.log(this.modID)
 
         //reset each parse, indicates whether player completed parse
         this.parseCompleted = false;
