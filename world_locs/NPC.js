@@ -39,6 +39,9 @@ class Pit extends Location{
                     "Together you climb out. The gatekeeper will take care of " +
                         self.charDisplay + " from here.");
 
+                // Activate the NPC to be in GreatHall
+                NPCList[self.charID]['active'] = true;
+
                 // Start the dialog
                 txtmd.startDialog(self.charID, "rescue", self.charDisplay)
             }

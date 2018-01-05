@@ -51,18 +51,6 @@ var DIALOGUES = {
         ]
     },
 
-    "tutor": {
-        "tutVoice1": [
-            "You're awake at last!",
-            "Welcome to the dungeon. I've been trapped down here for millenia, and have learned a few tricks along the way."
-        ],
-        "tutVoice2": [
-            "Great, I'll show you the ropes.",
-            "First, start by walking over to me. I'm about 7 steps up and 16 paces to the left."
-        ]
-    },
-
-
     "alchemist": {
         "rescue": [
             "The prisoner is a balding man with thick spectacles. He shakes your hand limply.",
