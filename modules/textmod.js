@@ -16,6 +16,8 @@ class TextModule {
         this.topBtn = "#tmbtn_top"
         console.log(this.modID)
 
+        //reset each parse, indicates whether player completed parse
+        this.parseCompleted = false;
     }
 
     startDialog(speakerID, dialogID, speakerName) {
@@ -136,6 +138,8 @@ class TextModule {
         //  This starts with a decision, shows transition text,
         //  and ends with a custom combat
 
+        this.parseCompleted = false; // always start w false completion
+
         var speaker = json["speaker"]
         var msgs = json["msgs"]
 
@@ -145,6 +149,7 @@ class TextModule {
             // base case! no recursive cb
             // execute the function in arg0 using type map with all else as args
             var args = [...msgs[0].splice(1), speaker]
+            this.parseCompleted = true; // set to true so user knows full parse completed
         }
         else{
             // Assume cb is to the next tm display func
@@ -181,6 +186,8 @@ class TextModule {
         canMove = true;
         this.revertBtns();
         $(this.modID).hide()
+        console.log("parse completed: " + this.parseCompleted)
+        return this.parseCompleted
     }
 
     revertBtns() {
