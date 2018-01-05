@@ -11,114 +11,59 @@ class Pit extends Location{
         super(rowID, colID, "Pit", 'pit', 'p', 'A pitfall, once covered with crumbled stone. Someone appears trapped within.', false, true)
         this.charID = charID;
         this.charDisplay = charDisplay;
-        this.empty = false;
-        var self = this;
-        this.encounter = function(){
-            print('message', this.message);
-            canMove = false;
-            $("#text-module").show();
-            $("#enter").hide();
-            $("#stay").show().html('Leave').click(function(){
-                revertTextModule();
-            })
-            $("#descend").show().html('Rescue').click(function(){
-                revertTextModule();
-                if(Math.random() < .4){
-                    self.message = 'You descend carefully and reach the bottom unscathed.';
-                }
-                else{
-                    self.message = 'You make it to the bottom, slightly worse for wear.';
-                    hero.vitality -= 10;
-                    refreshInfo();
-                }
-                print('message', self.message);
-                $("#text-module").show();
-                $("#enter").hide();
-                $("#descend").off('click').hide();
-                $("#stay").off('click').hide();
-                $("#open").show().click(function(){
-                    $("#open").off('click').hide();
-                    self.used = true;
-                    dialogues['trapped'][self.charID].push("Together you climb out. The gatekeeper will take care of " +  self.charDisplay + " from here.");
-                    self.interact(self, dialogues['trapped'][self.charID], 0);
-                })
-            })
-        }
+        this.used = false;
     }
+
     hero_interact(){
         if(!this.used){
-            this.encounter();
-        }
-    }
-    interact(self, stringArray, thisMessage){
-        if(thisMessage == 0 || thisMessage == stringArray.length - 1){
-            print('message', stringArray[thisMessage]);
-        }
-        else{
-        print("message", "<div style='font-size:12px;position:absolute;top:0;left:10px;'>" + self.charDisplay + "</div>" + stringArray[thisMessage]);
-    }
-      NPCList[self.charID]['active'] = true;
-        $("#open").show();
-        $("#open").click(
-            function() {
-                $("#open").off('click');
-                if(thisMessage + 1 < stringArray.length){
-                    console.log("next panel");
-                    thisMessage++;
-                    self.interact(self, stringArray, thisMessage);
+            canMove = false;
+            var self = this;
+
+            // Chance to get hurt, occurs if decide to not leave
+            var rescueFunc = function() {
+                self.used = true;
+                if(Math.random() < .4){
+                    return 'You descend carefully and reach the bottom unscathed.';
                 }
                 else{
-                    console.log("dialogue over");
-                    $("#open").hide();
-                    $("#enter").show();
-                    $("#text-module").hide();
-                    print("lastMessage", "enemy-message");
-                    canMove = true;
+                    hero.vitality -= 10;
+                    refreshInfo();
+                    return 'You make it to the bottom, slightly worse for wear.';
                 }
             }
-        )
+
+            // After the rescue chance of hurt, start dialog
+            var dialogFunc = function() { 
+                // Push the start message
+                DIALOGUES[self.charID]['rescue'].push(
+                    "Together you climb out. The gatekeeper will take care of " +
+                        self.charDisplay + " from here.");
+
+                // Start the dialog
+                txtmd.startDialog(self.charID, "rescue", self.charDisplay)
+            }
+
+            var txtmodmsg = { "msgs": [
+                ["dec", this.message, "Rescue", "Leave"],
+                ["finfunc", rescueFunc, "-->", dialogFunc]
+            ]};
+
+            txtmd.parseTxtMdJSON(txtmodmsg)
+        }
     }
 }
 
 class CharDialogue extends Location{
-    constructor(rowID, colID, charId, charDisplay){
+    constructor(rowID, colID, charId, charDisplay, dialogId){
         super(rowID, colID, 'Character Dialogue', 'charDialogue', 'C', "", false, true);
         this.charId = charId;
         this.charDisplay = charDisplay;
-        var self = this;
-
-        this.dialogue = function(stringArray, thisMessage, promResolve){
-        print("message", "<div style='font-size:12px;position:absolute;top:0;left:10px;'>" + this.charDisplay + "</div>" + stringArray[thisMessage]);
-        $("#text-module").show();
-        $("#enter").hide();
-        $("#open").show();
-        $("#open").click(
-            function() {
-                $("#open").off('click');
-                if(thisMessage + 1 < stringArray.length){
-                    console.log("next panel");
-                    thisMessage++;
-                    self.dialogue(stringArray, thisMessage, promResolve);
-                }
-                else{
-                    if(typeof promResolve != "undefined"){
-                        console.log("resolving promise");
-                        promResolve();
-                    }
-                    console.log("dialogue over");
-                    $("#open").hide();
-                    $("#enter").show();
-                    $("#text-module").hide();
-                    print("lastMessage", "enemy-message");
-                    canMove = true;
-                }
-            }
-        )
-        }
+        this.dialogId = dialogId;
     }
+
     hero_interact(){
         canMove = false;
-        this.dialogue(dialogues[this.charId], 0);
+        txtmd.startDialog(this.charId, this.dialogId, this.charDisplay)
     }
 
 }

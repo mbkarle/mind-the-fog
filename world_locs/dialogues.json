@@ -1,5 +1,5 @@
 var DIALOGUES = {
-    "Gatekeeper": {
+    "gatekeeper": {
         "DungeonEntrance": [
             "Greetings, wanderer.",
             "Before you lies the dungeon. It is rife with danger but filled with opportunity.",
@@ -37,7 +37,7 @@ var DIALOGUES = {
         ]
     },
 
-    "Instructor": {
+    "instructor": {
         "GreatHall": [
             "Hello there!",
             "In the dungeon, you'll face many enemies, and fighting will be inevitable.",
@@ -51,7 +51,7 @@ var DIALOGUES = {
         ]
     },
 
-    "Tutor": {
+    "tutor": {
         "tutVoice1": [
             "You're awake at last!",
             "Welcome to the dungeon. I've been trapped down here for millenia, and have learned a few tricks along the way."
@@ -63,7 +63,7 @@ var DIALOGUES = {
     },
 
 
-    "Alchemist": {
+    "alchemist": {
         "rescue": [
             "The prisoner is a balding man with thick spectacles. He shakes your hand limply.",
             "I'm an alchemist, sir. I can make potions, or other consumable concoctions.",
@@ -71,7 +71,7 @@ var DIALOGUES = {
         ]
     },
 
-    "ShieldMaker": {
+    "shieldMaker": {
         "rescue": [
             "The trapped is a tall woman with a large shield strapped to her back.",
             "I'm fine, thanks. The shield took away most of the impact.",

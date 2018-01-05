@@ -28,6 +28,8 @@ function populateFirstRoom(){
     map[2][3] = new Altar(2,3)
     map[2][4] = new Statue(2,4)
     map[2][5] = new Cave(2,5)
+    map[2][6] = new Pit(2,6, "alchemist", "the alchemist")
+    map[2][7] = new Pit(2,7, "shieldMaker", "the shield maker")
 
     //clear all fog at end
     clearAllFog(map)
@@ -37,6 +39,8 @@ function populateFirstRoom(){
     map[2][3].refreshInnerHTML()
     map[2][4].refreshInnerHTML()
     map[2][5].refreshInnerHTML()
+    map[2][6].refreshInnerHTML()
+    map[2][7].refreshInnerHTML()
 }
 
 // ============================================

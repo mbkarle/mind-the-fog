@@ -18,13 +18,13 @@ class TextModule {
 
     }
 
-    startDialogue(speaker, dialogID) {
+    startDialog(speakerID, dialogID, speakerName) {
         // A function for a character dialogue
         // Given @speaker and @dialogID, starts the appropriate dialogue in
         // dialogues.json
 
         // convo is the list of strings
-        var convo = DIALOGUES[speaker][dialogID]
+        var convo = DIALOGUES[speakerID][dialogID]
         var msgs = []
 
         // iterate through convo, add appropriate list to msgs
@@ -35,7 +35,7 @@ class TextModule {
         msgs.push(["fin", convo[i]])
 
         // assemble json w speaker and use parse func to do dialogue
-        var txtmodmsg = { "speaker": speaker, "msgs": msgs }
+        var txtmodmsg = { "speaker": speakerName, "msgs": msgs }
         this.parseTxtMdJSON(txtmodmsg);
     }
 
