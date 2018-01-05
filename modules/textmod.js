@@ -18,12 +18,25 @@ class TextModule {
 
     }
 
-    startDialogue(dialogID) {
+    startDialogue(speaker, dialogID) {
         // A function for a character dialogue
-        // Given @dialogID, starts the appropriate dialogue in
+        // Given @speaker and @dialogID, starts the appropriate dialogue in
         // dialogues.json
 
-        // TODO
+        // convo is the list of strings
+        var convo = DIALOGUES[speaker][dialogID]
+        var msgs = []
+
+        // iterate through convo, add appropriate list to msgs
+        for(var i = 0; i < convo.length - 1; i++){
+            msgs.push(["trans", convo[i]])
+        }
+        // last message is final text
+        msgs.push(["fin", convo[i]])
+
+        // assemble json w speaker and use parse func to do dialogue
+        var txtmodmsg = { "speaker": speaker, "msgs": msgs }
+        this.parseTxtMdJSON(txtmodmsg);
     }
 
     binaryDecision(text, posBtnText, negBtnText, cb, speaker) {
