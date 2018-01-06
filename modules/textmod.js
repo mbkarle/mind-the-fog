@@ -28,7 +28,7 @@ class TextModule {
 
         // Update HTML
         this.setTextBox(text, speaker)
-        
+
         // Show Module
         $(this.modID).show()
     }
@@ -190,7 +190,7 @@ class TextModule {
         //      "msgs" : [
         //           ["dec", "Stay or go now?", "stay", "go"],
         //           ["transit", "Glad you stayed..."],
-        //           ["combat", "Now I will eat you! muahahaha"]
+        //           ["finfunc", "Now I will eat you! muahahaha", fight_enemy(hero, Boss)]
         //      ]
         //  }
         //  This starts with a decision, shows transition text,
