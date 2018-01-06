@@ -217,11 +217,7 @@ function fight_enemy(hero, enemy){
 }
 
 //As of new txtmd, enter_combat is only for normal combat
-function enter_combat(room, custom_enemy) {
-    console.log('entered normal combat')
-
-    canMove = false;
-
+function enter_combat(room) {
     //Its a normal combat, choose randomly from the en_list of the room
     enemy = room.enemy_list[Math.floor(Math.random() * room.enemy_list.length)];
 

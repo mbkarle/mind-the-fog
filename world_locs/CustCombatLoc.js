@@ -13,7 +13,6 @@ class Statue extends Location {
 
     hero_interact(){
         if(!this.destroyed_statue){
-            canMove = false;
             var statue = this;
             var enterFightFunc = function() {
                 statue.destroyed_statue = true;
@@ -39,7 +38,6 @@ class Cave extends Location {
 
     hero_interact(){
         if(!this.empty){
-            canMove = false;
             var cave = this;
             var enterFightFunc = function() {
                 cave.empty = true;

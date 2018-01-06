@@ -13,7 +13,7 @@ class Fountain extends Location {
     hero_interact(){
         if(!this.used){
             var fountain = this;
-            canMove = false;
+
             // Set up interaction function
             var func = function() {
                 fountain.used = true;
@@ -48,7 +48,6 @@ class Altar extends Location {
     }
     hero_interact(){
         if(!this.used){
-            canMove = false;
             var altar = this;
 
             var func = function() {

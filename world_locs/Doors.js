@@ -15,8 +15,6 @@ class Door extends Location{ //highly experimental content at hand here
     }
 
     hero_interact(){
-        canMove = false;
-
         var self = this;
         var nextRoomFunc = function() {
             // remove hero from old room + clear fog
@@ -60,7 +58,6 @@ class LockedDoor extends Location{
     }
 
     hero_interact(){
-        canMove = false;
         txtmd.parseTxtMdJSON({ "msgs": [ ["fin", this.message] ] });
     }
 }
@@ -72,7 +69,6 @@ class Trapdoor extends Location {
 
     hero_interact(){
         console.log("descend?")
-        canMove = false;
         var descendFunc = function(){
             //TODO: shouldnt have to check this... just dont build trapdoors on last floornew map!
             if(curr_floor < num_floors - 1){

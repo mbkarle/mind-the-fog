@@ -16,7 +16,6 @@ class Pit extends Location{
 
     hero_interact(){
         if(!this.used){
-            canMove = false;
             var self = this;
 
             // Chance to get hurt, occurs if decide to not leave
@@ -65,7 +64,6 @@ class CharDialogue extends Location{
     }
 
     hero_interact(){
-        canMove = false;
         txtmd.startDialog(this.charId, this.dialogId, this.charDisplay)
     }
 
@@ -75,26 +73,15 @@ class NPC extends Location {
     constructor(rowID, colID, name){
         super(rowID, colID, name, 'npc', NPCList[name]['symbol'], NPCList[name]['description'], false, true);
         this.onSale = NPCList[name]['merchandise'];
-        var self = this;
-        this.interact = function(){
-          canMove = false;
-          print('message', this.message);
-          $('#text-module').show();
-          $('#enter').hide();
-          $('#open').show().click(function(){
-            self.openNPCModule(self);
-            $('#open').hide().off('click');
-            $('#text-module').animate({
-              top: '175px'
-            })
-          })
-        }
     }
+
     hero_interact(){
         if(this.onSale.length > 0){
-            this.interact();
+            txtmd.parseTxtMdJSON({"msgs":[["dec", this.message, "Shop", "Leave",
+                () => this.openNPCModule(this)]]})
         }
     }
+
     openNPCModule(self){
       $('#worldMap').hide();
       $("#vendor-module").show();
@@ -167,10 +154,9 @@ class NPC extends Location {
 
     closeModule(){
         $("#tab").show();
-        canMove = true;
         $("#worldMap").show();
         $("#vendor-module").hide();
-        revertTextModule();
+        txtmd.revertTxtMd();
         refreshInfo();
         $("#close").off('click');
     }

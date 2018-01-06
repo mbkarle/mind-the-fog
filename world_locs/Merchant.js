@@ -165,7 +165,6 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
 
     }
     hero_interact(){
-        canMove = false;
         var merch = this;
         var shopFunc = function(){
             txtmd.revertTxtMd();
@@ -221,7 +220,6 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
         }
     }
     closeModule(){
-        canMove = true;
         $("#worldMap").show();
         $("#vendor-module").hide();
         revertTextModule();

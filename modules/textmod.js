@@ -196,6 +196,9 @@ class TextModule {
         //  This starts with a decision, shows transition text,
         //  and ends with a custom combat
 
+        // prevent hero from moving
+        canMove = false;
+
         this.parseCompleted = false; // always start w false completion
 
         var speaker = json["speaker"]

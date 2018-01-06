@@ -103,3 +103,6 @@ function textModJSONTestWFinFunc(tm){
     tm.parseTxtMdJSON(obj)
 }
 
+function testCombat(){
+    enter_combat(room_list[curr_floor][curr_room])
+}
