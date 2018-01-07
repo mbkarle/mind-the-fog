@@ -19,7 +19,6 @@
 
   <!--World Objects-->
   <script type="text/javascript" src="world_objects/NPC_Mgmt.js"></script>
-  <script type="text/javascript" src="world_objects/dialogues.json"></script>
   <script type="text/javascript" src="world_objects/floor.js"></script>
   <script type="text/javascript" src="world_objects/Item.js"></script>
   <script type="text/javascript" src="world_objects/Character.js"></script>
@@ -27,6 +26,7 @@
   <script type="text/javascript" src="world_objects/Dog.js"></script>
 
   <!--World Locations-->
+  <script type="text/javascript" src="world_locs/dialogues.json"></script>
   <script type="text/javascript" src="world_locs/Location.js"></script>
   <script type="text/javascript" src="world_locs/ChanceLocs.js"></script>
   <script type="text/javascript" src="world_locs/Chest.js"></script>
@@ -35,6 +35,9 @@
   <script type="text/javascript" src="world_locs/Merchant.js"></script>
   <script type="text/javascript" src="world_locs/NPC.js"></script>
   <script type="text/javascript" src="world_locs/Noninteractive.js"></script>
+
+  <!--HTML Modules-->
+  <script type="text/javascript" src="modules/textmod.js"></script>
 
   <!--World Scripts-->
   <script type="text/javascript" src="world/tutorial.js"></script>
@@ -83,7 +86,7 @@
     </div>
     <div id="combat-module" style="margin:0 auto">
       <div id="hero">
-          <div id="heroSymbol" style="position: relative">X</div>
+          <div id="heroSymbol" style="position: relative"> X </div>
           <div id="heroHealthBar" class="statusBar" style="left: -14%"></div>
       </div>
       <div id="HeroEffects" style="left: 150px"></div>
@@ -111,6 +114,14 @@
       <div class="interact" id="stay" style="display: none;bottom:30px;">Stay</div>
       <div class="interact" id="equip" style="display:none;bottom:90px;">Equip</div>
     </div>
+
+    <div id="text-module_" style="margin:0 auto">
+      <div id="textBox_" style="margin:0 auto"></div>
+      <div id="hoverInfo_"></div>
+      <div class="interact" id="tmbtn_top" style="bottom:30px;"></div>
+      <div class="interact" id="tmbtn_bot"></div>
+    </div>
+  </div>
   </div>
 </body>
 

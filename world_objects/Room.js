@@ -79,7 +79,7 @@ class Room {
 
                 map = buildRoomOfSize(height, width);
 
-                var tutorialDialogue = new CharDialogue(3, 5, "instructor", "instructor");
+                var tutorialDialogue = new CharDialogue(3, 5, "instructor", "instructor", "GreatHall");
                 map[tutorialDialogue.rowID][tutorialDialogue.colID] = tutorialDialogue;
 
                 clearAllFog(map);
@@ -127,7 +127,7 @@ class Room {
                 var entrance = new DungeonEntrance(6,35)
                 map[entrance.rowID][entrance.colID] = entrance;
 
-                var gateKeeper = new CharDialogue(9, 30, "gatekeeper", 'the gatekeeper');
+                var gateKeeper = new CharDialogue(9, 30, "gatekeeper", 'the gatekeeper', "DungeonEntrance");
                 map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper;
 
                 map[doge.dogY][doge.dogX].dog_present = true;

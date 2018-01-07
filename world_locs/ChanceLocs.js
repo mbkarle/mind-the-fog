@@ -12,48 +12,31 @@ class Fountain extends Location {
     }
     hero_interact(){
         if(!this.used){
-            canMove = false;
-            $("#text-module").show();
-            $("#enter").hide();
-            $("#descend").show();
-            $("#stay").show();
-
-            var msg = print("message", this.message);
-            $("#descend").html("Use");
-            $("#stay").html("Leave");
             var fountain = this;
-            $("#descend").click(
-                function(){
-                    revertTextModule();
-                    if(Math.random() <= .5){
-                        hero.maxVitality += 5;
-                        hero.vitality = hero.maxVitality;
-                        refreshInfo();
-                        print("message", "The gods have smiled upon you. Your vitality is improved.");
-                        $("#text-module").show();
-                        $("#enter").hide();
-                        $("#open").show().click(function(){
-                            $("#open").off('click');
-                            $("#open").hide();
-                            revertTextModule();
-                        })
-                    }
-                    else{
-                        print("message", "The gods do not hear your prayers. Nothing happens.");
-                        $("#text-module").show();
-                        $("#enter").hide();
-                        $("#open").show().click(function(){
-                            $("#open").off('click').hide();
 
-                            revertTextModule();
-                        })
-                    }
+            // Set up interaction function
+            var func = function() {
                 fountain.used = true;
+                if(Math.random() <= .5){
+                    hero.maxVitality += 5;
+                    hero.vitality = hero.maxVitality;
+                    refreshInfo();
+                    return "The gods have smiled upon you. Your vitality is improved."
                 }
-            )
-        $("#stay").click(function(){
-            revertTextModule();
-        })
+                else{
+                    return "The gods do not hear your prayers. Nothing happens."
+                }
+            }
+
+            //set up the string of messages to parse
+            var txtmodmsg = {
+                "msgs": [
+                    ["dec", this.message, "Use", "Leave"],
+                    ["fin", func]
+                ]}
+
+            //show messages using textmod
+            txtmd.parseTxtMdJSON(txtmodmsg)
         }
     }
 }
@@ -65,51 +48,36 @@ class Altar extends Location {
     }
     hero_interact(){
         if(!this.used){
-            canMove = false;
-            $("#text-module").show();
-            $("#enter").hide();
-            $("#descend").show();
-            $("#stay").show();
-
-            var msg = print("message", this.message);
-            $("#descend").html('Use');
-            $("#stay").html('Leave');
             var altar = this;
-            $("#descend").click(
-                function(){
-                    revertTextModule();
-                    hero.maxVitality -= 5;
-                    hero.vitality -= 5;
-                    if(hero.vitality <= 0){
-                        hero.vitality = 1;
-                    }
-                    var statToImprove = Math.random();
-                    if(statToImprove <= .5){
-                        hero.strength += Math.ceil(Math.random() * 2);
-                        statToImprove = "strength";
-                    }
-                    else{
-                        hero.dexterity += Math.ceil(Math.random() * 2);
-                        statToImprove = "dexterity";
-                    }
-                    print("message", "The gods of death accept your blood sacrifice. Your " + statToImprove + " has improved.");
-                    refreshInfo();
-                    $("#text-module").show();
-                    $("#enter").hide();
-                    $("#open").show().click(function(){
-                        $("#open").off('click');
-                        $("#open").hide();
-                        revertTextModule();
-                        })
 
+            var func = function() {
                 altar.used = true;
+                hero.maxVitality -= 5;
+                hero.vitality -= 5;
+                if(hero.vitality <= 0){
+                    hero.vitality = 1;
                 }
-            )
+                var statToImprove = Math.random();
+                if(statToImprove <= .5){
+                    hero.strength += Math.ceil(Math.random() * 2);
+                    statToImprove = "strength";
+                }
+                else{
+                    hero.dexterity += Math.ceil(Math.random() * 2);
+                    statToImprove = "dexterity";
+                }
+                refreshInfo();
+                return "The gods of death accept your blood sacrifice. Your " +
+                    statToImprove + " has improved."
+            }
 
-        $("#stay").click(function(){
-            revertTextModule();
-        })
+            var txtmodmsg = {
+                "msgs": [
+                    ["dec", this.message, "Use", "Leave"],
+                    ["fin", func]
+                ]};
+            
+            txtmd.parseTxtMdJSON(txtmodmsg)
         }
     }
 }
-

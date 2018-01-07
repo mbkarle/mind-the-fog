@@ -23,8 +23,6 @@ class Dog {
         tile.passable = !tile.passable;
     
         //TODO: Dog Inventory?
-        // $('#text-module').show();
-        // print('message', 'Give Dog an Item?')
     }
 
     compute_path_to_hero(avX,avY, map){

@@ -22,6 +22,7 @@ var game_duration = 1800000; //how long before the fog closes in totally
 //variables to track printed messages
 var messageArray;
 var messageCount;
+var txtmd = new TextModule()
 
 //variables of hero status
 var canMove;
