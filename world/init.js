@@ -195,7 +195,7 @@ window.addEventListener("keydown", move, false);
 window.onload = function(){
     start_combatModule = document.getElementById('combat-module').innerHTML;
     start_game();
-    tutorialStart();
+    //tutorialStart();
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
             refreshInfo();

@@ -366,7 +366,6 @@ function makeNormalRoom(height, width, map, locations, itemList, tier, floor, np
         switch (locations[i]) {
             case 'chest':
                 map[locs[i][0]][locs[i][1]] = new Chest(locs[i][0],locs[i][1], itemList)
-                map[locs[i][0]][locs[i][1]].fillChest();
                 break;
 
             case 'trapdoor':

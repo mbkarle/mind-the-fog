@@ -251,6 +251,7 @@ class TextModule {
         canMove = true;
         this.revertBtns();
         $(this.modID).hide()
+        $(this.hoverID).hide()
         console.log("parse completed: " + this.parseCompleted)
         return this.parseCompleted
     }
@@ -300,19 +301,20 @@ class TextModule {
                     console.log("here")
                     //transfer the item to the hero
                     inv.transfer_item(hero.inv, parseInt($(this).attr('item_id')))
+                    $(self.hoverID).hide()
                     //redisplay the inventory
-                    txtmd.showInventory(inv)
+                    self.showInventory(inv)
                 });
         }
 
         // Handle gold + torches seperately
         $("#takeGOLD").click( function() { 
             inv.transfer_item(hero.inv, "gold");
-            txtmd.showInventory(inv)
+            self.showInventory(inv)
         });
         $("#takeTORCHES").click( function() { 
             inv.transfer_item(hero.inv, "torches");
-            txtmd.showInventory(inv)
+            self.showInventory(inv)
         });
 
         // At the end of it all, show the txtmd!

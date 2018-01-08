@@ -84,7 +84,8 @@ class Inventory {
 
         // Build the item inner html -------------------------
         var items = this.inv
-        var invhtml = "You find: <br>"
+        var header = "You find: <br>"
+        var invhtml = header
         var itemInfos = []
         for(var i = 0; i < items.length; i++){
             // First store all of the item infos for the hover module
@@ -127,6 +128,10 @@ class Inventory {
                 "<div id='takeTORCHES' class='interact'> " + take_txt + " </div></div>";
         }
 
+        // if nothing ever added, add message
+        if(invhtml === header){
+            invhtml += "Nothing left to take"
+        }
         return {"innerhtml": invhtml, "infos": itemInfos};
     }
 }
