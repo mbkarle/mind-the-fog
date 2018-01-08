@@ -16,6 +16,9 @@ function setup_combat(hero, enemy){
     enemy.vitality = enemy.maxVitality; //bc we use same objects across mult. fights
     enemyHealthPCent = enemy.vitality / enemy.maxVitality * 100;
 
+    // refresh enemy inventory
+    enemy.regenInv()
+
     // setup HTML
     $("#enemyHealthBar").html(
         enemy.vitality + " / " + enemy.maxVitality +

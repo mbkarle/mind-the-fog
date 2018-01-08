@@ -17,6 +17,11 @@ class Boss extends Character{
         super(name, strength, dexterity, vitality, 'enemy');
         this.constructorName = "Boss";
         this.inv = new Inventory(lootList, 1, 1)
+        this.lootList = lootList
+    }
+
+    regenInv(){
+        this.inv = new Inventory(this.lootList, 1, 1)
     }
 }
 
@@ -61,5 +66,10 @@ class Enemy extends Character{
         super(name, strength, dexterity, vitality, 'enemy');
         this.constructorName = "Enemy";
         this.inv = new Inventory(mobDrops, 2, 0)
-  }
+    }
+
+    regenInv(items=mobDrops){
+        this.inv = new Inventory(items, 2, 0)
+    }
+
 }
