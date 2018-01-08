@@ -20,6 +20,9 @@ class TextModule {
 
         // position of text box (for animation)
         this.posID = "norm"
+
+        // hover info
+        this.hoverID = "#hoverInfo_"
     }
 
     commentator(text, speaker) {
@@ -264,10 +267,59 @@ class TextModule {
         $(this.botBtn).hide()
     }
 
-    showInventory() {
+    showInventory(inv) {
         // Show an inventory (chest, dog, monster, etc)
+        
+        // Display the inner html ------------------------------
+        var invHTMLObj = inv.generateHTML()
+        this.setTextBox(invHTMLObj["innerhtml"])
 
-        // TODO
+        // Mouse Listeners--------------------------------------
+        //(need mouse listeners after itemMessage printed)
+        var items = inv.inv
+        var self = this;
+        // Deal with the non-gold/torch items first
+        for(var i = 0; i < items.length; i++){
+            // Set the hover info to print item info
+            var item_to_print =  (' ' + invHTMLObj["infos"][i]).slice(1)
+            var id = '#itemInfo'+i;
+            $(id).attr('item_to_print', item_to_print)
+            $(id).mouseenter(function(){
+                $(self.hoverID).html( $(this).attr('item_to_print') );
+                $(self.hoverID).show();
+            })
+            $(id).mouseleave(function(){
+                $(self.hoverID).hide();
+            })
+
+            //handle the take buttons
+            var takeID = '#take'+i;
+            $(takeID).attr('item_id', i)
+            $(takeID).click(
+                function() {
+                    console.log("here")
+                    //transfer the item to the hero
+                    inv.transfer_item(hero.inv, parseInt($(this).attr('item_id')))
+                    //redisplay the inventory
+                    txtmd.showInventory(inv)
+                });
+        }
+
+        // Handle gold + torches seperately
+        $("#takeGOLD").click( function() { 
+            inv.transfer_item(hero.inv, "gold");
+            txtmd.showInventory(inv)
+        });
+        $("#takeTORCHES").click( function() { 
+            inv.transfer_item(hero.inv, "torches");
+            txtmd.showInventory(inv)
+        });
+
+        // At the end of it all, show the txtmd!
+        $(this.modID).show()
+        $(this.botBtn).show()
+        $(this.botBtn).html("X")
+        $(this.botBtn).off().click(function(){self.revertTxtMd()})
     }
 
     setTextBox(text, speaker) {

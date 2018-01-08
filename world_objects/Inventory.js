@@ -6,23 +6,37 @@
  */
 
 class Inventory {
-    constructor(items){
+    constructor(items, capacity, maxGenGold, maxGenTorches){
         // An inventory object is at its barebones just an array
         this.inv = []
         this.gold = 0
         this.torches = 0
+        this.capacity = capacity
+
+        // Generate the inventory upon init.
+        if(items.length > 0){
+            this.generate(items, maxGenGold, maxGenTorches)
+        }
     }
 
     add(item){ this.inv.push(item) }
 
-    remove(itemIdx){ this.inv.splice(itemIdx, 1) }
+    remove(itemIdx){ return this.inv.splice(itemIdx, 1)[0] }
+
+    size() { return this.inv.length }
 
     transfer_item(target_inv, sourceID){
         // Given index of element in this inv, transfer to target
 
         if(typeof sourceID === "number"){
+            //First check capacity of target!
+            if(target_inv.size() >= target_inv.capacity){
+                openAlert("No space in inventory!")
+                return -1;
+            }
+
             //Its an indx in this.inv
-            this.remove(sourceID)
+            var item = this.remove(sourceID)
             target_inv.add(item)
         }
 
@@ -37,13 +51,14 @@ class Inventory {
         }
     }
 
-    generate(itemList, capacity, maxGold, maxTorches){
+    generate(itemList, maxGold, maxTorches){
         // Given list of items, generates inventory
         // TODO: maybe make fancier than random? switch-case?
 
-        // First push random items until capacity
-        for(var i = 0; i < capacity; i++){
-            this.add(Math.floor(itemList.length * Math.random()))
+        // First push random items until some fraction of capacity
+        var num_items = Math.floor(Math.random() * (this.capacity-1)) + 1
+        for(var i = 0; i < num_items; i++){
+            this.add(itemList[Math.floor(itemList.length * Math.random())])
         }
 
         // Then, if should have gold, add gold
@@ -56,6 +71,63 @@ class Inventory {
         if(typeof maxTorches === "number"){
             this.torches += Math.floor(Math.random() * maxTorches)
         }
+    }
+
+    generateHTML(target_inv, takeID, take_txt) {
+        // A function to generate an HTML series of elements with
+        // appropriate buttons and click functions
+        // @target_inv is the inv the buttons transfer to!
+
+        if(typeof take_txt === "undefined"){
+            var take_txt = "Take"
+        }
+
+        // Build the item inner html -------------------------
+        var items = this.inv
+        var invhtml = "You find: <br>"
+        var itemInfos = []
+        for(var i = 0; i < items.length; i++){
+            // First store all of the item infos for the hover module
+            itemInfos.push((items[i].name + "<br>"))
+            for (attribute in items[i]) {
+                if (typeof items[i][attribute] == "number" && attribute != 'value') {
+                    if(items[i][attribute] >= 0){
+                        itemInfos[i] += attribute + ": +" + items[i][attribute] + "<br>";
+                    }
+                    else{ //issue #49
+                        itemInfos[i] += attribute + ": " + items[i][attribute] + "<br>";
+                    }
+                }
+            }
+
+            // Add aditional info for effect items and consumables
+            if(items[i].constructorName == 'effectItem' || items[i].constructorName == 'Consumable'){
+                for(var j = 0; j < items[i].buffArray.length; j++){
+                    itemInfos[i] += "buffs: " + items[i].buffArray[j].name + "<br>";
+                }
+                for(var k = 0; k < items[i].debuffArray.length; k++){
+                    itemInfos[i] += "debuffs: " + items[i].debuffArray[k].name + "<br>";
+                }
+            }
+
+            //build the html to print to the textBox
+            invhtml += "<div class='itemInfo' id='itemInfo" + i + "'>" +
+                items[i].name + "<div id='take" + i + "' class='interact'> " + take_txt + " </div></div>";
+
+        }
+
+        //handle gold and torches seperately
+        if(this.gold > 0){
+            invhtml += "<div class='itemInfo' id='itemInfo" + i + "'> Gold: " + this.gold +
+                "<div id='takeGOLD' class='interact'> " + take_txt + " </div></div>";
+        }
+        if(this.torches > 0){
+            i++;
+            invhtml += "<div class='itemInfo' id='itemInfo" + i + "'> Torches: " + this.torches +
+                "<div id='takeTORCHES' class='interact'> " + take_txt + " </div></div>";
+        }
+
+        return {"innerhtml": invhtml, "infos": itemInfos};
     }
 }
 

@@ -43,6 +43,9 @@ class Hero extends Character{
         carried: []
     }
 
+    //hero inventory
+    this.inv = new Inventory([], 10)
+
   }
 }
 
