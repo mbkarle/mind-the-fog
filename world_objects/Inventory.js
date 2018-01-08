@@ -11,6 +11,7 @@ class Inventory {
         this.inv = []
         this.gold = 0
         this.torches = 0
+        this.torchCapacity = 10
         this.capacity = capacity
 
         // Generate the inventory upon init.
@@ -48,6 +49,11 @@ class Inventory {
         else if(sourceID === "torches"){
             target_inv.torches += this.torches
             this.torches = 0
+
+            // Set to capacity if too large
+            if(target_inv.torches > target_inv.torchCapacity){
+                target_inv.torches = target_inv.torchCapacity
+            }
         }
     }
 
@@ -136,7 +142,77 @@ class Inventory {
     }
 }
 
-class WornInventory extends Inventory {
-    // Special subclass that has checks for what can be worn
+class EquippedInventory {
+    // An inventory that consists of items equipped.
+    // Must have multiple capacities and enforce them
+    // Key feature: a linked "carried" inventory that feeds this inv
+    constructor(owner, carr_inv){
+        // The inventory itself, if we ever use for more than hero,
+        // may want to take the slots in in constructor
+        this.inv = {
+            "weapon": null,
+            "headgear": null,
+            "armor": null
+        }
 
+        // need to update owners stats in some cases
+        this.owner = owner;
+
+        // carry_inv is the linked inventory that feeds this
+        // inv. No items should be directly transfered to this.
+        this.carry_inv = carr_inv
+
+        //TODO: diff capacities for each slot?
+    }
+
+    equip(carr_idx){
+        // equips the item at index @carr_idx from supporting carry_inv
+        // unequips what is there if null
+
+        // remove and save item
+        var item = this.carry_inv.remove(carr_idx)
+
+        // check appropriate slot
+        var slot = item.type
+        if(this.inv[slot]){
+            // if something equipped, unequip
+            this.unequip(slot)
+        }
+
+        // equip item
+        this.inv[slot] = item
+
+        //go through and update owner's stats
+        var attribute;
+        for (attribute in item) {
+            if (typeof item[attribute] == "number") {
+                this.owner[attribute] += item[attribute];
+            }
+        }
+        if(this.owner.dexterity <= 0){ //no dividing by 0 !!
+            this.owner.dexterity = 0.5;
+        }
+    }
+
+    unequip(slot){
+        // unequips the item at slot @slot and transfers to carry_inv
+
+        // remove and save item
+        var item = this.inv[slot]
+        this.inv[slot] = null
+
+        //go through and update stats
+        var attribute;
+        for (attribute in item) {
+            if (typeof item[attribute] == "number") {
+                this.owner[attribute] -= item[attribute];
+            }
+        }
+        if(this.owner.vitality <= 0){
+            this.owner.vitality = 1;
+        }
+
+        // add the item to the supporting carry_inv
+        this.carry_inv.add(item)
+    }
 }
