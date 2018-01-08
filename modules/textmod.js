@@ -268,9 +268,9 @@ class TextModule {
         $(this.botBtn).hide()
     }
 
-    showInventory(inv) {
+    showInventory(inv, cb) {
         // Show an inventory (chest, dog, monster, etc)
-        
+
         // Display the inner html ------------------------------
         var invHTMLObj = inv.generateHTML()
         this.setTextBox(invHTMLObj["innerhtml"])
@@ -303,25 +303,28 @@ class TextModule {
                     inv.transfer_item(hero.inv, parseInt($(this).attr('item_id')))
                     $(self.hoverID).hide()
                     //redisplay the inventory
-                    self.showInventory(inv)
+                    self.showInventory(inv, cb)
                 });
         }
 
         // Handle gold + torches seperately
-        $("#takeGOLD").click( function() { 
+        $("#takeGOLD").click( function() {
             inv.transfer_item(hero.inv, "gold");
-            self.showInventory(inv)
+            self.showInventory(inv, cb)
         });
-        $("#takeTORCHES").click( function() { 
+        $("#takeTORCHES").click( function() {
             inv.transfer_item(hero.inv, "torches");
-            self.showInventory(inv)
+            self.showInventory(inv, cb)
         });
 
         // At the end of it all, show the txtmd!
         $(this.modID).show()
         $(this.botBtn).show()
         $(this.botBtn).html("X")
-        $(this.botBtn).off().click(function(){self.revertTxtMd()})
+        if(typeof cb === 'undefined'){
+            $(this.botBtn).off().click(function(){self.revertTxtMd()})
+        }
+        else{$(this.botBtn).off().click(cb)}
     }
 
     setTextBox(text, speaker) {

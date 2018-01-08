@@ -6,7 +6,7 @@
  */
 
 class Inventory {
-    constructor(items, capacity, maxGenGold, maxGenTorches){
+    constructor(items, capacity, minGenItems, maxGenGold, maxGenTorches){
         // An inventory object is at its barebones just an array
         this.inv = []
         this.gold = 0
@@ -15,7 +15,7 @@ class Inventory {
 
         // Generate the inventory upon init.
         if(items.length > 0){
-            this.generate(items, maxGenGold, maxGenTorches)
+            this.generate(items, minGenItems, maxGenGold, maxGenTorches)
         }
     }
 
@@ -51,12 +51,12 @@ class Inventory {
         }
     }
 
-    generate(itemList, maxGold, maxTorches){
+    generate(itemList, minItems, maxGold, maxTorches){
         // Given list of items, generates inventory
         // TODO: maybe make fancier than random? switch-case?
 
         // First push random items until some fraction of capacity
-        var num_items = Math.floor(Math.random() * (this.capacity-1)) + 1
+        var num_items = Math.floor(Math.random() * (this.capacity-minItems+1)) + minItems
         for(var i = 0; i < num_items; i++){
             this.add(itemList[Math.floor(itemList.length * Math.random())])
         }

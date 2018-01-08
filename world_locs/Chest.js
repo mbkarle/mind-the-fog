@@ -11,7 +11,7 @@ class Chest extends Location {
         // All of the items in the chest are in an Inventory
         var maxTorches = 3
         var maxGold = 500
-        this.inv = new Inventory(itemList, this.size, maxGold, maxTorches)
+        this.inv = new Inventory(itemList, this.size, 1, maxGold, maxTorches)
     }
 
     hero_interact(){

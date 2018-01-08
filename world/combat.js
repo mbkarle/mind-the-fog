@@ -322,49 +322,21 @@ function Damage(source, target) {
         $("#combat-module").hide(1000);
         $("#combat-module").off('click');
 
-
-        // handle mob drops
-        /* TODO: handle with new txtmd
-        var dropChance = Math.random();
-        if (!customCombat && dropChance > 0.75) {
-            $("#open").show();
-            $("#open").click(
-                function(e) {
-                    e.stopPropagation();
-                    print("item", [mobDrops[target.lootId]]);
-                    mob_drop_items([mobDrops[target.lootId]])
-                    $("#open").click(function(){$("#open").off('click'); exit_combat(room, customCombat); })
-                }
-            );
-        } else if (customCombat) {
-            hero.xp += 100; //TODO: scale
-            $("#open").show();
-            $("#open").click(
-                function(e) {
-                    console.log(enemy);
-                    e.stopPropagation();
-                    print("item", [target.loot]);
-                    mob_drop_items([target.loot])
-                    $("#open").click(function(){exit_combat(room, customCombat)})
-                }
-            )
-        }
-        else {
-            console.log('case 3--no drops, and random monster')
-            $("#open").show();
-            $("#open").click(
-                function() {
-                    $("#open").off('click');
-                    exit_combat(room, customCombat);
-                }
-            )
-        }*/
-
-        // print messgaes
-        txtmd.setPosition("high")
+        //Handle mob drops
         var exitFunc = function() { exit_combat(room, customCombat) }
-        txtmd.parseTxtMdJSON({"msgs": [["trans", "You've defeated the beast!"],
-            ["finfunc", "Mob Drops Placeholder", "X", exitFunc]]})
+        if(target.inv.size() > 0){
+            var txtmodmsg = {"msgs": [
+                ["trans", "You've defeated the beast!"],
+                ["finfunc", "a treasure from the fight is left behind", "Examine", 
+                    function(){ txtmd.showInventory(target.inv, exitFunc)} ]] }
+        }
+        else{
+            var txtmodmsg = {"msgs": [["finfunc", "You've defeated the beast!", "X", exitFunc]]}
+        }
+
+        // print messages
+        txtmd.setPosition("high")
+        txtmd.parseTxtMdJSON(txtmodmsg)
     }
     return hit;
 }
@@ -383,31 +355,4 @@ function Shield() {
 function readyUp() {
     ready = true;
     return ready;
-}
-
-function mob_drop_items(items){
-    for(var i = 0; i < items.length; i++){
-        takeID = '#take'+i;
-        item = $().extend({}, items[i])
-        $(takeID).attr('item_id', i)
-        $(takeID).click(
-            function() {
-                if(hero.inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency" || items[$(this).attr('item_id')].constructorName == "Torch"){
-                    item_to_take = items[$(this).attr('item_id')];
-                    if(item_to_take.constructorName != 'Consumable'){
-                        take_item($().extend({},item_to_take))
-                    }
-                    else{
-                      var temp = new Consumable(item_to_take.name, 'lul');
-                      take_item(temp);
-                    }
-
-                    $(this).hide();
-                }
-                else {
-                    openAlert("Your inventory is full");
-                }
-            }
-        )
-    }
 }
