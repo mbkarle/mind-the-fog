@@ -18,11 +18,26 @@ class Item {
 
         if(toList){
             for(var i = 0; i < items.length; i++){
-            items[i].push(this);
+                items[i].push(this);
+            }
         }
-        }
-
     }
+
+    genHoverInfoHTML() {
+        var innerhtml = this.name + "<br>"
+        for (attribute in this) {
+            if (typeof this[attribute] == "number" && attribute != 'value') {
+                if(this[attribute] >= 0){
+                    innerhtml += attribute + ": +" + this[attribute] + "<br>";
+                }
+                else{ //issue #49
+                    innerhtml += attribute + ": " + this[attribute] + "<br>";
+                }
+            }
+        }
+        return innerhtml
+    }
+
 }
 
 class effectItem extends Item {
@@ -50,6 +65,20 @@ class effectItem extends Item {
                 }
             }
         }
+    }
+
+    genHoverInfoHTML(){
+        var innerhtml = super.genHoverInfoHTML()
+
+        // add buffs/debuffs
+        for(var j = 0; j < this.buffArray.length; j++){
+            innerhtml += "buffs: " + this.buffArray[j].name + "<br>";
+        }
+        for(var k = 0; k < this.debuffArray.length; k++){
+            innerhtml += "debuffs: " + this.debuffArray[k].name + "<br>";
+        }
+
+        return innerhtml
     }
 }
 
@@ -255,6 +284,21 @@ class Consumable {
             return room.itemList.indexOf(this);
         }
     }
+
+    genHoverInfoHTML(){
+        var innerhtml = super.genHoverInfoHTML()
+
+        // add buffs/debuffs
+        for(var j = 0; j < this.buffArray.length; j++){
+            innerhtml += "buffs: " + this.buffArray[j].name + "<br>";
+        }
+        for(var k = 0; k < this.debuffArray.length; k++){
+            innerhtml += "debuffs: " + this.debuffArray[k].name + "<br>";
+        }
+
+        return innerhtml
+    }
+
     useConsumable(consumable){
         for(var i = 0; i < ConsumableList[consumable.name]['characteristics'].length; i++){
             hero[ConsumableList[consumable.name]['characteristics'][i]] += ConsumableList[consumable.name]['changes'][i];

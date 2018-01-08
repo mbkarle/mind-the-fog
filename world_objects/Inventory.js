@@ -79,66 +79,94 @@ class Inventory {
         }
     }
 
-    generateHTML(target_inv, takeID, take_txt) {
+    generateHTML(mod_ids, mod_cbs) {
         // A function to generate an HTML series of elements with
         // appropriate buttons and click functions
-        // @target_inv is the inv the buttons transfer to!
-
-        if(typeof take_txt === "undefined"){
-            var take_txt = "Take"
-        }
 
         // Build the item inner html -------------------------
+        var header = "You find: <br>" //the top of the display
+        var invhtml = header //the string to return
+        var itemInfos = [] //the hover infos
+
+        // some shortcuts for legibility
         var items = this.inv
-        var header = "You find: <br>"
-        var invhtml = header
-        var itemInfos = []
+        var unqID = mod_ids["uniqueID"]
+        var itemBoxID = unqID + "_invItemBox"
+        var cbBtnID = unqID + "_cbBtn"
+
         for(var i = 0; i < items.length; i++){
             // First store all of the item infos for the hover module
-            itemInfos.push((items[i].name + "<br>"))
-            for (attribute in items[i]) {
-                if (typeof items[i][attribute] == "number" && attribute != 'value') {
-                    if(items[i][attribute] >= 0){
-                        itemInfos[i] += attribute + ": +" + items[i][attribute] + "<br>";
-                    }
-                    else{ //issue #49
-                        itemInfos[i] += attribute + ": " + items[i][attribute] + "<br>";
-                    }
-                }
-            }
-
-            // Add aditional info for effect items and consumables
-            if(items[i].constructorName == 'effectItem' || items[i].constructorName == 'Consumable'){
-                for(var j = 0; j < items[i].buffArray.length; j++){
-                    itemInfos[i] += "buffs: " + items[i].buffArray[j].name + "<br>";
-                }
-                for(var k = 0; k < items[i].debuffArray.length; k++){
-                    itemInfos[i] += "debuffs: " + items[i].debuffArray[k].name + "<br>";
-                }
-            }
+            itemInfos.push(items[i].genHoverInfoHTML())
 
             //build the html to print to the textBox
-            invhtml += "<div class='itemInfo' id='itemInfo" + i + "'>" +
-                items[i].name + "<div id='take" + i + "' class='interact'> " + take_txt + " </div></div>";
+            invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
+                items[i].name + 
+                "<div id='" + cbBtnID + i + "' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
 
         }
 
         //handle gold and torches seperately
-        if(this.gold > 0){
-            invhtml += "<div class='itemInfo' id='itemInfo" + i + "'> Gold: " + this.gold +
-                "<div id='takeGOLD' class='interact'> " + take_txt + " </div></div>";
-        }
-        if(this.torches > 0){
+        if(this.gold > 0 && typeof mod_cbs["goldcb"] !== 'undefined'){
+            invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" + 
+                "Gold: " + this.gold +
+                "<div id='" + unqID + "_GOLDBtn' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
             i++;
-            invhtml += "<div class='itemInfo' id='itemInfo" + i + "'> Torches: " + this.torches +
-                "<div id='takeTORCHES' class='interact'> " + take_txt + " </div></div>";
+        }
+        if(this.torches > 0 && typeof mod_cbs["torchcb"] !== 'undefined'){
+            invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" + 
+                "Torches: " + this.torches +
+                "<div id='" + unqID + "_TORCHESBtn' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
         }
 
         // if nothing ever added, add message
         if(invhtml === header){
             invhtml += "Nothing left to take"
         }
-        return {"innerhtml": invhtml, "infos": itemInfos};
+
+        // Mouse Listeners--------------------------------------------
+        //(need mouse listeners after itemMessage printed)
+        var self = this;
+        var clickFunc = function(){
+            // Deal with the non-gold/torch items first
+            for(var i = 0; i < items.length; i++){
+                // Set the hover info to print item info
+                var item_to_print =  (' ' + itemInfos[i]).slice(1)
+                var thisItemBoxID = '#' + itemBoxID + i
+                $(thisItemBoxID).attr('item_to_print', item_to_print)
+                $(thisItemBoxID).mouseenter(function(){
+                    $(mod_ids["hoverID"]).html( $(this).attr('item_to_print') );
+                    $(mod_ids["hoverID"]).show();
+                })
+                $(thisItemBoxID).mouseleave(function(){
+                    $(mod_ids["hoverID"]).hide();
+                })
+
+                //handle the action buttons
+                var thisCbBtnID = '#' + cbBtnID + i;
+                $(thisCbBtnID).attr('item_id', i)
+                $(thisCbBtnID).click(
+                    function() {
+                        //action on this item
+                        mod_cbs["actioncb"](parseInt($(this).attr('item_id')))
+                        //hide hover
+                        $(mod_ids["hoverID"]).hide()
+                        //redisplay the inventory
+                        mod_cbs["refresh"]()
+                    });
+            }
+
+            // Handle gold + torches seperately
+            $("#" + unqID + "_GOLDBtn").click( function() {
+                mod_cbs["goldcb"]()
+                mod_cbs["refresh"]()
+            });
+            $("#" + unqID + "_TORCHESBtn").click( function() {
+                mod_cbs["torchcb"]()
+                mod_cbs["refresh"]()
+            });
+        }
+
+        return {"innerhtml": invhtml, "setClicks": clickFunc};
     }
 }
 
