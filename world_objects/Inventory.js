@@ -56,7 +56,7 @@ class Inventory {
             //First check capacity of target!
             if(target_inv.size() >= target_inv.capacity){
                 openAlert("No space in inventory!")
-                return -1;
+                return false;
             }
 
             //Its an indx in this.inv
@@ -68,8 +68,34 @@ class Inventory {
             }
             target_inv.add(item)
         }
+        return true
 
     }
+
+    transfer_for_gold(target_inv, sourceID, cost, sellFrac=1){
+        // A func that transfers this -> target in exchange
+        // for @cost from target. If target doesnt have money -> ret. false
+
+        // set default cost to be the Item's value
+        if(typeof cost === 'undefined'){
+            if(isNaN(parseInt(sourceID))){ var item = this.inv[sourceID] }
+            else{ var item = this.inv[parseInt(sourceID)] }
+            cost = Math.floor(item.value*sellFrac)
+        }
+
+        if(target_inv.gold < cost){ openAlert("It costs too much!"); return false }
+        else{
+            if(this.transfer_item(target_inv, sourceID)){
+                target_inv.gold -= cost
+                this.gold += cost
+                return true
+            }
+            return false
+        }
+    }
+
+        
+
 
     generate(itemList, minItems, maxGold, maxTorches){
         // Given list of items, generates inventory

@@ -184,7 +184,7 @@ display: none;
 background-color: white;
 }
 
-.txtmd_invItemBox {
+.txtmd_invItemBox, .vdr_invItemBox {
     border-style: solid;
     border-color: #a6a6a6;
     height: 25px;

@@ -1,6 +1,5 @@
 /*
  * This file should be for the Merchat location
- * TODO: Move the html to modules/
  */
 class Merchant extends Location{ // problems with selling: page needs to refresh when items are equipped in the inventory (equipped items shouldn't be sold)
     constructor(rowID, colID, itemList){
@@ -27,6 +26,7 @@ class Merchant extends Location{ // problems with selling: page needs to refresh
                 this.onSale.push(this.itemList[thisItem])
             }
         }
+
         this.openModule = function(buying){
             canMove = false;
             var self = this;

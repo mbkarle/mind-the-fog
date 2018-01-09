@@ -277,7 +277,7 @@ class TextModule {
             "hoverID": this.hoverID,
             "uniqueID": "txtmd"
         }
-        
+
         var mod_cbs = {
             "refresh": () => this.showInventory(inv, cb),
             "torchcb": () => inv.transfer_item(hero.inv, "torches"),
