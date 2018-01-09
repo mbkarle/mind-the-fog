@@ -109,7 +109,7 @@ function fight_enemy(hero, enemy){
 
             var txtmdmsg = {"msgs": [["finfunc", "You died!", "Restart", restartFunc]]}
             txtmd.parseTxtMdJSON(txtmdmsg)
-            
+
             // Clear the timeouts in this room
             room_list[curr_floor][curr_room].clearAllFogTimeouts();
 
@@ -170,7 +170,7 @@ function fight_enemy(hero, enemy){
             // Do the damage + commentate
             hitprint = Damage(hero, enemy);
             if(enemy.vitality > 0){
-                txtmd.commentator("You strike for " + hitprint + "damage!") 
+                txtmd.commentator("You strike for " + hitprint + "damage!")
             }
 
             //jquery animations:
@@ -238,7 +238,7 @@ function enter_combat(room) {
     room.num_enemies--;
 
     // now actually fight the enemy
-    var entermsg = "A fearsome " + enemy.name + " emerges from the shadows!" 
+    var entermsg = "A fearsome " + enemy.name + " emerges from the shadows!"
     var enterfunc = function(){ txtmd.revertTxtMd(); fight_enemy(hero, enemy) }
 
     txtmd.parseTxtMdJSON({"msgs": [["finfunc", entermsg, "Engage", enterfunc]]})
@@ -337,7 +337,7 @@ function Damage(source, target) {
         if(target.inv.size() > 0){
             var txtmodmsg = {"msgs": [
                 ["trans", "You've defeated the beast!"],
-                ["finfunc", "a treasure from the fight is left behind", "Examine", 
+                ["finfunc", "a treasure from the fight is left behind", "Examine",
                     function(){ txtmd.showInventory(target.inv, exitFunc)} ]] }
         }
         else{

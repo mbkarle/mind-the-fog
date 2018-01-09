@@ -121,7 +121,7 @@ class Inventory {
             //build the html to print to the textBox
             invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 items[i].name +
-                "<div id='" + cbBtnID + i + "' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
+                "<div id='" + cbBtnID + i + "' class='interact'> " + mod_cbs["actiontxt"](items[i]) + " </div></div>";
 
         }
 
@@ -129,13 +129,13 @@ class Inventory {
         if(this.gold > 0 && typeof mod_cbs["goldcb"] !== 'undefined'){
             invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 "Gold: " + this.gold +
-                "<div id='" + unqID + "_GOLDBtn' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
+                "<div id='" + unqID + "_GOLDBtn' class='interact'> " + mod_cbs["actiontxt"]("gold") + " </div></div>";
             i++;
         }
         if(this.torches > 0 && typeof mod_cbs["torchcb"] !== 'undefined'){
             invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 "Torches: " + this.torches +
-                "<div id='" + unqID + "_TORCHESBtn' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
+                "<div id='" + unqID + "_TORCHESBtn' class='interact'> " + mod_cbs["actiontxt"]("torches") + " </div></div>";
         }
 
         // Mouse Listeners--------------------------------------------

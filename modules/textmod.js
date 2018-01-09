@@ -283,7 +283,7 @@ class TextModule {
             "torchcb": () => inv.transfer_item(hero.inv, "torches"),
             "goldcb": () => inv.transfer_item(hero.inv, "gold"),
             "actioncb": (id) => inv.transfer_item(hero.inv, id),
-            "actiontxt": "Take"
+            "actiontxt": () => "Take"
         }
 
         // Display the inner html ------------------------------

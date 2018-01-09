@@ -68,7 +68,7 @@ function refreshInventoryHTML(hero, shield) {
     var eqmod_cbs = {
         "refresh": () => refreshInventoryHTML(hero, shield),
         "actioncb": (id) => eqinv.unequip(id),
-        "actiontxt": "Unequip"
+        "actiontxt": () => "Unequip"
     }
 
     // Display the inner html
@@ -88,7 +88,7 @@ function refreshInventoryHTML(hero, shield) {
     var carmod_cbs = {
         "refresh": () => refreshInventoryHTML(hero, shield),
         "actioncb": (id) => eqinv.equip(parseInt(id)),
-        "actiontxt": "Equip"
+        "actiontxt": () => "Equip"
     }
 
     // Display the inner html
