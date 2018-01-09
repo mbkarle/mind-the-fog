@@ -98,8 +98,7 @@ class Inventory {
         else{ var items = this.inv }
 
         // Build the item inner html -------------------------
-        var header = "You find: <br>" //the top of the display
-        var invhtml = header //the string to return
+        var invhtml = "" //the string to return
         var itemInfos = [] //the hover infos
 
         // some shortcuts for legibility
@@ -129,11 +128,6 @@ class Inventory {
             invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 "Torches: " + this.torches +
                 "<div id='" + unqID + "_TORCHESBtn' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
-        }
-
-        // if nothing ever added, add message
-        if(invhtml === header){
-            invhtml += "Nothing left to take"
         }
 
         // Mouse Listeners--------------------------------------------

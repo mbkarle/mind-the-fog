@@ -157,7 +157,7 @@ adding this class just for world so I can scrap fog.*/
 
 #info-module, #tree-module {
     width: 200px;
-    height: 550px;
+    height: 600px;
     padding-top: 25px;
     border-style: solid;
     border-color: #a6a6a6;
@@ -190,6 +190,20 @@ background-color: white;
     height: 25px;
     position: relative;
     margin-bottom: 5px;
+}
+
+.carinv_invItemBox, .eqinv_invItemBox {
+    height: 16px;
+    width: 180px;
+    position: relative;
+    font-size: 12px;
+    text-align: center;
+    border-style: solid;
+    border-color: #a6a6a6;
+    border-width: thin;
+    margin-bottom: 4px;
+    margin-left: 10px;
+    padding-top: 4px;
 }
 
 #xp {

@@ -269,10 +269,13 @@ class TextModule {
     showInventory(inv, cb) {
         // Show an inventory (chest, dog, monster, etc)
 
+        // Refresh hero inv to show transfer
+        refreshInventoryHTML(hero, heroShield)
+
         // Necessary info for generating inv html:
         var mod_ids = {
             "hoverID": this.hoverID,
-            "uniqueID": "txtmd",
+            "uniqueID": "txtmd"
         }
         
         var mod_cbs = {
@@ -285,7 +288,15 @@ class TextModule {
 
         // Display the inner html ------------------------------
         var invHTMLObj = inv.generateHTML(mod_ids, mod_cbs)
-        this.setTextBox(invHTMLObj["innerhtml"])
+
+        var innerhtml = invHTMLObj["innerhtml"]
+        var header = "You Find: <br>"
+        if(innerhtml === ""){
+            innerhtml = header + "Nothing left to take"
+        }
+        else{ innerhtml = header + innerhtml }
+
+        this.setTextBox(innerhtml)
 
         // Mouse Listeners--------------------------------------
         invHTMLObj["setClicks"]()
