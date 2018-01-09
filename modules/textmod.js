@@ -39,7 +39,6 @@ class TextModule {
     setPosition(posID, hero) {
         // animate the position of the textbox
         if(posID === this.posID){
-            console.log("no animation done")
             return;
         }
         switch(posID){
@@ -252,7 +251,6 @@ class TextModule {
         this.revertBtns();
         $(this.modID).hide()
         $(this.hoverID).hide()
-        console.log("parse completed: " + this.parseCompleted)
         return this.parseCompleted
     }
 

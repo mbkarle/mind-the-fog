@@ -29,19 +29,7 @@ class Inventory {
     transfer_item(target_inv, sourceID){
         // Given index of element in this inv, transfer to target
 
-        if(typeof sourceID === "number"){
-            //First check capacity of target!
-            if(target_inv.size() >= target_inv.capacity){
-                openAlert("No space in inventory!")
-                return -1;
-            }
-
-            //Its an indx in this.inv
-            var item = this.remove(sourceID)
-            target_inv.add(item)
-        }
-
-        else if(sourceID === "gold"){
+        if(sourceID === "gold"){
             target_inv.gold += this.gold
             this.gold = 0
         }
@@ -55,6 +43,24 @@ class Inventory {
                 target_inv.torches = target_inv.torchCapacity
             }
         }
+
+        else {
+            //First check capacity of target!
+            if(target_inv.size() >= target_inv.capacity){
+                openAlert("No space in inventory!")
+                return -1;
+            }
+
+            //Its an indx in this.inv
+            if(isNaN(parseInt(sourceID))){
+                var item = this.remove(sourceID)
+            }
+            else{
+                var item = this.remove(parseInt(sourceID))
+            }
+            target_inv.add(item)
+        }
+
     }
 
     generate(itemList, minItems, maxGold, maxTorches){
@@ -83,13 +89,20 @@ class Inventory {
         // A function to generate an HTML series of elements with
         // appropriate buttons and click functions
 
+        // distinguish between equipInv and Inv
+        if(!Array.isArray(this.inv)){
+            var items = Object.values(this.inv)
+            // filter null
+            items = items.filter(x => x)
+        }
+        else{ var items = this.inv }
+
         // Build the item inner html -------------------------
         var header = "You find: <br>" //the top of the display
         var invhtml = header //the string to return
         var itemInfos = [] //the hover infos
 
         // some shortcuts for legibility
-        var items = this.inv
         var unqID = mod_ids["uniqueID"]
         var itemBoxID = unqID + "_invItemBox"
         var cbBtnID = unqID + "_cbBtn"
@@ -100,20 +113,20 @@ class Inventory {
 
             //build the html to print to the textBox
             invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
-                items[i].name + 
+                items[i].name +
                 "<div id='" + cbBtnID + i + "' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
 
         }
 
         //handle gold and torches seperately
         if(this.gold > 0 && typeof mod_cbs["goldcb"] !== 'undefined'){
-            invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" + 
+            invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 "Gold: " + this.gold +
                 "<div id='" + unqID + "_GOLDBtn' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
             i++;
         }
         if(this.torches > 0 && typeof mod_cbs["torchcb"] !== 'undefined'){
-            invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" + 
+            invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 "Torches: " + this.torches +
                 "<div id='" + unqID + "_TORCHESBtn' class='interact'> " + mod_cbs["actiontxt"] + " </div></div>";
         }
@@ -143,11 +156,15 @@ class Inventory {
 
                 //handle the action buttons
                 var thisCbBtnID = '#' + cbBtnID + i;
-                $(thisCbBtnID).attr('item_id', i)
+                if(self.idx_by_type){ // equipInv is idx by type
+                    $(thisCbBtnID).attr('item_id', items[i].type)
+                }
+                else{ $(thisCbBtnID).attr('item_id', i) }
+
                 $(thisCbBtnID).click(
                     function() {
                         //action on this item
-                        mod_cbs["actioncb"](parseInt($(this).attr('item_id')))
+                        mod_cbs["actioncb"]($(this).attr('item_id'))
                         //hide hover
                         $(mod_ids["hoverID"]).hide()
                         //redisplay the inventory
@@ -170,13 +187,15 @@ class Inventory {
     }
 }
 
-class EquippedInventory {
+class EquippedInventory extends Inventory {
     // An inventory that consists of items equipped.
     // Must have multiple capacities and enforce them
     // Key feature: a linked "carried" inventory that feeds this inv
     constructor(owner, carr_inv){
         // The inventory itself, if we ever use for more than hero,
         // may want to take the slots in in constructor
+
+        super([], 3)
         this.inv = {
             "weapon": null,
             "headgear": null,
@@ -190,7 +209,26 @@ class EquippedInventory {
         // inv. No items should be directly transfered to this.
         this.carry_inv = carr_inv
 
+        // needed for the generateHTML
+        this.idx_by_type = true
+
         //TODO: diff capacities for each slot?
+    }
+
+    size() {
+        // convert to array
+        var arr = Object.values(this.inv)
+        // remove null + return size
+        return arr.filter(x => x).length
+    }
+
+    add() { alert("Add not implemented for EquipInventory, use supporting inv.") }
+
+    remove(slot) {
+        // Used for delete function / drop button
+        var item = this.inv[slot]
+        this.inv[slot] = null
+        return item
     }
 
     equip(carr_idx){
