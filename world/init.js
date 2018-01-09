@@ -348,4 +348,6 @@ function start_game(){
     room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
 
     refreshInfo();
+
+    dev_keys(); // turn on dev tools for now by default TODO: remove before beta
 }

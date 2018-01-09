@@ -35,19 +35,10 @@ class Hero extends Character{
         }
         this.wallet = 0;
         this.constructorName = "Hero";
-        this.num_torches = 3;
         this.spells = [];
         this.karma = 0;
         this.exhaustStatus = 0;
         this.exhaustLimit = 3;
-
-        //hero start inventory
-        this.inventory = {
-            weapon: null,
-            headgear: null,
-            armor: null,
-            carried: []
-        }
 
         //hero inventory
         this.inv = new Inventory([], 10)

@@ -144,23 +144,30 @@ function fight_enemy(hero, enemy){
         if (ready) {
             ready = false;
             window.setTimeout(readyUp, 10000 / hero.dexterity);
-            if (hero.inventory.weapon != null && hero.inventory.weapon.constructorName == 'effectItem') {
+
+            // Handle effect item buffs ----------------
+            var weapon = hero.equip_inv.inv.weapon
+            if (weapon != null && weapon.constructorName == 'effectItem') {
                 console.log("buffing up")
-                hero.inventory.weapon.buffUp(hero);
-                hero.inventory.weapon.debuffUp(enemy);
+                weapon.buffUp(hero);
+                weapon.debuffUp(enemy);
             }
-            if (hero.inventory.armor != null) {
-                if (hero.inventory.armor.constructorName == 'effectItem') {
-                    hero.inventory.armor.buffUp(hero);
-                    hero.inventory.armor.debuffUp(enemy);
+            var armor = hero.equip_inv.inv.armor
+            if (armor != null) {
+                if (armor.constructorName == 'effectItem') {
+                    armor.buffUp(hero);
+                    armor.debuffUp(enemy);
                 }
             }
-            if (hero.inventory.headgear != null) {
-                if (hero.inventory.headgear.constructorName == 'effectItem') {
-                    hero.inventory.headgear.buffUp(hero);
-                    hero.inventory.headgear.debuffUp(enemy);
+            var headgear = hero.equip_inv.inv.headgear
+            if (headgear != null) {
+                if (headgear.constructorName == 'effectItem') {
+                    headgear.buffUp(hero);
+                    headgear.debuffUp(enemy);
                 }
             }
+
+            // Do the damage + commentate
             hitprint = Damage(hero, enemy);
             if(enemy.vitality > 0){
                 txtmd.commentator("You strike for " + hitprint + "damage!") 

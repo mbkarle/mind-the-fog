@@ -26,6 +26,14 @@ class Inventory {
 
     size() { return this.inv.length }
 
+    useTorch() {
+        if(this.torches > 0){
+            this.torches--;
+            return true;
+        }
+        else{return false}
+    }
+
     transfer_item(target_inv, sourceID){
         // Given index of element in this inv, transfer to target
 

@@ -3,6 +3,55 @@
  * development + debugging but serve no role in the playing of the game.
  */
 
+// key listeners on top of the move listener!
+function dev_keys() {
+    window.removeEventListener('keydown', move);
+    window.addEventListener('keydown', devMove, false);
+
+    function devMove(e) {
+        move(e);
+
+        // Add dev keys here!
+        var room = room_list[curr_floor][curr_room]
+        var map = room.room_map
+        if (e.keyCode == "66") {
+            console.log("Dev tools activated");
+            console.log("So...., you're either a developer, or a cheater, or just lazy...")
+            hero.inv.add(MasterSword); //give absurd weapons
+            hero.equip_inv.equip(hero.inv.size()-1)
+            hero.vitality = 100000; //set absurd health stats
+            hero.maxVitality = 100000;
+            refreshInfo()
+
+            clearAllFog(map)
+            room.clearAllFogTimeouts();
+            room.buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
+        }
+
+        else if(e.keyCode == '189'){
+            //'-' removes monsters!
+            //for debugging only
+            openAlert("****removing monsters from the game!****")
+            for(var i = 0; i < room_list.length; i++){
+                for(var j = 0; j < room_list[i].length; j++){
+                    room_list[i][j].fightChance = 0;
+                }
+            }
+
+        }
+
+        else if(e.keyCode == '187'){
+            //'=' clears room!
+            //for debugging only
+            openAlert("****clearing room!****")
+            room.roomCleared = true;
+            var newPos = [avatarX,avatarY];
+            room.updateRoomHTML(newPos,newPos,torchlight,fog_radius);
+        }
+    }
+
+}
+
 // function to debug the dog (call in console)
 function where_is_doge(){
     var doge_locs = []
