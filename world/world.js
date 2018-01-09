@@ -74,6 +74,7 @@ function move(e) {
                 setTimeout(function(){
                     torchlight = false;
                     // if(!room_list[curr_floor][curr_room].roomCleared){
+                    var room = room_list[curr_floor][curr_room]
                     if(!room.fog_free_room){
                         room.addFogWhenTorchBurnsOut(avatarX,avatarY,fog_radius);
                         var newPos = [avatarX,avatarY];
