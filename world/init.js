@@ -20,8 +20,6 @@ Array.prototype.move = function(old_index, new_index){
 var game_duration = 1800000; //how long before the fog closes in totally
 
 //variables to track printed messages
-var messageArray;
-var messageCount;
 var txtmd = new TextModule()
 
 //variables of hero status
@@ -125,11 +123,6 @@ var titanHelm = new exoticItem("titanium helmet", "headgear", null, null, 40, 10
 var Leeroy = new exoticItem("Leeroy", "weapon", 30, null, null, 200, [itemList3, itemList4]);
 var Gloria = new exoticItem("Gloria", 'weapon', 20, 10, null, 250, [itemList4]);
 
-
-
-var gold = new Currency("gold", 1, null);
-
-var torch = new Torch(1)
 
 //------------------------------------------------------
 //              Initialize Characters
@@ -271,7 +264,7 @@ function start_game(){
     //combat-module must be reset
     $('#combat-module').html(start_combatModule);
     heroShield.vitality = heroShield.maxVitality;
-    hero.wallet = cached_gold;
+    hero.inv.gold = cached_gold;
 
     //message globals
     messageArray = [];

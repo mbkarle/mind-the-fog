@@ -33,7 +33,6 @@ class Hero extends Character{
         this.levelCheck = function() {
             return this.level = Math.floor(this.xp / 1000);
         }
-        this.wallet = 0;
         this.constructorName = "Hero";
         this.spells = [];
         this.karma = 0;

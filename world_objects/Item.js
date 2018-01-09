@@ -94,8 +94,8 @@ class exoticItem extends Item {
     }
     buyItem(item){
         var successful_transaction = false;
-        if(hero.wallet >= item.value){
-            hero.wallet -= item.value;
+        if(hero.inv.gold >= item.value){
+            hero.inv.gold -= item.value;
             successful_transaction = true;
             for(var i = 0; i < item.protoLists.length; i++){
                 item.protoLists[i].push(item);
@@ -125,22 +125,6 @@ class exoticItem extends Item {
     }
 }
 
-class Currency extends Item {
-    constructor(name, value, amount){
-        super(name);
-        this.value = value;
-        this.amount = amount;
-        this.wallet;
-        this.walletCheck = function(){ // adds directly to hero.wallet
-            return this.wallet = this.amount * this.value;
-        }
-        this.constructorName = "Currency";
-        this.getOgIdx = function(room){
-            return this;
-        }
-    }
-}
-
 class Shields extends Item {
   constructor(name, type, strength, dexterity, vitality, healthBoost, weight, recovery, toList, objid, items){
     super(name, type, strength, dexterity, vitality, toList, objid, items);
@@ -155,18 +139,6 @@ class Shields extends Item {
     clearTimeout(shieldReadyup);
     return this.shield_ready;
   }
-}
-
-class Torch extends Item {
-    constructor(num_torches){
-        super('torch')
-        this.torch_count = num_torches;
-        this.constructorName = "Torch";
-        this.getOgIdx = function(room){
-            return this;
-        }
-    }
-
 }
 
 var ConsumableList = {
@@ -320,8 +292,8 @@ class Consumable {
     }
     buyItem(item){
         var successful_transaction = false;
-        if(hero.wallet >= item.value){
-            hero.wallet -= item.value;
+        if(hero.inv.gold >= item.value){
+            hero.inv.gold -= item.value;
             successful_transaction = true;
             take_item(item);
             if(!item.prototyped){
@@ -489,8 +461,8 @@ class ShieldUpgrade {
     }
     buyItem(item){
         var successful_transaction = false;
-        if(hero.wallet >= item.value){
-            hero.wallet -= item.value;
+        if(hero.inv.gold >= item.value){
+            hero.inv.gold -= item.value;
             successful_transaction = true;
             refreshInfo();
         }

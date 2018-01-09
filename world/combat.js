@@ -119,7 +119,7 @@ function fight_enemy(hero, enemy){
             $("#shieldascii").html("")
 
             // Save gold
-            cached_gold = Math.floor(hero.wallet / 10);
+            cached_gold = Math.floor(hero.inv.gold / 10);
         }
 
         // if the hero shield breaks
