@@ -388,7 +388,6 @@ function makeNormalRoom(height, width, map, locations, itemList, tier, floor, np
 
             case 'merchant':
                 map[locs[i][0]][locs[i][1]] = new Merchant(locs[i][0], locs[i][1], itemList);
-                map[locs[i][0]][locs[i][1]].pickItems();
                 break;
 
             case 'pit':

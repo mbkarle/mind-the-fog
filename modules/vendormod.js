@@ -1,14 +1,11 @@
-class VendorMod {
+class VendorModule {
     constructor() {
         this.modID = "#vendor-module"
         this.hoverID = "#vendor-hover"
         this.textBox = "#vendor-contents"
-        this.exitBtnID = "#close"
-        this.tabID = "#tab"
+        this.exitBtnID = "#vendor-close"
+        this.tabID = "#vendor-tab"
         this.buying = true //default start w buy items
-
-        // currently the click listeners are set
-        $(this.exitBtnID).click(() => this.revertVendorMd())
     }
 
     openModForInvTransfer(buyerInv, sellerInv, sellAvail, buyFrac=1, sellFrac=.8) {
@@ -21,6 +18,8 @@ class VendorMod {
         // Show mod
         $(this.modID).show()
         $("#worldMap").hide()
+        $(this.exitBtnID).show()
+        $(this.exitBtnID).off().click(() => this.revertVendorMd())
 
         if(this.buying){
             var header = "For Purchase: <br> You've got " + buyerInv.gold + " gold <br>"

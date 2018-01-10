@@ -19,8 +19,9 @@ Array.prototype.move = function(old_index, new_index){
 //------------------------------------------------------
 var game_duration = 1800000; //how long before the fog closes in totally
 
-//variables to track printed messages
+// Modules -- #120
 var txtmd = new TextModule()
+var vndmd = new VendorModule()
 
 //variables of hero status
 var canMove;

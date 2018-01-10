@@ -79,7 +79,7 @@ function populateFirstRoom(){
     map[2][5] = new Cave(2,5)
     map[2][6] = new Pit(2,6, "alchemist", "the alchemist")
     map[2][7] = new Pit(2,7, "shieldMaker", "the shield maker")
-    map[2][8] = new Merchant(2,8, [MasterSword, MasterArmor, titanMail, Leeroy])
+    map[2][8] = new Merchant(2,8, itemList1)
 
     //clear all fog at end
     clearAllFog(map)
