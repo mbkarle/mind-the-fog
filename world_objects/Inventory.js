@@ -26,6 +26,24 @@ class Inventory {
 
     size() { return this.inv.length }
 
+    get(id) {
+        if(isNaN(parseInt)){ return this.inv[id] }
+        else{ return this.inv[parseInt(id)] }
+    }
+
+    pay(target_inv, amt, alertMsg) {
+        if(this.gold < amt){
+            openAlert(alertMsg)
+            return false
+        }
+        else{
+            this.gold -= amt
+            target_inv.gold += amt
+            return true
+        }
+    }
+
+
     useTorch() {
         if(this.torches > 0){
             this.torches--;
@@ -83,18 +101,17 @@ class Inventory {
             cost = Math.floor(item.value*sellFrac)
         }
 
-        if(target_inv.gold < cost){ openAlert("It costs too much!"); return false }
-        else{
+        // try to pay
+        if(target_inv.pay(this, cost, "It costs too much!")){
+            // try to transfer
             if(this.transfer_item(target_inv, sourceID)){
-                target_inv.gold -= cost
-                this.gold += cost
                 return true
             }
+            // if no space, return false, refund
+            this.pay(target_inv, cost)
             return false
         }
     }
-
-        
 
 
     generate(itemList, minItems, maxGold, maxTorches){
@@ -308,5 +325,17 @@ class EquippedInventory extends Inventory {
 
         // add the item to the supporting carry_inv
         this.carry_inv.add(item)
+    }
+}
+
+class PrebuiltInventory extends Inventory {
+    // A prebuilt inventory is just an inventory that is given a set of items
+    // and has no need for random generation of any sorts
+    constructor(items) {
+        super(items, items.length, items.length)
+    }
+
+    generate(items) {
+        this.inv = items
     }
 }

@@ -51,6 +51,20 @@ function dev_keys() {
 
 }
 
+// a temporary replacement to check functionality while we decide
+// on the hard values of items
+function randGenInvValues(){
+    for(var i = 0; i < itemList1.length; i++){
+        itemList1[i].value = Math.floor(Math.random() * 300)
+    }
+    for(var i = 0; i < itemList2.length; i++){
+        itemList2[i].value = Math.floor(Math.random() * 300)
+    }
+    for(var i = 0; i < itemList3.length; i++){
+        itemList3[i].value = Math.floor(Math.random() * 300)
+    }
+}
+
 // function to debug the dog (call in console)
 function where_is_doge(){
     var doge_locs = []
@@ -71,7 +85,7 @@ function where_is_doge(){
 function populateFirstRoom(){
     //func to populate the training room w Locs for dev
     //purposes
-    map = room_list[0][2].room_map
+    map = room_list[0][1].room_map
     map[2][2] = new Fountain(2,2)
     map[2][3] = new Altar(2,3)
     map[2][4] = new Statue(2,4)

@@ -8,10 +8,12 @@ class VendorModule {
         this.buying = true //default start w buy items
     }
 
-    openModForInvTransfer(buyerInv, sellerInv, sellAvail, buyFrac=1, sellFrac=.8) {
+    openModForInvTransfer(buyerInv, sellerInv, sellAvail, buyFunc, buyBtnTxt, buyFrac=1, sellFrac=.8) {
         // buyerInv == the person doing the buying
         // sellerInv == the person doing the selling
         // sellAvail == show tab or not
+        // buyFunc == func to execute on buy
+        // buyBtnTxt == button text on the item buttons
         // buyFrac == buy things full price
         // sellFrac == sell at discount
 
@@ -35,10 +37,9 @@ class VendorModule {
         // setup the mod_ids and cb's for displaying the inv
         var mod_ids = {"hoverID": this.hoverID, "uniqueID": "vdr"}
         var buy_cbs = {
-            "refresh": () => this.openModForInvTransfer(buyerInv, sellerInv),
-            "actioncb": (id) => {sellerInv.transfer_for_gold(buyerInv, id, undefined, frac);
-                    refreshInventoryHTML(hero, heroShield)},
-            "actiontxt": (item) => Math.floor(frac * item.value) + " gold"
+            "refresh": () => this.openModForInvTransfer(buyerInv, sellerInv, sellAvail, buyFunc, buyBtnTxt, buyFrac, sellFrac),
+            "actioncb": (id) => buyFunc(id, buyerInv, sellerInv, frac),
+            "actiontxt": (item) => buyBtnTxt(item, frac)
         }
 
         // generate and set html
@@ -51,7 +52,7 @@ class VendorModule {
             var self = this
             var tabFunc = function() {
                 self.buying = !self.buying
-                self.openModForInvTransfer(sellerInv, buyerInv, sellAvail, buyFrac, sellFrac)
+                self.openModForInvTransfer(sellerInv, buyerInv, sellAvail, buyFunc, buyBtnTxt, buyFrac, sellFrac)
             }
 
             $(this.tabID).html(tabTxt)

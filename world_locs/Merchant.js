@@ -17,7 +17,15 @@ class Merchant extends Location{
         var merch = this;
         var shopFunc = function(){
             txtmd.revertTxtMd();
-            vndmd.openModForInvTransfer(hero.inv, merch.inv, true) //true means can sell
+            var actioncb = function(id, buyerInv, sellerInv, frac) {
+                sellerInv.transfer_for_gold(buyerInv, id, undefined, frac);
+                refreshInventoryHTML(hero, heroShield)
+            }
+            var actiontxt = function(item, frac){
+                return Math.floor(frac * item.value) + " gold"
+            }
+
+            vndmd.openModForInvTransfer(hero.inv, merch.inv, true, actioncb, actiontxt) //true means can sell
         }
         txtmd.parseTxtMdJSON({"msgs": [["dec", merch.message, "Shop", "Leave", shopFunc]]})
     }

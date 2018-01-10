@@ -21,7 +21,7 @@ class Boss extends Character{
     }
 
     regenInv(){
-        this.inv = new Inventory(this.lootList, 1, 1)
+        this.inv = new PrebuiltInventory(this.lootList)
     }
 }
 
@@ -38,6 +38,8 @@ class Hero extends Character{
         this.karma = 0;
         this.exhaustStatus = 0;
         this.exhaustLimit = 3;
+
+        this.shieldUpgrade = ShieldList['wood']
 
         //hero inventory
         this.inv = new Inventory([], 10)
