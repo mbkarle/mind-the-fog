@@ -13,9 +13,16 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
   <!-- ================== Game Scripts =====================-->
+  <!--TempDB without Dependencies-->
+  <script type="text/javascript" src="tempdb/dialogues.js"></script>
+  <script type="text/javascript" src="tempdb/npcs.js"></script>
+  <script type="text/javascript" src="tempdb/shields.js"></script>
+
   <!--Magic Objects-->
   <script type="text/javascript" src="magic_objects/effect.js"></script>
   <script type="text/javascript" src="magic_objects/spell.js"></script>
+  <!--CONSUMABLES defined after effects initialized-->
+  <script type="text/javascript" src="tempdb/consumables.js"></script>
 
   <!--World Objects-->
   <script type="text/javascript" src="world_objects/Inventory.js"></script>
@@ -27,7 +34,6 @@
   <script type="text/javascript" src="world_objects/Dog.js"></script>
 
   <!--World Locations-->
-  <script type="text/javascript" src="world_locs/dialogues.json"></script>
   <script type="text/javascript" src="world_locs/Location.js"></script>
   <script type="text/javascript" src="world_locs/ChanceLocs.js"></script>
   <script type="text/javascript" src="world_locs/Chest.js"></script>
@@ -123,7 +129,6 @@
       <div class="interact" id="tmbtn_top" style="bottom:30px;"></div>
       <div class="interact" id="tmbtn_bot"></div>
     </div>
-  </div>
   </div>
 </body>
 

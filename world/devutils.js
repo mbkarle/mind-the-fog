@@ -51,6 +51,15 @@ function dev_keys() {
 
 }
 
+function unlockAllNPCS(){
+    NPCKeys = Object.keys(NPCS)
+    for(var i = 0; i < NPCKeys.length; i++){
+        NPCS[NPCKeys[i]]["active"] = true
+    }
+    start_game()
+    hero.inv.gold += 10000
+}
+
 // a temporary replacement to check functionality while we decide
 // on the hard values of items
 function randGenInvValues(){

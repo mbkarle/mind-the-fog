@@ -32,14 +32,14 @@ class Pit extends Location{
             }
 
             // After the rescue chance of hurt, start dialog
-            var dialogFunc = function() { 
+            var dialogFunc = function() {
                 // Push the start message
                 DIALOGUES[self.charID]['rescue'].push(
                     "Together you climb out. The gatekeeper will take care of " +
                         self.charDisplay + " from here.");
 
                 // Activate the NPC to be in GreatHall
-                NPCList[self.charID]['active'] = true;
+                NPCS[self.charID]['active'] = true;
 
                 // Start the dialog
                 txtmd.startDialog(self.charID, "rescue", self.charDisplay)
@@ -71,93 +71,27 @@ class CharDialogue extends Location{
 
 class NPC extends Location {
     constructor(rowID, colID, name){
-        super(rowID, colID, name, 'npc', NPCList[name]['symbol'], NPCList[name]['description'], false, true);
-        this.onSale = NPCList[name]['merchandise'];
+        super(rowID, colID, name, 'npc', NPCS[name]['symbol'], NPCS[name]['description'], false, true);
+
+        // Load the merch into a inventory wrapper for use w visualizing/transfers/etc
+        this.inv = new PrebuiltInventory(NPCS[name]['merchandise'])
     }
 
     hero_interact(){
-        if(this.onSale.length > 0){
-            txtmd.parseTxtMdJSON({"msgs":[["dec", this.message, "Shop", "Leave",
-                () => this.openNPCModule(this)]]})
+        if(this.inv.size() > 0){
+            var npc = this
+            // load buyFunc and buyBtnTxt for vendor mod
+            var buyFunc = NPCS[this.name]["buyFunc"]
+            var buyBtnTxt = NPCS[this.name]["buyBtnTxt"]
+
+            // set up the opening of the vendor mod
+            var shopFunc = function(){
+                txtmd.revertTxtMd();
+                vndmd.openModForInvTransfer(hero.inv, npc.inv, false, buyFunc, buyBtnTxt)
+            }
+
+            // use text module to decide to display vendor mod (shopfunc)
+            txtmd.parseTxtMdJSON({"msgs":[["dec", this.message, "Shop", "Leave", shopFunc]]})
         }
-    }
-
-    openNPCModule(self){
-      $('#worldMap').hide();
-      $("#vendor-module").show();
-      $("#tab").hide();
-      var itemMessage = "On sale: <br>";
-      var itemInfos = [];
-      for(var i = 0; i < self.onSale.length; i++){
-        itemInfos.push((self.onSale[i].name + "<br>"))
-        for (attribute in self.onSale[i]) {
-            if (typeof self.onSale[i][attribute] == "number" && attribute != 'value') {
-                if(self.onSale[i].constructorName != 'ShieldUpgrade'){
-                    if(self.onSale[i][attribute] >= 0){
-                        itemInfos[i] += attribute + ": +" + self.onSale[i][attribute] + "<br>";
-                    }
-                    else{ //issue #49
-                        itemInfos[i] += attribute + ": " + self.onSale[i][attribute] + "<br>";
-                    }
-                }
-                else{
-                    itemInfos[i] += attribute + ": " + self.onSale[i][attribute] + "<br>";
-                }
-            }
-        }
-        if(self.onSale[i].constructorName == 'effectItem'){
-
-            for(var j = 0; j < self.onSale[i].buffArray.length; j++){
-
-                itemInfos[i] += "buffs: " + self.onSale[i].buffArray[j].name + "<br>";
-            }
-            for(var k = 0; k < self.onSale[i].debuffArray.length; k++){
-                itemInfos[i] += "debuffs: " + self.onSale[i].debuffArray[k].name + "<br>";
-            }
-        }
-        if(self.onSale[i].constructorName == 'Consumable'){
-
-            for(var j = 0; j < self.onSale[i].buffArray.length; j++){
-
-                itemInfos[i] += "buffs: " + self.onSale[i].buffArray[j]['buff'].name + "<br>";
-            }
-            for(var k = 0; k < self.onSale[i].debuffArray.length; k++){
-                itemInfos[i] += "debuffs: " + self.onSale[i].debuffArray[k]['debuff'].name + "<br>";
-            }
-        }
-
-        itemMessage += "<div class='itemInfo' id='onSale" + i + "' style='border-width:2px;'>" + self.onSale[i].name + "<div id='buy" + i + "' class='interact'>" +  "</div></div>";
-      }
-      $('#vendor-contents').html(itemMessage);
-      if(self.onSale.length > 0){
-          self.onSale[0].drop_onSale(self);
-      }
-
-
-      for(var i = 0; i < self.onSale.length; i++){
-          var item_to_print =  (' ' + itemInfos[i]).slice(1)
-          var id = '#onSale'+i;
-          $(id).attr('item_to_print', item_to_print)
-          $(id).mouseenter(function(){
-              $("#vendor-hover").html( $(this).attr('item_to_print') );
-              $("#vendor-hover").show();
-          })
-          $(id).mouseleave(function(){
-              $("#vendor-hover").hide();
-          })
-
-      }
-      $("#close").click(function(){
-          self.closeModule();
-      })
-    }
-
-    closeModule(){
-        $("#tab").show();
-        $("#worldMap").show();
-        $("#vendor-module").hide();
-        txtmd.revertTxtMd();
-        refreshInfo();
-        $("#close").off('click');
     }
 }

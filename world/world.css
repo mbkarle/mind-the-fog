@@ -306,6 +306,7 @@ background-color: white;
     background-color: white;
     display: none;
 }
+
 #vendor-tab{
     height: 20px;
     width: 40px;
@@ -315,6 +316,7 @@ background-color: white;
     right: 0;
     top: -30px;
     text-align: center;
+    display: none;
 }
 
 #HeroEffects, #EnemyEffects, #effectsHover{

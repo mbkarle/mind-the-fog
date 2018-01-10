@@ -39,8 +39,8 @@ class Hero extends Character{
         this.exhaustStatus = 0;
         this.exhaustLimit = 3;
 
-        this.shieldUpgrade = ShieldList['wood']
-
+        // shield upgrade equipped
+        this.shieldUpgradeName = 'wood'
         //hero inventory
         this.inv = new Inventory([], 10)
 

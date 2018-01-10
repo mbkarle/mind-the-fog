@@ -393,11 +393,11 @@ function makeNormalRoom(height, width, map, locations, itemList, tier, floor, np
             case 'pit':
                 var thisNPC;
                 var npcDiscoverable = true;
-                if(floor == 1 && !NPCList['shieldMaker']['active']){
-                    thisNPC = NPCList['shieldMaker'];
+                if(floor == 1 && !NPCS['shieldMaker']['active']){
+                    thisNPC = NPCS['shieldMaker'];
                 }
-                else if(floor == 3 && !NPCList['alchemist']['active']){
-                    thisNPC = NPCList['alchemist'];
+                else if(floor == 3 && !NPCS['alchemist']['active']){
+                    thisNPC = NPCS['alchemist'];
                 }
                 //floor 5 dog trainer
                 //floor 7 rare item blacksmith
