@@ -5,7 +5,6 @@
 
 // key listeners on top of the move listener!
 function dev_keys() {
-    window.removeEventListener('keydown', move);
     window.addEventListener('keydown', devMove, false);
 
     function devMove(e) {

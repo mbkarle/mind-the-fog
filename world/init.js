@@ -185,7 +185,11 @@ var cached_gold = 0;
 var pitActive;
 
 //LetsiGO!
-window.addEventListener("keydown", move, false);
+var DEVUTILS = true
+// key listener
+if(DEVUTILS){ dev_keys() }
+else{ window.addEventListener("keydown", move, false); }
+
 window.onload = function(){
     start_combatModule = document.getElementById('combat-module').innerHTML;
     start_game();
@@ -342,6 +346,4 @@ function start_game(){
     room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
 
     refreshInfo();
-
-    dev_keys(); // turn on dev tools for now by default TODO: remove before beta
 }
