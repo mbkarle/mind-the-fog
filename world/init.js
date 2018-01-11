@@ -262,8 +262,8 @@ function start_game(){
     mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 20000, 3);
     forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 8000, 2);
 
-    for(var i = 0; i < Object.keys(spellTree).length; i++){
-        spellTree[Object.keys(spellTree)[i]]['learned'] = false;
+    for(var i = 0; i < Object.keys(SPELLTREE).length; i++){
+        SPELLTREE[Object.keys(SPELLTREE)[i]]['learned'] = false;
     }
 
     //combat-module must be reset

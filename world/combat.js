@@ -33,20 +33,20 @@ function setup_combat(hero, enemy){
     //set spell targets:
     for(var i = 0; i < hero.spells.length; i++){
         hero.spells[i].target = enemy;
-        for(var n = 0; n < activeSpellEffects[hero.spells[i].name]['buffs'].length; n++){
-            if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target === 'enemy'){
-                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = enemy;
+        for(var n = 0; n < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'].length; n++){
+            if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target === 'enemy'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target = enemy;
             }
-            else if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target === 'hero'){
-                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = hero;
+            else if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target === 'hero'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target = hero;
             }
         }
-        for(var m = 0; m < activeSpellEffects[hero.spells[i].name]['debuffs'].length; m++){
-            if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target === 'enemy'){
-                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = enemy;
+        for(var m = 0; m < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'].length; m++){
+            if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target === 'enemy'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target = enemy;
             }
-            else if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target === 'hero'){
-                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = hero;
+            else if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target === 'hero'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target = hero;
             }
         }
     }
@@ -277,14 +277,14 @@ function exit_combat(room, customCombat) {
     // Handle the spells @mbkarle is responsible here down
     for(var i = 0; i < hero.spells.length; i++){
         hero.spells[i].target = enemy;
-        for(var n = 0; n < activeSpellEffects[hero.spells[i].name]['buffs'].length; n++){
-            if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target.constructorName === 'Enemy' || activeSpellEffects[hero.spells[i].name]['buffs'][n].target.constructorName === 'Boss'){
-                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = 'enemy';
+        for(var n = 0; n < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'].length; n++){
+            if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target.constructorName === 'Enemy' || ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target.constructorName === 'Boss'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target = 'enemy';
             }
         }
-        for(var m = 0; m < activeSpellEffects[hero.spells[i].name]['debuffs'].length; m++){
-            if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Enemy' || activeSpellEffects[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Boss'){
-                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = 'enemy';
+        for(var m = 0; m < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'].length; m++){
+            if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Enemy' || ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Boss'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target = 'enemy';
             }
         }
     }
