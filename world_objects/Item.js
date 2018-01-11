@@ -139,21 +139,21 @@ class Consumable extends Item{
         return innerhtml
     }
 
-    useConsumable(consumable){
-        for(var i = 0; i < CONSUMABLES[consumable.name]['characteristics'].length; i++){
-            hero[CONSUMABLES[consumable.name]['characteristics'][i]] += CONSUMABLES[consumable.name]['changes'][i];
+    useConsumable(){
+        for(var i = 0; i < CONSUMABLES[this.name]['characteristics'].length; i++){
+            hero[CONSUMABLES[this.name]['characteristics'][i]] += CONSUMABLES[this.name]['changes'][i];
         }
         if(hero.vitality > hero.maxVitality){
             hero.vitality = hero.maxVitality;
         }
-        for(var i = 0; i < CONSUMABLES[consumable.name]['buffs'].length; i++){
-            if(Math.random() < CONSUMABLES[consumable.name]['buffs'][i]['chance']){
-                CONSUMABLES[consumable.name]['buffs'][i]['buff'].applyBuff(hero);
+        for(var i = 0; i < CONSUMABLES[this.name]['buffs'].length; i++){
+            if(Math.random() < CONSUMABLES[this.name]['buffs'][i]['chance']){
+                CONSUMABLES[this.name]['buffs'][i]['buff'].applyBuff(hero);
             }
         }
-        for(var i = 0; i < CONSUMABLES[consumable.name]['debuffs'].length; i++){
-            if(Math.random() < CONSUMABLES[consumable.name]['debuffs'][i]['chance']){
-                CONSUMABLES[consumable.name]['debuffs'][i]['debuff'].applyDebuff(hero);
+        for(var i = 0; i < CONSUMABLES[this.name]['debuffs'].length; i++){
+            if(Math.random() < CONSUMABLES[this.name]['debuffs'][i]['chance']){
+                CONSUMABLES[this.name]['debuffs'][i]['debuff'].applyDebuff(hero);
             }
         }
         refreshInfo();

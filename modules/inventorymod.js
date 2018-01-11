@@ -88,9 +88,21 @@ function refreshInventoryHTML(hero, shield) {
 
     var carmod_cbs = {
         "refresh": () => refreshInventoryHTML(hero, shield),
-        "actioncb": (id) => eqinv.equip(parseInt(id)),
-        "actiontxt": () => "Equip",
-        "dropcb": (id) => inv.remove(id)
+        "actioncb": function(id){
+            var item = inv.get(id)
+            if(item.constructorName === 'Consumable'){
+                inv.remove(id)
+                item.useConsumable()
+            }
+            else{ eqinv.equip(parseInt(id)) }
+        },
+        "actiontxt": function(item){
+            if(item.constructorName === 'Consumable'){
+                return "Use"
+            }
+            else{ return "Equip" }
+        },
+        "dropcb": (id) => inv.remove(id),
     }
 
     // Display the inner html
