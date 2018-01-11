@@ -67,7 +67,11 @@ function refreshInventoryHTML(hero, shield) {
 
     var eqmod_cbs = {
         "refresh": () => refreshInventoryHTML(hero, shield),
-        "actioncb": (id) => eqinv.unequip(id),
+        "actioncb": function(id){
+            eqinv.unequip(id)
+            // Refresh vndmd if selling
+            if(!vndmd.buying && vndmd.refreshFunc){vndmd.refreshFunc()}
+        },
         "actiontxt": () => "Unequip",
         "dropcb": (id) => eqinv.remove(id)
     }
@@ -95,6 +99,9 @@ function refreshInventoryHTML(hero, shield) {
                 item.useConsumable()
             }
             else{ eqinv.equip(parseInt(id)) }
+
+            // Refresh vndmd if selling
+            if(!vndmd.buying && vndmd.refreshFunc){vndmd.refreshFunc()}
         },
         "actiontxt": function(item){
             if(item.constructorName === 'Consumable'){

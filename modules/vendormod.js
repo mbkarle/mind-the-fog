@@ -6,6 +6,7 @@ class VendorModule {
         this.exitBtnID = "#vendor-close"
         this.tabID = "#vendor-tab"
         this.buying = true //default start w buy items
+        this.refreshFunc = null //used to manually update (ie unequip in inv = avail for sale)
     }
 
     openModForInvTransfer(buyerInv, sellerInv, sellAvail, buyFunc, buyBtnTxt, buyFrac=1, sellFrac=.8) {
@@ -42,6 +43,8 @@ class VendorModule {
             "actiontxt": (item) => buyBtnTxt(item, frac)
         }
 
+        this.refreshFunc = buy_cbs["refresh"]
+
         // generate and set html
         var sellObj = sellerInv.generateHTML(mod_ids, buy_cbs)
         this.setTextBox(header + sellObj["innerhtml"]) //set html
@@ -76,6 +79,7 @@ class VendorModule {
 
         // defaults
         this.buying = true
+        this.refreshFrunc = null
     }
 
     setTextBox(text) { $(this.textBox).html(text) }
