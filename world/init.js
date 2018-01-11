@@ -23,6 +23,7 @@ var game_duration = 1800000; //how long before the fog closes in totally
 var txtmd = new TextModule()
 var vndmd = new VendorModule()
 var doginvmd = new DogInvModule()
+var cmbmd = new CombatModule()
 
 //variables of hero status
 var canMove;
