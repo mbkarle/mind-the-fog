@@ -74,6 +74,7 @@ class DogInvModule {
                 if(!vndmd.buying && vndmd.refreshFunc){vndmd.refreshFunc()}
             },
             "actiontxt": () => "Take",
+            "goldcb": () => doge.inv.transfer_item(hero.inv, "gold"),
             "dropcb": (id) => doge.inv.remove(id)
         }
 

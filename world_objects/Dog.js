@@ -11,7 +11,10 @@ class Dog {
         this.dog_radius = -1; //should be set each time fog changes to fog_radius
         this.path_to_hero = [];
         this.move_interval = -1;
+
+        // Trainable characteristics!
         this.dog_speed = 100;
+        this.goldCarryFrac = .1; //used on hero death
 
         // The Dog Inventory
         this.inv = new Inventory([], 1) // start size one.

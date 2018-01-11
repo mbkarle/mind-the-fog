@@ -182,7 +182,6 @@ var avatarY;
 
 //variables for resets
 var start_combatModule;
-var cached_gold = 0;
 var pitActive;
 
 //LetsiGO!
@@ -272,7 +271,6 @@ function start_game(){
     //combat-module must be reset
     $('#combat-module').html(start_combatModule);
     heroShield.vitality = heroShield.maxVitality;
-    hero.inv.gold = cached_gold;
 
     //message globals
     messageArray = [];
