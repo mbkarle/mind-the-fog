@@ -155,7 +155,7 @@ adding this class just for world so I can scrap fog.*/
   margin: auto;
 }
 
-#info-module, #tree-module {
+#info-module, #tree-module, #dog-info-module{
     width: 200px;
     height: 600px;
     padding-top: 25px;
@@ -192,8 +192,9 @@ background-color: white;
     margin-bottom: 5px;
 }
 
-.carinv_invItemBox, .eqinv_invItemBox {
-    height: 16px;
+.carinv_invItemBox, .eqinv_invItemBox,
+.doginv_invItemBox, .heroToDogInv_invItemBox{
+    height: 13px;
     width: 180px;
     position: relative;
     font-size: 12px;
@@ -203,7 +204,7 @@ background-color: white;
     border-width: thin;
     margin-bottom: 4px;
     margin-left: 10px;
-    padding-top: 4px;
+    padding-top: 2px;
 }
 
 #xp {
@@ -266,12 +267,13 @@ background-color: white;
     top: 0;
 }
 
-#inventory {
+#inventory, #dog-inventory{
     line-height: 95%;
     height: 300px;
 }
 
-#inv_hoverInfo, #hoverCompare {
+#inv_hoverInfo, #hoverCompare,
+#doginv_hoverInfo {
     padding: 10px 20px 10px 20px;
     position: absolute;
     border-color: #a6a6a6;
@@ -286,12 +288,10 @@ background-color: white;
     font-family: cursive;
 }
 
-.small {
-  top: 0;
+.smallDropBtn {
   bottom: 0;
   left: 10px;
   width: 12px;
-  height: 12px;
 }
 
 #vendor-module {

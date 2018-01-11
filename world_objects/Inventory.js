@@ -170,7 +170,7 @@ class Inventory {
 
             // If given a drop cb, display the drop button with that function!
             if(typeof mod_cbs["dropcb"] !== 'undefined'){
-                invhtml += "<div id='" + unqID + "_DROP" + i + "' class='interact small'>x</div></div>"
+                invhtml += "<div id='" + unqID + "_DROP" + i + "' class='interact smallDropBtn'>x</div></div>"
             }
             else{ invhtml += "</div>" }
         }

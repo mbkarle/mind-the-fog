@@ -1,4 +1,4 @@
-/* 
+/*
  * This file holds all functions for world interaction
  * (movement, descent)
  */
@@ -93,6 +93,12 @@ function move(e) {
 
         if(didMove){
             doge.hero_move_update_dog(last_key_press,avatarX, avatarY, map);
+
+            // Check dist btw dog & hero and activate doginvmd if needed!
+            if(doge.manhat_dist_from_hero(avatarX, avatarY) <= 1){
+                doginvmd.activateMod()
+            }
+            else{ doginvmd.deactivateMod() }
         }
 
         if(didMove || activatedTorch){
@@ -121,8 +127,14 @@ function move(e) {
     }
 
     //keypresses outside of canMove
-    if (e.keyCode == 73){
+    if (e.keyCode == 73){ // i for inventory
         $("#info-module").toggle(100);
+        doginvmd.hideMod(); // there can only be one!
+        refreshInfo();
+    }
+    else if(doginvmd.avail && e.keyCode == 70) { // f for friend (dog)
+        doginvmd.toggleMod()
+        $("#info-module").hide(100); // there can only be one!
         refreshInfo();
     }
     else if(e.keyCode == 77){
@@ -154,7 +166,7 @@ function checkLocation(avX, avY){
 
 }
 
-function refillChests(){ 
+function refillChests(){
     //rebuilds floors so that chests can be filled with newly introduced materials
     //used after interaction w certain npcs
     console.log('Old room 1: ')
@@ -172,6 +184,9 @@ function refreshInfo() {
 
     //spell tree:
     refreshSpellTreeHTML(hero)
+
+    //dog inventory
+    if(doginvmd.open){ doginvmd.refreshDogInv() }
 
     //refresh for combat-module:
     var healthFraction = hero.vitality/hero.maxVitality;

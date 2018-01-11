@@ -12,7 +12,7 @@
   <!--JQuery-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-  <!-- ================== Game Scripts =====================-->
+  <!-- ================== Game Scripts ===================== -->
   <!--TempDB without Dependencies-->
   <script type="text/javascript" src="tempdb/dialogues.js"></script>
   <script type="text/javascript" src="tempdb/npcs.js"></script>
@@ -49,6 +49,7 @@
   <script type="text/javascript" src="modules/textmod.js"></script>
   <script type="text/javascript" src="modules/inventorymod.js"></script>
   <script type="text/javascript" src="modules/vendormod.js"></script>
+  <script type="text/javascript" src="modules/doginvmod.js"></script>
 
   <!--World Scripts-->
   <script type="text/javascript" src="world/tutorial.js"></script>
@@ -62,10 +63,12 @@
 </head>
 
 <body>
+
+<!-- Out of Game Modules -->
 <div style="margin:0 auto">
+    <!-- Hero Inventory -->
     <div id="InvOpen" class="interact" style="top:10px;left:10px;width:20px;height:20px;text-align:center">i</div>
     <div id="info-module" style="margin:0 auto">
-    <!-- will show inventory, stats, etc. -->
         <div id="characterInfo" class="infoBox"></div>
         <hr style="position=absolute;width:100%">
         <div id="inventory" class="infoBox"></div>
@@ -76,24 +79,40 @@
         <hr class="inv_hr">
         <div id="gold" class="infoBox">$$</div>
         <div id="xp" class="infoBox">XP</div>
-      </div>
-      <div id="alertBox" style="margin:0 auto"><div id="ok" class="interact" style="z-index:6;">––&#62;</div></div>
+    </div>
+
+    <!-- Dog Inventory -->
+    <div id="DogInvOpen" class="interact" style="display:none;top:10px;left:40px;width:20px;height:20px;text-align:center">f</div>
+    <div id="dog-info-module" style="margin:0 auto">
+        <pre id='doginvascii'></pre>
+        <div id="dog-inventory" class="infoBox"></div>
+        <div id="doginv_hoverInfo"></div>
+    </div>
+
+    <!-- Custom Alert Box -->
+    <div id="alertBox" style="margin:0 auto"><div id="ok" class="interact" style="z-index:6;">––&#62;</div></div>
+
+    <!-- Spell Tree Module -->
     <div id="TreeOpen" class="interact" style="top:10px;right:10px;width:20px;height:20px;text-align:center;">M</div>
     <div id="tree-module" style="margin:0 auto;right:10px;"></div>
 </div>
-  <div style="width:600px; margin:0 auto;">
+
+<!-- Main Game Area -->
+<div style="width:600px; margin:0 auto;">
+    <!-- World Map (map populated here) -->
     <div id="worldMap" style="margin:0 auto">
-      <!-- <div id="avatar">x</div> -->
-      <!-- <img id="map" src="http://files.site-fusion.co.uk/webfusion159311/image/9d-binche_sample.png"> -->
-      <!-- <div class="worldCentered"></div> -->
       <div id="worldContent" style="margin:0 auto" class="worldCentered"></div>
     </div>
+
+    <!-- Vendor Module -->
     <div id="vendor-module" style="margin:0 auto" class="worldCentered">
         <div id="vendor-tab">Buy</div>
         <div id="vendor-contents"></div>
         <div id="vendor-hover"></div>
         <div id="vendor-close" class="interact">Close</div>
     </div>
+
+    <!-- Combat Module -->
     <div id="combat-module" style="margin:0 auto">
       <div id="hero">
           <div id="heroSymbol" style="position: relative"> X </div>
@@ -115,16 +134,8 @@
       </div>
       <pre id="shieldascii"></pre>
     </div>
-    <div id="text-module" style="margin:0 auto">
-      <div id="textBox" style="margin:0 auto"></div>
-      <div id="hoverInfo"></div>
-      <div class="interact" id="enter">Engage</div>
-      <div class="interact" id="open" style="display: none">––&#62;</div>
-      <div class="interact" id="descend" style="display: none">Descend</div>
-      <div class="interact" id="stay" style="display: none;bottom:30px;">Stay</div>
-      <div class="interact" id="equip" style="display:none;bottom:90px;">Equip</div>
-    </div>
 
+    <!-- Text Module -->
     <div id="text-module_" style="margin:0 auto">
       <div id="textBox_" style="margin:0 auto"></div>
       <div id="hoverInfo_"></div>
