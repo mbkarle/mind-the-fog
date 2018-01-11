@@ -82,7 +82,8 @@ function refreshInventoryHTML(hero, shield) {
 
 
     // The carried section -----------------------------------------------
-    inventoryMessage += "<hr style='width: 80%'> Carried: <br><br>"
+    inventoryMessage += "<hr style='width: 80%'> Carried: <br><small>("+
+        hero.inv.size() +"/" + hero.inv.capacity +")<br></small><br>"
 
     // Set mod_id and mod_cb's for the Inv HTML
     var carmod_ids = {
