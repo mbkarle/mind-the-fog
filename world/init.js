@@ -19,10 +19,9 @@ Array.prototype.move = function(old_index, new_index){
 //------------------------------------------------------
 var game_duration = 1800000; //how long before the fog closes in totally
 
-//variables to track printed messages
-var messageArray;
-var messageCount;
+// Modules -- #120
 var txtmd = new TextModule()
+var vndmd = new VendorModule()
 
 //variables of hero status
 var canMove;
@@ -126,11 +125,6 @@ var Leeroy = new exoticItem("Leeroy", "weapon", 30, null, null, 200, [itemList3,
 var Gloria = new exoticItem("Gloria", 'weapon', 20, 10, null, 250, [itemList4]);
 
 
-
-var gold = new Currency("gold", 1, null);
-
-var torch = new Torch(1)
-
 //------------------------------------------------------
 //              Initialize Characters
 //------------------------------------------------------
@@ -191,11 +185,15 @@ var cached_gold = 0;
 var pitActive;
 
 //LetsiGO!
-window.addEventListener("keydown", move, false);
+var DEVUTILS = true
+// key listener
+if(DEVUTILS){ dev_keys() }
+else{ window.addEventListener("keydown", move, false); }
+
 window.onload = function(){
     start_combatModule = document.getElementById('combat-module').innerHTML;
     start_game();
-    tutorialStart();
+    //tutorialStart();
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
             refreshInfo();
@@ -264,14 +262,14 @@ function start_game(){
     mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 20000, 3);
     forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 8000, 2);
 
-    for(var i = 0; i < Object.keys(spellTree).length; i++){
-        spellTree[Object.keys(spellTree)[i]]['learned'] = false;
+    for(var i = 0; i < Object.keys(SPELLTREE).length; i++){
+        SPELLTREE[Object.keys(SPELLTREE)[i]]['learned'] = false;
     }
 
     //combat-module must be reset
     $('#combat-module').html(start_combatModule);
     heroShield.vitality = heroShield.maxVitality;
-    hero.wallet = cached_gold;
+    hero.inv.gold = cached_gold;
 
     //message globals
     messageArray = [];

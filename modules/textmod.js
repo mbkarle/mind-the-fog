@@ -20,6 +20,9 @@ class TextModule {
 
         // position of text box (for animation)
         this.posID = "norm"
+
+        // hover info
+        this.hoverID = "#hoverInfo_"
     }
 
     commentator(text, speaker) {
@@ -36,7 +39,6 @@ class TextModule {
     setPosition(posID, hero) {
         // animate the position of the textbox
         if(posID === this.posID){
-            console.log("no animation done")
             return;
         }
         switch(posID){
@@ -248,7 +250,7 @@ class TextModule {
         canMove = true;
         this.revertBtns();
         $(this.modID).hide()
-        console.log("parse completed: " + this.parseCompleted)
+        $(this.hoverID).hide()
         return this.parseCompleted
     }
 
@@ -264,10 +266,50 @@ class TextModule {
         $(this.botBtn).hide()
     }
 
-    showInventory() {
+    showInventory(inv, cb) {
         // Show an inventory (chest, dog, monster, etc)
 
-        // TODO
+        // Refresh hero inv to show transfer
+        refreshInventoryHTML(hero, heroShield)
+
+        // Necessary info for generating inv html:
+        var mod_ids = {
+            "hoverID": this.hoverID,
+            "uniqueID": "txtmd"
+        }
+
+        var mod_cbs = {
+            "refresh": () => this.showInventory(inv, cb),
+            "torchcb": () => inv.transfer_item(hero.inv, "torches"),
+            "goldcb": () => inv.transfer_item(hero.inv, "gold"),
+            "actioncb": (id) => inv.transfer_item(hero.inv, id),
+            "actiontxt": () => "Take"
+        }
+
+        // Display the inner html ------------------------------
+        var invHTMLObj = inv.generateHTML(mod_ids, mod_cbs)
+
+        var innerhtml = invHTMLObj["innerhtml"]
+        var header = "You Find: <br>"
+        if(innerhtml === ""){
+            innerhtml = header + "Nothing left to take"
+        }
+        else{ innerhtml = header + innerhtml }
+
+        this.setTextBox(innerhtml)
+
+        // Mouse Listeners--------------------------------------
+        invHTMLObj["setClicks"]()
+
+        // At the end of it all, show the txtmd!
+        var self = this;
+        $(this.modID).show()
+        $(this.botBtn).show()
+        $(this.botBtn).html("X")
+        if(typeof cb === 'undefined'){
+            $(this.botBtn).off().click(function(){self.revertTxtMd()})
+        }
+        else{$(this.botBtn).off().click(cb)}
     }
 
     setTextBox(text, speaker) {

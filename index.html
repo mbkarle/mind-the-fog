@@ -13,11 +13,21 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
   <!-- ================== Game Scripts =====================-->
+  <!--TempDB without Dependencies-->
+  <script type="text/javascript" src="tempdb/dialogues.js"></script>
+  <script type="text/javascript" src="tempdb/npcs.js"></script>
+  <script type="text/javascript" src="tempdb/shields.js"></script>
+
   <!--Magic Objects-->
   <script type="text/javascript" src="magic_objects/effect.js"></script>
+  <!--Spell Stuff Needs Buffs-->
+  <script type="text/javascript" src="tempdb/spells.js"></script>
   <script type="text/javascript" src="magic_objects/spell.js"></script>
+  <!--CONSUMABLES defined after effects initialized-->
+  <script type="text/javascript" src="tempdb/consumables.js"></script>
 
   <!--World Objects-->
+  <script type="text/javascript" src="world_objects/Inventory.js"></script>
   <script type="text/javascript" src="world_objects/NPC_Mgmt.js"></script>
   <script type="text/javascript" src="world_objects/floor.js"></script>
   <script type="text/javascript" src="world_objects/Item.js"></script>
@@ -26,7 +36,6 @@
   <script type="text/javascript" src="world_objects/Dog.js"></script>
 
   <!--World Locations-->
-  <script type="text/javascript" src="world_locs/dialogues.json"></script>
   <script type="text/javascript" src="world_locs/Location.js"></script>
   <script type="text/javascript" src="world_locs/ChanceLocs.js"></script>
   <script type="text/javascript" src="world_locs/Chest.js"></script>
@@ -38,10 +47,11 @@
 
   <!--HTML Modules-->
   <script type="text/javascript" src="modules/textmod.js"></script>
+  <script type="text/javascript" src="modules/inventorymod.js"></script>
+  <script type="text/javascript" src="modules/vendormod.js"></script>
 
   <!--World Scripts-->
   <script type="text/javascript" src="world/tutorial.js"></script>
-  <script type="text/javascript" src="world/inventory.js"></script>
   <script type="text/javascript" src="world/spelltree.js"></script>
   <script type="text/javascript" src="world/messages.js"></script>
   <script type="text/javascript" src="world/world.js"></script>
@@ -79,10 +89,10 @@
       <div id="worldContent" style="margin:0 auto" class="worldCentered"></div>
     </div>
     <div id="vendor-module" style="margin:0 auto" class="worldCentered">
-        <div id="tab">Buy</div>
+        <div id="vendor-tab">Buy</div>
         <div id="vendor-contents"></div>
         <div id="vendor-hover"></div>
-        <div id="close" class="interact">Close</div>
+        <div id="vendor-close" class="interact">Close</div>
     </div>
     <div id="combat-module" style="margin:0 auto">
       <div id="hero">
@@ -121,7 +131,6 @@
       <div class="interact" id="tmbtn_top" style="bottom:30px;"></div>
       <div class="interact" id="tmbtn_bot"></div>
     </div>
-  </div>
   </div>
 </body>
 

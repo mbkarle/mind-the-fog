@@ -366,7 +366,6 @@ function makeNormalRoom(height, width, map, locations, itemList, tier, floor, np
         switch (locations[i]) {
             case 'chest':
                 map[locs[i][0]][locs[i][1]] = new Chest(locs[i][0],locs[i][1], itemList)
-                map[locs[i][0]][locs[i][1]].fillChest();
                 break;
 
             case 'trapdoor':
@@ -389,17 +388,16 @@ function makeNormalRoom(height, width, map, locations, itemList, tier, floor, np
 
             case 'merchant':
                 map[locs[i][0]][locs[i][1]] = new Merchant(locs[i][0], locs[i][1], itemList);
-                map[locs[i][0]][locs[i][1]].pickItems();
                 break;
 
             case 'pit':
                 var thisNPC;
                 var npcDiscoverable = true;
-                if(floor == 1 && !NPCList['shieldMaker']['active']){
-                    thisNPC = NPCList['shieldMaker'];
+                if(floor == 1 && !NPCS['shieldMaker']['active']){
+                    thisNPC = NPCS['shieldMaker'];
                 }
-                else if(floor == 3 && !NPCList['alchemist']['active']){
-                    thisNPC = NPCList['alchemist'];
+                else if(floor == 3 && !NPCS['alchemist']['active']){
+                    thisNPC = NPCS['alchemist'];
                 }
                 //floor 5 dog trainer
                 //floor 7 rare item blacksmith

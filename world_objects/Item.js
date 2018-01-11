@@ -9,7 +9,6 @@ class Item {
         this.toList = toList;
         this.objid = objid;
         this.items = items;
-        this.equipped = false;
         this.value = null;
         this.constructorName = "Item";
         this.getOgIdx = function(room){
@@ -18,11 +17,26 @@ class Item {
 
         if(toList){
             for(var i = 0; i < items.length; i++){
-            items[i].push(this);
+                items[i].push(this);
+            }
         }
-        }
-
     }
+
+    genHoverInfoHTML() {
+        var innerhtml = this.name + "<br>"
+        for (attribute in this) {
+            if (typeof this[attribute] == "number" && attribute != 'value') {
+                if(this[attribute] >= 0){
+                    innerhtml += attribute + ": +" + this[attribute] + "<br>";
+                }
+                else{ //issue #49
+                    innerhtml += attribute + ": " + this[attribute] + "<br>";
+                }
+            }
+        }
+        return innerhtml
+    }
+
 }
 
 class effectItem extends Item {
@@ -51,64 +65,29 @@ class effectItem extends Item {
             }
         }
     }
+
+    genHoverInfoHTML(){
+        var innerhtml = super.genHoverInfoHTML()
+
+        // add buffs/debuffs
+        for(var j = 0; j < this.buffArray.length; j++){
+            innerhtml += "buffs: " + this.buffArray[j].name + "<br>";
+        }
+        for(var k = 0; k < this.debuffArray.length; k++){
+            innerhtml += "debuffs: " + this.debuffArray[k].name + "<br>";
+        }
+
+        return innerhtml
+    }
 }
 
 class exoticItem extends Item {
     constructor(name, type, strength, dexterity, vitality, value, protoLists){
-        super(name, type, strength, dexterity, vitality, true, null, [NPCList['blacksmith']['merchandise']]);
+        super(name, type, strength, dexterity, vitality, true, null, [NPCS['blacksmith']['merchandise']]);
         this.constructorName = "exoticItem";
-        this.getListIdx = function(){
-            return NPCList['blacksmith']['merchandise'].indexOf(this);
-        }
+        this.unlocked = false
         this.value = value;
         this.protoLists = protoLists;
-    }
-    buyItem(item){
-        var successful_transaction = false;
-        if(hero.wallet >= item.value){
-            hero.wallet -= item.value;
-            successful_transaction = true;
-            for(var i = 0; i < item.protoLists.length; i++){
-                item.protoLists[i].push(item);
-            }
-            NPCList['blacksmith']['merchandise'].splice(item.getListIdx(), 1);
-            refillChests();
-            refreshInfo();
-        }
-        else{
-            openAlert("You can't afford this item");
-        }
-        return successful_transaction;
-    }
-    drop_onSale(self){
-        for(var i = 0; i < self.onSale.length; i++){
-            var buyID = "#buy" + i;
-            $(buyID).attr("buy_id", i);
-            $(buyID).html(self.onSale[$(buyID).attr('buy_id')].value + 'gold');
-            $(buyID).click(function(){
-                console.log('buying item');
-                if(self.onSale[$(this).attr('buy_id')].buyItem(self.onSale[$(this).attr('buy_id')])){
-                $(this).off('click');
-                self.openNPCModule(self); //updates window
-            }
-            })
-        }
-    }
-}
-
-class Currency extends Item {
-    constructor(name, value, amount){
-        super(name);
-        this.value = value;
-        this.amount = amount;
-        this.wallet;
-        this.walletCheck = function(){ // adds directly to hero.wallet
-            return this.wallet = this.amount * this.value;
-        }
-        this.constructorName = "Currency";
-        this.getOgIdx = function(room){
-            return this;
-        }
     }
 }
 
@@ -128,374 +107,114 @@ class Shields extends Item {
   }
 }
 
-class Torch extends Item {
-    constructor(num_torches){
-        super('torch')
-        this.torch_count = num_torches;
-        this.constructorName = "Torch";
-        this.getOgIdx = function(room){
-            return this;
-        }
-    }
-
-}
-
-var ConsumableList = {
-    "minor health potion": {
-        'characteristics' : ['vitality'],
-        'changes': [10],
-        'buffs': [],
-        'debuffs': [],
-        'value': 20,
-        'itemlists': [1, 2]
-    },
-    "major health potion": {
-        'characteristics': ['vitality'],
-        'changes': [50],
-        'buffs': [],
-        'debuffs': [],
-        'value': 50,
-        'itemlists': [0, 2, 3, 4]
-    },
-    'strength potion': {
-        'characteristics' : [],
-        'changes': [],
-        'buffs': [
-            {
-            'buff': supStrength,
-            'chance': 1,
-            'target': 'hero'
-            }
-        ],
-        'debuffs': [],
-        'value': 50,
-        'itemlists': [2, 3]
-    },
-    'dexterity potion': {
-        'characteristics': [],
-        'changes': [],
-        'buffs': [
-          {
-            'buff': supSpeed,
-            'chance': 1,
-            'target': 'hero'
-          }
-        ],
-        'debuffs': [],
-        'value': 50,
-        'itemlists': [2, 3]
-    },
-    'sponge potion': {
-        'characteristics': [],
-        'changes': [],
-        'buffs': [
-            {
-                'buff': sponge,
-                'chance': 1,
-                'target': 'hero'
-            }
-        ],
-        'debuffs': [
-            {
-                'debuff': slow,
-                'chance': .5,
-                'target': 'hero'
-            }
-        ],
-        'value': 80,
-        'itemlists': [3, 4]
-    },
-    'perma strength': {
-      'characteristics': ['strength', 'vitality', 'maxVitality'],
-      'changes': [2, 5, 5],
-      'buffs': [],
-      'debuffs': [],
-      'value': 100,
-      'itemlists': [2, 3]
-    },
-    'perma dexterity': {
-      'characteristics': ['dexterity'],
-      'changes': [2],
-      'buffs': [],
-      'debuffs': [],
-      'value': 100,
-      'itemlists': [2, 3]
-    },
-    'perma vitality': {
-      'characteristics': ['vitality', 'maxVitality'],
-      'changes': [20, 20],
-      'buffs': [],
-      'debuffs': [],
-      'value': 100,
-      'itemlists': [2, 3]
-    },
-    'liquid machismo': {
-      'characteristics': ['strength', 'dexterity', 'vitality', 'maxVitality'],
-      'changes': [1, 1, 20, 20],
-      'buffs': [],
-      'debuffs': [],
-      'value': 150,
-      'itemlists': [3, 4]
-    }
-}
-
-class Consumable {
+class Consumable extends Item{
     constructor(name, objid){
+        super(name, 'consumable')
         this.name = name;
         this.objid = objid;
-        for(var i = 0; i < ConsumableList[name]['characteristics'].length; i++){
-            this[ConsumableList[name]['characteristics'][i]] = ConsumableList[name]['changes'][i];
+        for(var i = 0; i < CONSUMABLES[name]['characteristics'].length; i++){
+            this[CONSUMABLES[name]['characteristics'][i]] = CONSUMABLES[name]['changes'][i];
         }
-        this.buffArray = ConsumableList[name]['buffs'];
-        this.debuffArray = ConsumableList[name]['debuffs'];
+        this.buffArray = CONSUMABLES[name]['buffs'];
+        this.debuffArray = CONSUMABLES[name]['debuffs'];
         this.constructorName = 'Consumable';
-        this.value = ConsumableList[name]['value'];
+        this.value = CONSUMABLES[name]['value'];
         this.prototyped = false;
         this.getOgIdx = function(room){
             return room.itemList.indexOf(this);
         }
     }
-    useConsumable(consumable){
-        for(var i = 0; i < ConsumableList[consumable.name]['characteristics'].length; i++){
-            hero[ConsumableList[consumable.name]['characteristics'][i]] += ConsumableList[consumable.name]['changes'][i];
+
+    genHoverInfoHTML(){
+        var innerhtml = super.genHoverInfoHTML()
+
+        // add buffs/debuffs
+        for(var j = 0; j < this.buffArray.length; j++){
+            innerhtml += "buffs: " + this.buffArray[j].buff.name + "<br>";
+        }
+        for(var k = 0; k < this.debuffArray.length; k++){
+            innerhtml += "debuffs: " + this.debuffArray[k].debuff.name + "<br>";
+        }
+
+        return innerhtml
+    }
+
+    useConsumable(){
+        for(var i = 0; i < CONSUMABLES[this.name]['characteristics'].length; i++){
+            hero[CONSUMABLES[this.name]['characteristics'][i]] += CONSUMABLES[this.name]['changes'][i];
         }
         if(hero.vitality > hero.maxVitality){
             hero.vitality = hero.maxVitality;
         }
-        for(var i = 0; i < ConsumableList[consumable.name]['buffs'].length; i++){
-            if(Math.random() < ConsumableList[consumable.name]['buffs'][i]['chance']){
-                ConsumableList[consumable.name]['buffs'][i]['buff'].applyBuff(hero);
+        for(var i = 0; i < CONSUMABLES[this.name]['buffs'].length; i++){
+            if(Math.random() < CONSUMABLES[this.name]['buffs'][i]['chance']){
+                CONSUMABLES[this.name]['buffs'][i]['buff'].applyBuff(hero);
             }
         }
-        for(var i = 0; i < ConsumableList[consumable.name]['debuffs'].length; i++){
-            if(Math.random() < ConsumableList[consumable.name]['debuffs'][i]['chance']){
-                ConsumableList[consumable.name]['debuffs'][i]['debuff'].applyDebuff(hero);
+        for(var i = 0; i < CONSUMABLES[this.name]['debuffs'].length; i++){
+            if(Math.random() < CONSUMABLES[this.name]['debuffs'][i]['chance']){
+                CONSUMABLES[this.name]['debuffs'][i]['debuff'].applyDebuff(hero);
             }
         }
         refreshInfo();
     }
-    buyItem(item){
-        var successful_transaction = false;
-        if(hero.wallet >= item.value){
-            hero.wallet -= item.value;
-            successful_transaction = true;
-            take_item(item);
-            if(!item.prototyped){
-              item.prototyped = true;
-              for(var i = 0; i < ConsumableList[item.name]['itemlists'].length; i++){
-                itemListMeta[ConsumableList[item.name]['itemlists'][i]].push(item);
-              }
-              refillChests();
-            }
-            refreshInfo();
-        }
-        else{
-            openAlert("You can't afford this item");
-        }
-        return successful_transaction;
-    }
-    drop_onSale(self){
-        for(var i = 0; i < self.onSale.length; i++){
-            self.onSale[i].value = ConsumableList[self.onSale[i].name]['value'];
-            var buyID = "#buy" + i;
-            $(buyID).attr("buy_id", i);
-            $(buyID).html(self.onSale[$(buyID).attr('buy_id')].value + 'gold');
-            $(buyID).click(function(){
-                console.log('buying item');
-                if(self.onSale[$(this).attr('buy_id')].buyItem(self.onSale[$(this).attr('buy_id')])){
-                $(this).off('click');
-                self.openNPCModule(self); //updates window
-            }
-            })
-        }
-    }
 }
-for(var consumable in ConsumableList){
+
+// Load in consumables into NPCS
+for(var consumable in CONSUMABLES){
     var newConsumable = new Consumable(consumable, 'lul');
-    NPCList['alchemist']['merchandise'].push(newConsumable);
-}
-var ShieldList = {
-    'wood': {
-        'weight': 3,
-        'recovery': 4,
-        'healthBoost': 1,
-        'vitality': 30,
-        'maxVitality': 30,
-        'value': 0
-    },
-    'ironwood': {
-        'weight': 4,
-        'recovery': 4,
-        'healthBoost': 1,
-        'vitality': 40,
-        'maxVitality': 40,
-        'value': 60
-    },
-    'lightwood': {
-        'weight': 2,
-        'recovery': 4,
-        'healthBoost': 2,
-        'vitality': 30,
-        'maxVitality': 30,
-        'value': 60
-    },
-    'iron': {
-        'weight': 4,
-        'recovery': 4,
-        'healthBoost': 2,
-        'vitality': 50,
-        'maxVitality': 50,
-        'value': 100
-    },
-    'cobalt': {
-        'weight': 3,
-        'recovery': 3,
-        'healthBoost': 2,
-        'vitality': 40,
-        'maxVitality': 40,
-        'value': 100
-    },
-    'copper': {
-        'weight': 2,
-        'recovery': 4,
-        'healthBoost': 1,
-        'vitality': 45,
-        'maxVitality': 45,
-        'value': 100
-    },
-    'tungsten': {
-        'weight': 5,
-        'recovery': 3,
-        'healthBoost': 2,
-        'vitality': 60,
-        'maxVitality': 60,
-        'value': 150
-    },
-    'silver': {
-        'weight': 4,
-        'recovery': 4,
-        'healthBoost': 2,
-        'vitality': 80,
-        'maxVitality': 80,
-        'value': 150
-    },
-    'lead': {
-        'weight': 6,
-        'recovery': 5,
-        'healthBoost': 3,
-        'vitality': 150,
-        'maxVitality': 150,
-        'value': 200
-    },
-    'gold': {
-        'weight': 5,
-        'recovery': 4,
-        'healthBoost': 2,
-        'vitality': 120,
-        'maxVitality': 120,
-        'value': 200
-    },
-    'steel': {
-        'weight': 3,
-        'recovery': 3,
-        'healthBoost': 3,
-        'vitality': 90,
-        'maxVitality': 90,
-        'value': 250
-    },
-    'lithium': {
-        'weight': 1,
-        'recovery': 4,
-        'healthBoost': 1,
-        'vitality': 70,
-        'maxVitality': 70,
-        'value': 230
-    }
+    NPCS['alchemist']['merchandise'].push(newConsumable);
 }
 
 class ShieldUpgrade {
     constructor(name){
         this.name = name;
-        this.weight = ShieldList[name]['weight'];
-        this.recovery = ShieldList[name]['recovery'];
-        this.healthBoost = ShieldList[name]['healthBoost'];
-        this.vitality = ShieldList[name]['vitality'];
-        this.maxVitality = ShieldList[name]['maxVitality'];
-        this.value = ShieldList[name]['value'];
+        this.weight = SHIELDS[name]['weight'];
+        this.recovery = SHIELDS[name]['recovery'];
+        this.healthBoost = SHIELDS[name]['healthBoost'];
+        this.vitality = SHIELDS[name]['vitality'];
+        this.maxVitality = SHIELDS[name]['maxVitality'];
+        this.value = SHIELDS[name]['value'];
         this.purchased = false;
-        this.equipped = false;
         this.constructorName = "ShieldUpgrade";
-        this.equipShield = function() {
-            this.unequipShield();
-            for(var attribute in ShieldList[this.name]){
-                if(attribute != 'value'){
-                    heroShield[attribute] = ShieldList[this.name][attribute];
-                }
+    }
+
+    genHoverInfoHTML() {
+        var innerhtml = this.name + "<br>"
+        for (attribute in this) {
+            if (typeof this[attribute] == "number" && attribute != 'value') {
+                innerhtml += attribute + ": " + this[attribute] + "<br>";
             }
-            this.equipped = true;
         }
-        this.unequipShield = function() {
-            for(var attribute in ShieldList['wood']){
-                if(attribute != 'value'){
-                    heroShield[attribute] = ShieldList['wood'][attribute];
-                }
+        return innerhtml
+    }
+
+    isEquipped() { return hero.shieldUpgradeName === this.name }
+
+    equipShield() {
+        hero.shieldUpgradeName = this.name // set hero's shield upg
+        //set stats to be this shield
+        for(var attribute in SHIELDS[this.name]){
+            if(attribute != 'value'){
+                heroShield[attribute] = SHIELDS[this.name][attribute];
             }
-            this.equipped = false;
         }
     }
-    buyItem(item){
-        var successful_transaction = false;
-        if(hero.wallet >= item.value){
-            hero.wallet -= item.value;
-            successful_transaction = true;
-            refreshInfo();
-        }
-        else{
-            openAlert("You can't afford this item");
-        }
-        return successful_transaction;
-    }
-    drop_onSale(self){
-        for(var i = 0; i < self.onSale.length; i++){
-            var buyID = "#buy" + i;
-            $(buyID).attr("buy_id", i);
-            if(!self.onSale[$(buyID).attr('buy_id')].purchased){
-                $(buyID).html(self.onSale[$(buyID).attr('buy_id')].value + 'gold');
-                $(buyID).click(function(){
-                    if(self.onSale[$(this).attr('buy_id')].buyItem(self.onSale[$(this).attr('buy_id')])){
-                    $(this).off('click');
-                    self.onSale[$(this).attr('buy_id')].purchased = true;
-                    self.openNPCModule(self); //updates window
-                }
-                })
-            }
-            else if(self.onSale[$(buyID).attr('buy_id')].purchased && !self.onSale[$(buyID).attr('buy_id')].equipped){
-                $(buyID).html("Equip");
-                $(buyID).click(function(){
-                    for(var j = 0; j < self.onSale.length; j++){
-                            self.onSale[j].equipped = false;
-                    }
-                    self.onSale[$(this).attr('buy_id')].equipShield();
-                    refreshInfo();
-                    $(this).off('click');
-                    self.openNPCModule(self);
-                })
-            }
-            else{
-                $(buyID).html('Unequip');
-                $(buyID).click(function(){
-                    self.onSale[$(this).attr('buy_id')].unequipShield();
-                    refreshInfo();
-                    $(this).off('click').html('Equip');
-                    self.openNPCModule(self);
-                })
+
+    unequipShield() {
+        hero.shieldUpgradeName = 'wood' // reset hero's shield upg
+        for(var attribute in SHIELDS['wood']){
+            if(attribute != 'value'){
+                heroShield[attribute] = SHIELDS['wood'][attribute];
             }
         }
     }
 }
-for(var shield in ShieldList){
+
+// Load in shields into NPCS
+for(var shield in SHIELDS){
     if(shield != 'wood'){
         var newShield = new ShieldUpgrade(shield);
-        NPCList['shieldMaker']['merchandise'].push(newShield);
+        NPCS['shieldMaker']['merchandise'].push(newShield);
     }
 }

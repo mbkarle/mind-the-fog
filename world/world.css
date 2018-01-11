@@ -1,6 +1,6 @@
 /* Make text unselectable */
 body {
-    -webkit-user-select: none; /* Safari */        
+    -webkit-user-select: none; /* Safari */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
@@ -157,7 +157,7 @@ adding this class just for world so I can scrap fog.*/
 
 #info-module, #tree-module {
     width: 200px;
-    height: 550px;
+    height: 600px;
     padding-top: 25px;
     border-style: solid;
     border-color: #a6a6a6;
@@ -184,12 +184,26 @@ display: none;
 background-color: white;
 }
 
-.itemInfo {
+.txtmd_invItemBox, .vdr_invItemBox {
     border-style: solid;
     border-color: #a6a6a6;
     height: 25px;
     position: relative;
     margin-bottom: 5px;
+}
+
+.carinv_invItemBox, .eqinv_invItemBox {
+    height: 16px;
+    width: 180px;
+    position: relative;
+    font-size: 12px;
+    text-align: center;
+    border-style: solid;
+    border-color: #a6a6a6;
+    border-width: thin;
+    margin-bottom: 4px;
+    margin-left: 10px;
+    padding-top: 4px;
 }
 
 #xp {
@@ -281,7 +295,7 @@ background-color: white;
 }
 
 #vendor-module {
-    height: 410px;
+    height: 500px;
     width: 600px;
     font-size: 12px;
     font-family: cursive;
@@ -292,7 +306,8 @@ background-color: white;
     background-color: white;
     display: none;
 }
-#tab{
+
+#vendor-tab{
     height: 20px;
     width: 40px;
     border-style: solid;
@@ -301,6 +316,7 @@ background-color: white;
     right: 0;
     top: -30px;
     text-align: center;
+    display: none;
 }
 
 #HeroEffects, #EnemyEffects, #effectsHover{

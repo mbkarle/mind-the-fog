@@ -65,62 +65,24 @@ function move(e) {
                 map[avatarY][avatarX].hero_present = true;
                 didMove = true;
             }
-        } else if (e.keyCode == "66") {
-            console.log("Dev tools activated");
-            console.log("So...., you're either a developer, or a cheater, or just lazy...")
-            equip(hero, MasterSword); //give absurd weapons
-            take_item(MasterSword)
-            hero.vitality = 100000; //set absurd health stats
-            hero.maxVitality = 100000;
-
-            clearAllFog(map)
-            room.clearAllFogTimeouts();
-            room.buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
         } else if (e.keyCode == "84"){ //t for torch
-            if(hero.num_torches > 0){
-                if(!torchlight){
-                    console.log("Activating torch")
-                    hero.num_torches--;
-                    activatedTorch = true;
-                    refreshInfo();
-                    torchlight = true;
-                    setTimeout(function(){
-                        torchlight = false;
-                        // if(!room_list[curr_floor][curr_room].roomCleared){
-                        if(!room.fog_free_room){
-                            room.addFogWhenTorchBurnsOut(avatarX,avatarY,fog_radius);
-                            var newPos = [avatarX,avatarY];
-                            room.updateRoomHTML(newPos,newPos,torchlight,fog_radius);
-                        }
-                        console.log("Your torch fades to nothing."
-                    )}, 10000)
-                }
-                else{
-                    console.log("You can't turn off a torch, silly!")
-                }
+            if(!torchlight && hero.inv.useTorch()){
+                console.log("Activating torch")
+                activatedTorch = true;
+                refreshInfo();
+                torchlight = true;
+                setTimeout(function(){
+                    torchlight = false;
+                    // if(!room_list[curr_floor][curr_room].roomCleared){
+                    var room = room_list[curr_floor][curr_room]
+                    if(!room.fog_free_room){
+                        room.addFogWhenTorchBurnsOut(avatarX,avatarY,fog_radius);
+                        var newPos = [avatarX,avatarY];
+                        room.updateRoomHTML(newPos,newPos,torchlight,fog_radius);
+                    }
+                    console.log("Your torch fades to nothing."
+                )}, 10000)
             }
-            else{
-                console.log("No torches to use!")
-            }
-        } else if(e.keyCode == '189'){
-            //'-' removes monsters!
-            //for debugging only
-            openAlert("****removing monsters from the game!****")
-            for(var i = 0; i < room_list.length; i++){
-                for(var j = 0; j < room_list[i].length; j++){
-                    room_list[i][j].fightChance = 0;
-                }
-            }
-
-        }
-        else if(e.keyCode == '187'){
-            //'-' removes monsters!
-            //for debugging only
-            openAlert("****clearing floor!****")
-            room.roomCleared = true;
-            var newPos = [avatarX,avatarY];
-            room.updateRoomHTML(newPos,newPos,torchlight,fog_radius);
-
         }
         else if(e.keyCode == '69'){
             //e for interact (#81 issues)
@@ -141,21 +103,23 @@ function move(e) {
         //chance to enter combat
         if (Math.random() < room.fightChance  && !room.roomCleared && didMove) {
             enter_combat(room)
-
         }
 
+        // heal from moving
         if(hero.vitality + 2 <= hero.maxVitality && didMove) {
             hero.vitality += 2;
             refreshInfo();
         } else if(hero.vitality + 1 <= hero.maxVitality && didMove){
-          hero.vitality += 1;
-          refreshInfo();
+            hero.vitality += 1;
+            refreshInfo();
         }
 
+        // passable loc interactions happen when stepped on!
         if(didMove){
             checkLocation(avatarX, avatarY);
         }
     }
+
     //keypresses outside of canMove
     if (e.keyCode == 73){
         $("#info-module").toggle(100);
@@ -200,48 +164,6 @@ function refillChests(){
     }
     console.log('new room 1: ')
     console.log(room_list[1][0]);
-}
-
-function take_item(item, chest_to_take_from){
-    if(item.constructorName == 'Currency'){
-        item.walletCheck();
-        equip(hero, item);
-        item.wallet = null;
-    }
-    else if(item.constructorName == "Torch"){
-        hero.num_torches += item.torch_count;
-        if(hero.num_torches > 10){
-            hero.num_torches = 10;
-        }
-    }
-    else{
-        hero.inventory.carried.push(item)
-    }
-    refreshInfo();
-
-    // if taking from a chest (not prompt/monster)
-    if(typeof chest_to_take_from != 'undefined'){
-        var indexToRemove = chest_to_take_from.treasureIDs.indexOf(item.ogIdx);
-        chest_to_take_from.treasureIDs.splice(indexToRemove, 1); //removes item from treasureIDs so that it will not appear on next visit of chest
-    }
-
-}
-
-
-function revertTextModule(){
-    $("#descend").off("click")
-    $("#stay").off("click")
-    $("#stay").hide();
-    $("#enter").hide();
-    $("#enter").show();
-    $("#text-module").hide();
-    $("#descend").hide();
-    canMove = true;
-    print("lastMessage", "enemy-message");
-
-    //in case innerHTMl was changed; resets to default
-    $('#descend').html("Descend")
-    $('#stay').html("Stay")
 }
 
 function refreshInfo() {

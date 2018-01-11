@@ -16,6 +16,9 @@ function setup_combat(hero, enemy){
     enemy.vitality = enemy.maxVitality; //bc we use same objects across mult. fights
     enemyHealthPCent = enemy.vitality / enemy.maxVitality * 100;
 
+    // refresh enemy inventory
+    enemy.regenInv()
+
     // setup HTML
     $("#enemyHealthBar").html(
         enemy.vitality + " / " + enemy.maxVitality +
@@ -30,20 +33,20 @@ function setup_combat(hero, enemy){
     //set spell targets:
     for(var i = 0; i < hero.spells.length; i++){
         hero.spells[i].target = enemy;
-        for(var n = 0; n < activeSpellEffects[hero.spells[i].name]['buffs'].length; n++){
-            if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target === 'enemy'){
-                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = enemy;
+        for(var n = 0; n < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'].length; n++){
+            if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target === 'enemy'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target = enemy;
             }
-            else if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target === 'hero'){
-                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = hero;
+            else if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target === 'hero'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target = hero;
             }
         }
-        for(var m = 0; m < activeSpellEffects[hero.spells[i].name]['debuffs'].length; m++){
-            if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target === 'enemy'){
-                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = enemy;
+        for(var m = 0; m < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'].length; m++){
+            if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target === 'enemy'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target = enemy;
             }
-            else if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target === 'hero'){
-                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = hero;
+            else if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target === 'hero'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target = hero;
             }
         }
     }
@@ -106,7 +109,7 @@ function fight_enemy(hero, enemy){
 
             var txtmdmsg = {"msgs": [["finfunc", "You died!", "Restart", restartFunc]]}
             txtmd.parseTxtMdJSON(txtmdmsg)
-            
+
             // Clear the timeouts in this room
             room_list[curr_floor][curr_room].clearAllFogTimeouts();
 
@@ -116,7 +119,7 @@ function fight_enemy(hero, enemy){
             $("#shieldascii").html("")
 
             // Save gold
-            cached_gold = Math.floor(hero.wallet / 10);
+            cached_gold = Math.floor(hero.inv.gold / 10);
         }
 
         // if the hero shield breaks
@@ -141,26 +144,33 @@ function fight_enemy(hero, enemy){
         if (ready) {
             ready = false;
             window.setTimeout(readyUp, 10000 / hero.dexterity);
-            if (hero.inventory.weapon != null && hero.inventory.weapon.constructorName == 'effectItem') {
+
+            // Handle effect item buffs ----------------
+            var weapon = hero.equip_inv.inv.weapon
+            if (weapon != null && weapon.constructorName == 'effectItem') {
                 console.log("buffing up")
-                hero.inventory.weapon.buffUp(hero);
-                hero.inventory.weapon.debuffUp(enemy);
+                weapon.buffUp(hero);
+                weapon.debuffUp(enemy);
             }
-            if (hero.inventory.armor != null) {
-                if (hero.inventory.armor.constructorName == 'effectItem') {
-                    hero.inventory.armor.buffUp(hero);
-                    hero.inventory.armor.debuffUp(enemy);
+            var armor = hero.equip_inv.inv.armor
+            if (armor != null) {
+                if (armor.constructorName == 'effectItem') {
+                    armor.buffUp(hero);
+                    armor.debuffUp(enemy);
                 }
             }
-            if (hero.inventory.headgear != null) {
-                if (hero.inventory.headgear.constructorName == 'effectItem') {
-                    hero.inventory.headgear.buffUp(hero);
-                    hero.inventory.headgear.debuffUp(enemy);
+            var headgear = hero.equip_inv.inv.headgear
+            if (headgear != null) {
+                if (headgear.constructorName == 'effectItem') {
+                    headgear.buffUp(hero);
+                    headgear.debuffUp(enemy);
                 }
             }
+
+            // Do the damage + commentate
             hitprint = Damage(hero, enemy);
             if(enemy.vitality > 0){
-                txtmd.commentator("You strike for " + hitprint + "damage!") 
+                txtmd.commentator("You strike for " + hitprint + "damage!")
             }
 
             //jquery animations:
@@ -228,7 +238,7 @@ function enter_combat(room) {
     room.num_enemies--;
 
     // now actually fight the enemy
-    var entermsg = "A fearsome " + enemy.name + " emerges from the shadows!" 
+    var entermsg = "A fearsome " + enemy.name + " emerges from the shadows!"
     var enterfunc = function(){ txtmd.revertTxtMd(); fight_enemy(hero, enemy) }
 
     txtmd.parseTxtMdJSON({"msgs": [["finfunc", entermsg, "Engage", enterfunc]]})
@@ -267,14 +277,14 @@ function exit_combat(room, customCombat) {
     // Handle the spells @mbkarle is responsible here down
     for(var i = 0; i < hero.spells.length; i++){
         hero.spells[i].target = enemy;
-        for(var n = 0; n < activeSpellEffects[hero.spells[i].name]['buffs'].length; n++){
-            if(activeSpellEffects[hero.spells[i].name]['buffs'][n].target.constructorName === 'Enemy' || activeSpellEffects[hero.spells[i].name]['buffs'][n].target.constructorName === 'Boss'){
-                activeSpellEffects[hero.spells[i].name]['buffs'][n].target = 'enemy';
+        for(var n = 0; n < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'].length; n++){
+            if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target.constructorName === 'Enemy' || ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target.constructorName === 'Boss'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target = 'enemy';
             }
         }
-        for(var m = 0; m < activeSpellEffects[hero.spells[i].name]['debuffs'].length; m++){
-            if(activeSpellEffects[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Enemy' || activeSpellEffects[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Boss'){
-                activeSpellEffects[hero.spells[i].name]['debuffs'][m].target = 'enemy';
+        for(var m = 0; m < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'].length; m++){
+            if(ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Enemy' || ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Boss'){
+                ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target = 'enemy';
             }
         }
     }
@@ -322,49 +332,21 @@ function Damage(source, target) {
         $("#combat-module").hide(1000);
         $("#combat-module").off('click');
 
-
-        // handle mob drops
-        /* TODO: handle with new txtmd
-        var dropChance = Math.random();
-        if (!customCombat && dropChance > 0.75) {
-            $("#open").show();
-            $("#open").click(
-                function(e) {
-                    e.stopPropagation();
-                    print("item", [mobDrops[target.lootId]]);
-                    mob_drop_items([mobDrops[target.lootId]])
-                    $("#open").click(function(){$("#open").off('click'); exit_combat(room, customCombat); })
-                }
-            );
-        } else if (customCombat) {
-            hero.xp += 100; //TODO: scale
-            $("#open").show();
-            $("#open").click(
-                function(e) {
-                    console.log(enemy);
-                    e.stopPropagation();
-                    print("item", [target.loot]);
-                    mob_drop_items([target.loot])
-                    $("#open").click(function(){exit_combat(room, customCombat)})
-                }
-            )
-        }
-        else {
-            console.log('case 3--no drops, and random monster')
-            $("#open").show();
-            $("#open").click(
-                function() {
-                    $("#open").off('click');
-                    exit_combat(room, customCombat);
-                }
-            )
-        }*/
-
-        // print messgaes
-        txtmd.setPosition("high")
+        //Handle mob drops
         var exitFunc = function() { exit_combat(room, customCombat) }
-        txtmd.parseTxtMdJSON({"msgs": [["trans", "You've defeated the beast!"],
-            ["finfunc", "Mob Drops Placeholder", "X", exitFunc]]})
+        if(target.inv.size() > 0){
+            var txtmodmsg = {"msgs": [
+                ["trans", "You've defeated the beast!"],
+                ["finfunc", "a treasure from the fight is left behind", "Examine",
+                    function(){ txtmd.showInventory(target.inv, exitFunc)} ]] }
+        }
+        else{
+            var txtmodmsg = {"msgs": [["finfunc", "You've defeated the beast!", "X", exitFunc]]}
+        }
+
+        // print messages
+        txtmd.setPosition("high")
+        txtmd.parseTxtMdJSON(txtmodmsg)
     }
     return hit;
 }
@@ -383,31 +365,4 @@ function Shield() {
 function readyUp() {
     ready = true;
     return ready;
-}
-
-function mob_drop_items(items){
-    for(var i = 0; i < items.length; i++){
-        takeID = '#take'+i;
-        item = $().extend({}, items[i])
-        $(takeID).attr('item_id', i)
-        $(takeID).click(
-            function() {
-                if(hero.inventory['carried'].length < 10 || items[$(this).attr('item_id')].constructorName == "Currency" || items[$(this).attr('item_id')].constructorName == "Torch"){
-                    item_to_take = items[$(this).attr('item_id')];
-                    if(item_to_take.constructorName != 'Consumable'){
-                        take_item($().extend({},item_to_take))
-                    }
-                    else{
-                      var temp = new Consumable(item_to_take.name, 'lul');
-                      take_item(temp);
-                    }
-
-                    $(this).hide();
-                }
-                else {
-                    openAlert("Your inventory is full");
-                }
-            }
-        )
-    }
 }
