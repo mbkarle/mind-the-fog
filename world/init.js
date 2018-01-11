@@ -197,14 +197,10 @@ window.onload = function(){
     //tutorialStart();
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
-            $("#dog-info-module").hide(100);
+            doginvmd.hideMod();
             refreshInfo();
         }
-    document.getElementById("DogInvOpen").onclick = function() {
-            $("#dog-info-module").toggle(100);
-            $("#info-module").hide(100);
-            refreshInfo();
-        }
+
     $("#TreeOpen").click(function(){
         $("#tree-module").toggle(100);
         refreshInfo();
