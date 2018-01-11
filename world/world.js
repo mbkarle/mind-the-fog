@@ -1,4 +1,4 @@
-/* 
+/*
  * This file holds all functions for world interaction
  * (movement, descent)
  */
@@ -160,7 +160,7 @@ function checkLocation(avX, avY){
 
 }
 
-function refillChests(){ 
+function refillChests(){
     //rebuilds floors so that chests can be filled with newly introduced materials
     //used after interaction w certain npcs
     console.log('Old room 1: ')
@@ -178,6 +178,9 @@ function refreshInfo() {
 
     //spell tree:
     refreshSpellTreeHTML(hero)
+
+    //dog inventory
+    doginvmd.refreshDogInv()
 
     //refresh for combat-module:
     var healthFraction = hero.vitality/hero.maxVitality;

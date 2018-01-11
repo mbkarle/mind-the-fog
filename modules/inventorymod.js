@@ -110,11 +110,11 @@ function refreshInventoryHTML(hero, shield) {
             }
             else{ return "Equip" }
         },
-        "dropcb": (id) => inv.remove(id),
+        "dropcb": (id) => inv.remove(id)
     }
 
     // Display the inner html
-    invHTMLObj = inv.generateHTML(carmod_ids, carmod_cbs)
+    var invHTMLObj = inv.generateHTML(carmod_ids, carmod_cbs)
     inventoryMessage += invHTMLObj["innerhtml"]
 
     $("#inventory").html(inventoryMessage)

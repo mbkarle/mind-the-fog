@@ -22,6 +22,7 @@ var game_duration = 1800000; //how long before the fog closes in totally
 // Modules -- #120
 var txtmd = new TextModule()
 var vndmd = new VendorModule()
+var doginvmd = new DogInvModule()
 
 //variables of hero status
 var canMove;
@@ -196,6 +197,12 @@ window.onload = function(){
     //tutorialStart();
     document.getElementById("InvOpen").onclick = function() {
             $("#info-module").toggle(100);
+            $("#dog-info-module").hide(100);
+            refreshInfo();
+        }
+    document.getElementById("DogInvOpen").onclick = function() {
+            $("#dog-info-module").toggle(100);
+            $("#info-module").hide(100);
             refreshInfo();
         }
     $("#TreeOpen").click(function(){

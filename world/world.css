@@ -192,7 +192,8 @@ background-color: white;
     margin-bottom: 5px;
 }
 
-.carinv_invItemBox, .eqinv_invItemBox {
+.carinv_invItemBox, .eqinv_invItemBox,
+.doginv_invItemBox, .heroToDogInv_invItemBox{
     height: 13px;
     width: 180px;
     position: relative;
@@ -271,7 +272,8 @@ background-color: white;
     height: 300px;
 }
 
-#inv_hoverInfo, #hoverCompare {
+#inv_hoverInfo, #hoverCompare,
+#doginv_hoverInfo {
     padding: 10px 20px 10px 20px;
     position: absolute;
     border-color: #a6a6a6;
