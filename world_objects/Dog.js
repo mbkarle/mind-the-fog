@@ -9,10 +9,12 @@ class Dog {
 
         this.following = false;
         this.dog_radius = -1; //should be set each time fog changes to fog_radius
-        this.dog_item = null; //TODO: dog carries over an item?
         this.path_to_hero = [];
         this.move_interval = -1;
         this.dog_speed = 100;
+
+        // The Dog Inventory
+        this.inv = new Inventory([], 1) // start size one.
     }
 
     // A function all special Locations have upon a hero interacting
@@ -21,8 +23,6 @@ class Dog {
         console.log('following = ' + this.following);
 
         tile.passable = !tile.passable;
-    
-        //TODO: Dog Inventory?
     }
 
     compute_path_to_hero(avX,avY, map){
@@ -248,7 +248,7 @@ function a_star_search(start_loc, end_loc, map){
         }
         total_path = total_path.map(function(a){
             var splt = a.split('x')
-           	var x = splt[1]
+            var x = splt[1]
             var y = splt[0]
             return [parseInt(x), parseInt(y)]
         })

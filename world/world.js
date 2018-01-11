@@ -121,8 +121,14 @@ function move(e) {
     }
 
     //keypresses outside of canMove
-    if (e.keyCode == 73){
+    if (e.keyCode == 73){ // i for inventory
         $("#info-module").toggle(100);
+        $("#dog-info-module").hide(100); // there can only be one!
+        refreshInfo();
+    }
+    else if(e.keyCode == 70) { // f for friend (dog)
+        $("#dog-info-module").toggle(100);
+        $("#info-module").hide(100); // there can only be one!
         refreshInfo();
     }
     else if(e.keyCode == 77){
