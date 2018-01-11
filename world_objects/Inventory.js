@@ -52,7 +52,7 @@ class Inventory {
         else{return false}
     }
 
-    transfer_item(target_inv, sourceID){
+    transfer_item(target_inv, sourceID, keepOrig=false){
         // Given index of element in this inv, transfer to target
 
         if(sourceID === "gold"){
@@ -79,10 +79,12 @@ class Inventory {
 
             //Its an indx in this.inv
             if(isNaN(parseInt(sourceID))){
-                var item = this.remove(sourceID)
+                if(!keepOrig){ var item = this.remove(sourceID) }
+                else{ var item = this.get(sourceID) }
             }
             else{
-                var item = this.remove(parseInt(sourceID))
+                if(!keepOrig){ var item = this.remove(parseInt(sourceID)) }
+                else{ var item = this.get(sourceID) }
             }
             target_inv.add(item)
         }
@@ -90,7 +92,7 @@ class Inventory {
 
     }
 
-    transfer_for_gold(target_inv, sourceID, cost, sellFrac=1){
+    transfer_for_gold(target_inv, sourceID, cost, sellFrac=1, keepOrig=false){
         // A func that transfers this -> target in exchange
         // for @cost from target. If target doesnt have money -> ret. false
 
@@ -104,7 +106,7 @@ class Inventory {
         // try to pay
         if(target_inv.pay(this, cost, "It costs too much!")){
             // try to transfer
-            if(this.transfer_item(target_inv, sourceID)){
+            if(this.transfer_item(target_inv, sourceID, keepOrig)){
                 return true
             }
             // if no space, return false, refund

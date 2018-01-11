@@ -140,8 +140,9 @@ class Shields extends Item {
   }
 }
 
-class Consumable {
+class Consumable extends Item{
     constructor(name, objid){
+        super(name, 'consumable')
         this.name = name;
         this.objid = objid;
         for(var i = 0; i < CONSUMABLES[name]['characteristics'].length; i++){
@@ -162,10 +163,10 @@ class Consumable {
 
         // add buffs/debuffs
         for(var j = 0; j < this.buffArray.length; j++){
-            innerhtml += "buffs: " + this.buffArray[j].name + "<br>";
+            innerhtml += "buffs: " + this.buffArray[j].buff.name + "<br>";
         }
         for(var k = 0; k < this.debuffArray.length; k++){
-            innerhtml += "debuffs: " + this.debuffArray[k].name + "<br>";
+            innerhtml += "debuffs: " + this.debuffArray[k].debuff.name + "<br>";
         }
 
         return innerhtml
@@ -189,41 +190,6 @@ class Consumable {
             }
         }
         refreshInfo();
-    }
-    buyItem(item){
-        var successful_transaction = false;
-        if(hero.inv.gold >= item.value){
-            hero.inv.gold -= item.value;
-            successful_transaction = true;
-            take_item(item);
-            if(!item.prototyped){
-              item.prototyped = true;
-              for(var i = 0; i < CONSUMABLES[item.name]['itemlists'].length; i++){
-                itemListMeta[CONSUMABLES[item.name]['itemlists'][i]].push(item);
-              }
-              refillChests();
-            }
-            refreshInfo();
-        }
-        else{
-            openAlert("You can't afford this item");
-        }
-        return successful_transaction;
-    }
-    drop_onSale(self){
-        for(var i = 0; i < self.onSale.length; i++){
-            self.onSale[i].value = CONSUMABLES[self.onSale[i].name]['value'];
-            var buyID = "#buy" + i;
-            $(buyID).attr("buy_id", i);
-            $(buyID).html(self.onSale[$(buyID).attr('buy_id')].value + 'gold');
-            $(buyID).click(function(){
-                console.log('buying item');
-                if(self.onSale[$(this).attr('buy_id')].buyItem(self.onSale[$(this).attr('buy_id')])){
-                $(this).off('click');
-                self.openNPCModule(self); //updates window
-            }
-            })
-        }
     }
 }
 

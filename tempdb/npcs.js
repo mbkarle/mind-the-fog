@@ -7,7 +7,24 @@ var NPCS = {
         'coords': [3, 15],
         'symbol': 'A',
         'description': 'A pungent smell wafts towards you from where the alchemist sits, peddling his wares.',
-        'merchandise': []
+        'merchandise': [],
+        "buyFunc": function(id, buyerInv, sellerInv, frac) {
+            // Try to buy and transfer (but keepOrig=true)
+            if(sellerInv.transfer_for_gold(buyerInv, id, undefined, 1, true)){
+                // Consumables are prototyped the first time and
+                // thus added to the chests in the dungeon
+                var item = sellerInv.get(id)
+                if(!item.prototyped){
+                    item.prototyped = true;
+                    for(var i = 0; i < CONSUMABLES[item.name]['itemlists'].length; i++){
+                        itemListMeta[CONSUMABLES[item.name]['itemlists'][i]].push(item);
+                    }
+                    refillChests();
+                }
+                refreshInfo();
+            }
+        },
+        "buyBtnTxt": function(item, frac){ return Math.floor(frac * item.value) + " gold" }
     },
     "shieldMaker":{
         "charID": "shieldMaker",
