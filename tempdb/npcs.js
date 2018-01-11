@@ -10,7 +10,7 @@ var NPCS = {
         'merchandise': [],
         "buyFunc": function(id, buyerInv, sellerInv, frac) {
             // Try to buy and transfer (but keepOrig=true)
-            if(sellerInv.transfer_for_gold(buyerInv, id, undefined, 1, true)){
+            if(sellerInv.transfer_for_gold(buyerInv, id, undefined, frac, true)){
                 // Consumables are prototyped the first time and
                 // thus added to the chests in the dungeon
                 var item = sellerInv.get(id)
@@ -26,6 +26,7 @@ var NPCS = {
         },
         "buyBtnTxt": function(item, frac){ return Math.floor(frac * item.value) + " gold" }
     },
+
     "shieldMaker":{
         "charID": "shieldMaker",
         "charDisplay": "the shield maker",
@@ -46,7 +47,7 @@ var NPCS = {
             else{
                 // if not purchased...
                 // pay if you can
-                if( buyerInv.pay(sellerInv, item.value, "You can't afford this item!") ){
+                if( buyerInv.pay(sellerInv, Math.floor(frac * item.value), "You can't afford this item!") ){
                     item.purchased = true
                     // if success, equip shield
                     item.equipShield()
@@ -61,6 +62,7 @@ var NPCS = {
             else { return Math.floor(frac * item.value) + " gold" }
         }
     },
+
     "dogTrainer":{
         "charID": "dogTrainer",
         "charDisplay": "the dog trainer",
@@ -71,6 +73,7 @@ var NPCS = {
         'description': "The dog's plenty loyal. The trainer will put it to work.",
         'merchandise': []
     },
+
     "blacksmith":{
         "charID": 'blacksmith',
         'charDisplay': 'the blacksmith',
@@ -78,8 +81,30 @@ var NPCS = {
         'coords': [9, 25],
         'symbol': 'B',
         'description': "The blacksmith will fill the dungeon with his finest crafts.",
-        'merchandise': []
+        'merchandise': [],
+        "buyFunc": function(id, buyerInv, sellerInv, frac) {
+            var item = sellerInv.get(id)
+
+            // if not unlocked, unlock if u can pay
+            if(!item.unlocked ){
+                if( buyerInv.pay(sellerInv, Math.floor(frac * item.value), "You can't afford this item!") ){
+                    // Add item to all of its protoLists so it will be findable
+                    for(var i = 0; i < item.protoLists.length; i++){
+                        item.protoLists[i].push(item);
+                    }
+                    // unlock + refill chests for finding on this run
+                    item.unlocked = true
+                    refillChests();
+                    refreshInfo();
+                }
+            }
+        },
+        "buyBtnTxt": function(item, frac) {
+            if(item.unlocked){ return "Unlocked" }
+            else { return Math.floor(frac * item.value) + " gold" }
+        }
     },
+
     "winston":{
         "charID": 'winston',
         'charDisplay': "Winston",
