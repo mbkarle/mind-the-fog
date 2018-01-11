@@ -68,7 +68,8 @@ function refreshInventoryHTML(hero, shield) {
     var eqmod_cbs = {
         "refresh": () => refreshInventoryHTML(hero, shield),
         "actioncb": (id) => eqinv.unequip(id),
-        "actiontxt": () => "Unequip"
+        "actiontxt": () => "Unequip",
+        "dropcb": (id) => eqinv.remove(id)
     }
 
     // Display the inner html
@@ -88,7 +89,8 @@ function refreshInventoryHTML(hero, shield) {
     var carmod_cbs = {
         "refresh": () => refreshInventoryHTML(hero, shield),
         "actioncb": (id) => eqinv.equip(parseInt(id)),
-        "actiontxt": () => "Equip"
+        "actiontxt": () => "Equip",
+        "dropcb": (id) => inv.remove(id)
     }
 
     // Display the inner html

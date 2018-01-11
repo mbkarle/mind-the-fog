@@ -166,8 +166,13 @@ class Inventory {
             //build the html to print to the textBox
             invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 items[i].name +
-                "<div id='" + cbBtnID + i + "' class='interact'> " + mod_cbs["actiontxt"](items[i]) + " </div></div>";
+                "<div id='" + cbBtnID + i + "' class='interact'> " + mod_cbs["actiontxt"](items[i]) + " </div>";
 
+            // If given a drop cb, display the drop button with that function!
+            if(typeof mod_cbs["dropcb"] !== 'undefined'){
+                invhtml += "<div id='" + unqID + "_DROP" + i + "' class='interact small'>x</div></div>"
+            }
+            else{ invhtml += "</div>" }
         }
 
         //handle gold and torches seperately
@@ -203,10 +208,15 @@ class Inventory {
 
                 //handle the action buttons
                 var thisCbBtnID = '#' + cbBtnID + i;
+                var thisDropID = '#' + unqID + '_DROP' + i
                 if(self.idx_by_type){ // equipInv is idx by type
                     $(thisCbBtnID).attr('item_id', items[i].type)
+                    $(thisDropID).attr('item_id', items[i].type)
                 }
-                else{ $(thisCbBtnID).attr('item_id', i) }
+                else{
+                    $(thisCbBtnID).attr('item_id', i)
+                    $(thisDropID).attr('item_id', i)
+                }
 
                 $(thisCbBtnID).click(
                     function() {
@@ -217,6 +227,13 @@ class Inventory {
                         //redisplay the inventory
                         mod_cbs["refresh"]()
                     });
+
+                //handle the drop buttons
+                $(thisDropID).click(function(){
+                    mod_cbs["dropcb"]($(this).attr('item_id'))
+                    $(mod_ids["hoverID"]).hide()
+                    mod_cbs["refresh"]()
+                })
             }
 
             // Handle gold + torches seperately
