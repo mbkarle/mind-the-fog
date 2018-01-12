@@ -74,7 +74,7 @@ class NPC extends Location {
         super(rowID, colID, name, 'npc', NPCS[name]['symbol'], NPCS[name]['description'], false, true);
 
         // Load the merch into a inventory wrapper for use w visualizing/transfers/etc
-        this.inv = new PrebuiltInventory(NPCS[name]['merchandise'])
+        this.inv = new PrebuiltInventory(Object.values(NPCS[name]['merchandise']))
     }
 
     hero_interact(){

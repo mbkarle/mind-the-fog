@@ -83,11 +83,14 @@ class effectItem extends Item {
 
 class exoticItem extends Item {
     constructor(name, type, strength, dexterity, vitality, value, protoLists){
-        super(name, type, strength, dexterity, vitality, true, null, [NPCS['blacksmith']['merchandise']]);
+        super(name, type, strength, dexterity, vitality);
         this.constructorName = "exoticItem";
         this.unlocked = false
         this.value = value;
         this.protoLists = protoLists;
+
+        // Push to Blacksmith
+        NPCS["blacksmith"]["merchandise"][name] = this
     }
 }
 
@@ -163,7 +166,8 @@ class Consumable extends Item{
 // Load in consumables into NPCS
 for(var consumable in CONSUMABLES){
     var newConsumable = new Consumable(consumable, 'lul');
-    NPCS['alchemist']['merchandise'].push(newConsumable);
+    var id = newConsumable.name
+    NPCS['alchemist']['merchandise'][id] = newConsumable;
 }
 
 class ShieldUpgrade {
@@ -215,7 +219,8 @@ class ShieldUpgrade {
 for(var shield in SHIELDS){
     if(shield != 'wood'){
         var newShield = new ShieldUpgrade(shield);
-        NPCS['shieldMaker']['merchandise'].push(newShield);
+        var id = newShield.name
+        NPCS['shieldMaker']['merchandise'][id] = newShield;
     }
 }
 
@@ -228,15 +233,36 @@ class DogUpgrade {
         this.upgradeFunc = DOGUPGRADES[name]["func"]
         this.desc = DOGUPGRADES[name]["description"]
         this.value = DOGUPGRADES[name]["value"]
+        this.prereqs = DOGUPGRADES[name]["prereqs"]
+        this.catalog = NPCS["dogTrainer"]["merchandise"]
     }
 
     use() { this.upgradeFunc(doge) }
 
-    genHoverInfoHTML() { return "Description: <br> " + this.desc }
+    genHoverInfoHTML() { 
+        var html = "Description: <br> " + this.desc
+        if(this.prereqs.length > 0){ html += "<br><br>Prerequisites:<br>" }
+        for(var i = 0; i < this.prereqs.length; i++){
+            html += this.prereqs[i] + "<br>"
+        }
+        return html
+    }
+
+    purchasable() {
+        // Returns if able to purchase in terms of prereqs
+        for(var i = 0; i < this.prereqs.length; i++){
+            // Look up in the merch json
+            if(!this.catalog[this.prereqs[i]].purchased){
+                return false
+            }
+        }
+        return true
+    }
 }
 
 // Load in shields into NPCS
 for(var dogup in DOGUPGRADES){
     var newDogUP = new DogUpgrade(dogup);
-    NPCS['dogTrainer']['merchandise'].push(newDogUP);
+    var id = newDogUP.name
+    NPCS['dogTrainer']['merchandise'][id] = newDogUP;
 }

@@ -7,7 +7,7 @@ var NPCS = {
         "coords": [3, 15],
         "symbol": "A",
         "description": "A pungent smell wafts towards you from where the alchemist sits, peddling his wares.",
-        "merchandise": [],
+        "merchandise": {},
         "buyFunc": function(id, buyerInv, sellerInv, frac) {
             // Try to buy and transfer (but keepOrig=true)
             if(sellerInv.transfer_for_gold(buyerInv, id, undefined, frac, true)){
@@ -34,7 +34,7 @@ var NPCS = {
         "coords": [3, 6],
         "symbol": "S",
         "description": "The shield maker can improve your shield, for a price.",
-        "merchandise": [],
+        "merchandise": {},
         "buyFunc": function(id, buyerInv, sellerInv, frac) {
             var item = sellerInv.get(id)
 
@@ -70,10 +70,10 @@ var NPCS = {
         "coords": [9, 15],
         "symbol": "T",
         "description": "The dog's plenty loyal. The trainer will put it to work.",
-        "merchandise": [],
+        "merchandise": {},
         "buyFunc": function(id, buyerInv, sellerInv, frac) {
             var item = sellerInv.get(id)
-            if(!item.purchased){
+            if(!item.purchased && item.purchasable()){
                 if( buyerInv.pay(sellerInv, Math.floor(frac * item.value), "You can't afford this item!") ){
                     item.purchased = true
                     item.use()
@@ -82,7 +82,8 @@ var NPCS = {
         },
         "buyBtnTxt": function(item, frac) {
             if(item.purchased){ return "Already Purchased" }
-            else{ return "Buy" }
+            else if(item.purchasable()){ return Math.floor(frac * item.value) + " gold" }
+            else{ return "Locked" }
         }
     },
 
@@ -93,7 +94,7 @@ var NPCS = {
         "coords": [9, 25],
         "symbol": "B",
         "description": "The blacksmith will fill the dungeon with his finest crafts.",
-        "merchandise": [],
+        "merchandise": {},
         "buyFunc": function(id, buyerInv, sellerInv, frac) {
             var item = sellerInv.get(id)
 
@@ -124,6 +125,6 @@ var NPCS = {
         "coords": [3, 25],
         "symbol": "W",
         "description": "Winston will lend you his powers, for a price.",
-        "merchandise": []
+        "merchandise": {}
     }
 }
