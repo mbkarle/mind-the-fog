@@ -25,6 +25,7 @@ var vndmd = new VendorModule()
 var doginvmd = new DogInvModule()
 var cmbmd = new CombatModule()
 var invmd = new InventoryModule()
+var splmd = new SpellTreeModule()
 
 //variables of hero status
 var canMove;
@@ -203,7 +204,7 @@ window.onload = function(){
     }
 
     $("#TreeOpen").click(function(){
-        $("#tree-module").toggle(100);
+        splmd.toggleMod()
         refreshInfo();
     })
 

@@ -138,7 +138,7 @@ function move(e) {
         refreshInfo();
     }
     else if(e.keyCode == 77){
-        $("#tree-module").toggle(100);
+        splmd.toggleMod()
         refreshInfo();
     }
     if(fog_radius == 1 && fogDeath == -1){
@@ -183,7 +183,7 @@ function refreshInfo() {
     if(invmd.open){ invmd.refreshMod() }
 
     //spell tree:
-    refreshSpellTreeHTML(hero)
+    if(splmd.open){ splmd.refreshMod() }
 
     //dog inventory
     if(doginvmd.open){ doginvmd.refreshDogInv() }
