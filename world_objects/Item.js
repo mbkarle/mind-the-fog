@@ -218,3 +218,25 @@ for(var shield in SHIELDS){
         NPCS['shieldMaker']['merchandise'].push(newShield);
     }
 }
+
+class DogUpgrade {
+    // A DogUpgrade is essentially a function you buy that when you buy
+    // you apply to the dog!
+    constructor(name){
+        this.name = name
+        this.purchased = false
+        this.upgradeFunc = DOGUPGRADES[name]["func"]
+        this.desc = DOGUPGRADES[name]["description"]
+        this.value = DOGUPGRADES[name]["value"]
+    }
+
+    use() { this.upgradeFunc(doge) }
+
+    genHoverInfoHTML() { return "Description: <br> " + this.desc }
+}
+
+// Load in shields into NPCS
+for(var dogup in DOGUPGRADES){
+    var newDogUP = new DogUpgrade(dogup);
+    NPCS['dogTrainer']['merchandise'].push(newDogUP);
+}

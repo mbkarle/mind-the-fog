@@ -70,7 +70,20 @@ var NPCS = {
         "coords": [9, 15],
         "symbol": "T",
         "description": "The dog's plenty loyal. The trainer will put it to work.",
-        "merchandise": []
+        "merchandise": [],
+        "buyFunc": function(id, buyerInv, sellerInv, frac) {
+            var item = sellerInv.get(id)
+            if(!item.purchased){
+                if( buyerInv.pay(sellerInv, Math.floor(frac * item.value), "You can't afford this item!") ){
+                    item.purchased = true
+                    item.use()
+                }
+            }
+        },
+        "buyBtnTxt": function(item, frac) {
+            if(item.purchased){ return "Already Purchased" }
+            else{ return "Buy" }
+        }
     },
 
     "blacksmith":{

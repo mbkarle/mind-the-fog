@@ -18,6 +18,8 @@ class VendorModule {
         // buyBtnTxt == button text on the item buttons
         // buyFrac == buy things full price
         // sellFrac == sell at discount
+        
+        canMove = false
 
         // Show mod
         $(this.modID).show()
@@ -69,6 +71,8 @@ class VendorModule {
 
 
     revertVendorMd() {
+        canMove = true
+
         // hide everything
         $(this.modID).hide()
         $(this.tabID).hide()
