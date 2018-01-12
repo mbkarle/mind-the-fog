@@ -270,7 +270,7 @@ class TextModule {
         // Show an inventory (chest, dog, monster, etc)
 
         // Refresh hero inv to show transfer
-        refreshInventoryHTML(hero, heroShield)
+        invmd.refreshMod()
 
         // Necessary info for generating inv html:
         var mod_ids = {

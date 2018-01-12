@@ -18,7 +18,7 @@ class DogInvModule {
         var self = this
         $(this.btnID).off().click( function() {
             self.toggleMod()
-            $("#info-module").hide(100); //TODO: move hero inv to its own mod!
+            invmd.hideMod()
             refreshInfo();
         })
 

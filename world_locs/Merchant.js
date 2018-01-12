@@ -19,7 +19,7 @@ class Merchant extends Location{
             txtmd.revertTxtMd();
             var actioncb = function(id, buyerInv, sellerInv, frac) {
                 sellerInv.transfer_for_gold(buyerInv, id, undefined, frac);
-                refreshInventoryHTML(hero, heroShield)
+                invmd.refreshMod()
             }
             var actiontxt = function(item, frac){
                 return Math.floor(frac * item.value) + " gold"

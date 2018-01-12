@@ -128,13 +128,13 @@ function move(e) {
 
     //keypresses outside of canMove
     if (e.keyCode == 73){ // i for inventory
-        $("#info-module").toggle(100);
+        invmd.toggleMod()
         doginvmd.hideMod(); // there can only be one!
         refreshInfo();
     }
     else if(doginvmd.avail && e.keyCode == 70) { // f for friend (dog)
         doginvmd.toggleMod()
-        $("#info-module").hide(100); // there can only be one!
+        invmd.hideMod()
         refreshInfo();
     }
     else if(e.keyCode == 77){
@@ -180,7 +180,7 @@ function refillChests(){
 
 function refreshInfo() {
     //inventory
-    refreshInventoryHTML(hero, heroShield)
+    if(invmd.open){ invmd.refreshMod() }
 
     //spell tree:
     refreshSpellTreeHTML(hero)

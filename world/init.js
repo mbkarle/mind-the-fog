@@ -24,6 +24,7 @@ var txtmd = new TextModule()
 var vndmd = new VendorModule()
 var doginvmd = new DogInvModule()
 var cmbmd = new CombatModule()
+var invmd = new InventoryModule()
 
 //variables of hero status
 var canMove;
@@ -196,10 +197,10 @@ window.onload = function(){
     start_game();
     //tutorialStart();
     document.getElementById("InvOpen").onclick = function() {
-            $("#info-module").toggle(100);
-            doginvmd.hideMod();
-            refreshInfo();
-        }
+        invmd.toggleMod();
+        doginvmd.hideMod();
+        refreshInfo();
+    }
 
     $("#TreeOpen").click(function(){
         $("#tree-module").toggle(100);

@@ -24,7 +24,7 @@ class Item {
 
     genHoverInfoHTML() {
         var innerhtml = this.name + "<br>"
-        for (attribute in this) {
+        for (var attribute in this) {
             if (typeof this[attribute] == "number" && attribute != 'value') {
                 if(this[attribute] >= 0){
                     innerhtml += attribute + ": +" + this[attribute] + "<br>";
@@ -181,7 +181,7 @@ class ShieldUpgrade {
 
     genHoverInfoHTML() {
         var innerhtml = this.name + "<br>"
-        for (attribute in this) {
+        for (var attribute in this) {
             if (typeof this[attribute] == "number" && attribute != 'value') {
                 innerhtml += attribute + ": " + this[attribute] + "<br>";
             }
