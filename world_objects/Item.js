@@ -184,15 +184,18 @@ class ShieldUpgrade {
         this.value = SHIELDS[name]['value'];
         this.purchased = false;
         this.constructorName = "ShieldUpgrade";
+        this.tier = SHIELDS[name]["tier"]
+        this.catalog = NPCS["shieldMaker"]["merchandise"]
     }
 
     genHoverInfoHTML() {
         var innerhtml = this.name + "<br>"
         for (var attribute in this) {
-            if (typeof this[attribute] == "number" && attribute != 'value') {
+            if (typeof this[attribute] == "number" && attribute != 'value' && attribute != "tier") {
                 innerhtml += attribute + ": " + this[attribute] + "<br>";
             }
         }
+        innerhtml += "<br>Tier: " + this.tier + "<br><small>Prereq: purchased tier <br> equal or lower"
         return innerhtml
     }
 
@@ -215,6 +218,11 @@ class ShieldUpgrade {
                 heroShield[attribute] = SHIELDS['wood'][attribute];
             }
         }
+    }
+
+    purchasable() {
+        // Returns if able to purchase in terms of prereqs
+        return this.tier <= hero.maxUnlockedShieldTier + 1
     }
 }
 

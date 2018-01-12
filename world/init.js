@@ -3,6 +3,7 @@
  * including global variables called throughout
  */
 
+console.log("made it to init")
 
 Array.prototype.move = function(old_index, new_index){
     if (new_index >= this.length) {

@@ -43,11 +43,12 @@ var NPCS = {
                 if(!item.isEquipped()){ item.equipShield() }
                 else{ item.unequipShield() }
             }
-            else{
+            else if(item.purchasable()){
                 // if not purchased...
                 // pay if you can
                 if( buyerInv.pay(sellerInv, Math.floor(frac * item.value), "You can't afford this item!") ){
                     item.purchased = true
+                    hero.maxUnlockedShieldTier = Math.max(item.tier, hero.maxUnlockedShieldTier)
                     // if success, equip shield
                     item.equipShield()
                 }
@@ -58,6 +59,7 @@ var NPCS = {
                 if(item.isEquipped()){ return "Unequip" }
                 else{ return "Equip" }
             }
+            else if(!item.purchasable()) { return "Locked" }
             else { return Math.floor(frac * item.value) + " gold" }
         }
     },

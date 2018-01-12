@@ -41,6 +41,7 @@ class Hero extends Character{
 
         // shield upgrade equipped
         this.shieldUpgradeName = 'wood'
+        this.maxUnlockedShieldTier = 0
         //hero inventory
         this.inv = new Inventory([], 10)
 
