@@ -83,12 +83,7 @@ class InventoryModule {
         }
 
         var eqmod_cbs = {
-            "refresh": () => this.refreshMod(),
-            "actioncb": function(id){
-                eqinv.unequip(id)
-                // Refresh vndmd if selling
-                if(!vndmd.buying && vndmd.refreshFunc){vndmd.refreshFunc()}
-            },
+            "actioncb": (id) => eqinv.unequip(id),
             "actiontxt": () => "Unequip",
             "dropcb": (id) => eqinv.remove(id)
         }
@@ -109,7 +104,6 @@ class InventoryModule {
         }
 
         var carmod_cbs = {
-            "refresh": () => this.refreshMod(),
             "actioncb": function(id){
                 var item = inv.get(id)
                 if(item.constructorName === 'Consumable'){
@@ -117,9 +111,6 @@ class InventoryModule {
                     item.useConsumable()
                 }
                 else{ eqinv.equip(parseInt(id)) }
-
-                // Refresh vndmd if selling
-                if(!vndmd.buying && vndmd.refreshFunc){vndmd.refreshFunc()}
             },
             "actiontxt": function(item){
                 if(item.constructorName === 'Consumable'){

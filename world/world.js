@@ -187,4 +187,10 @@ function refreshOpenMods() {
 
     //dog inventory
     if(doginvmd.open){ doginvmd.refreshDogInv() }
+
+    //vendor module
+    if(vndmd.open){ vndmd.refreshFunc() }
+
+    //txtmd if showing inv
+    if(txtmd.openAndChanging){ txtmd.refreshFunc() }
 }

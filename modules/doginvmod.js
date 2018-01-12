@@ -67,12 +67,7 @@ class DogInvModule {
         // (without transfer), and a transfer could affect an
         // ongoing sale
         var dog_cbs = {
-            "refresh": () => this.refreshDogInv(),
-            "actioncb": function(id){
-                doge.inv.transfer_item(hero.inv, id)
-                // Refresh vndmd if selling (theoretically possible!)
-                if(!vndmd.buying && vndmd.refreshFunc){vndmd.refreshFunc()}
-            },
+            "actioncb": (id) => doge.inv.transfer_item(hero.inv, id),
             "actiontxt": () => "Take",
             "goldcb": () => doge.inv.transfer_item(hero.inv, "gold"),
             "dropcb": (id) => doge.inv.remove(id)
@@ -88,12 +83,7 @@ class DogInvModule {
 
         var hero_ids = {"hoverID": this.hoverID, "uniqueID": "heroToDogInv"}
         var hero_cbs = {
-            "refresh": () => this.refreshDogInv(),
-            "actioncb": function(id){
-                hero.inv.transfer_item(doge.inv, id)
-                // Refresh vndmd if selling (theoretically possible!)
-                if(!vndmd.buying && vndmd.refreshFunc){vndmd.refreshFunc()}
-            },
+            "actioncb": (id) => hero.inv.transfer_item(doge.inv, id),
             "actiontxt": () => "Give",
             "dropcb": (id) => hero.inv.remove(id)
         }

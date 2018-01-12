@@ -23,6 +23,10 @@ class TextModule {
 
         // hover info
         this.hoverID = "#hoverInfo_"
+
+        // for refreshing inv using refreshOpenMods
+        this.openAndChanging = false
+        this.refreshFunc = null
     }
 
     commentator(text, speaker) {
@@ -251,6 +255,8 @@ class TextModule {
         this.revertBtns();
         $(this.modID).hide()
         $(this.hoverID).hide()
+        this.refreshFunc = null
+        this.openAndChanging = false
         return this.parseCompleted
     }
 
@@ -269,8 +275,9 @@ class TextModule {
     showInventory(inv, cb) {
         // Show an inventory (chest, dog, monster, etc)
 
-        // Refresh hero inv to show transfer
-        invmd.refreshMod()
+        // Establish refresh func for refreshOpenMods()
+        this.refreshFunc = () => this.showInventory(inv, cb)
+        this.openAndChanging = true
 
         // Necessary info for generating inv html:
         var mod_ids = {
@@ -279,7 +286,6 @@ class TextModule {
         }
 
         var mod_cbs = {
-            "refresh": () => this.showInventory(inv, cb),
             "torchcb": () => inv.transfer_item(hero.inv, "torches"),
             "goldcb": () => inv.transfer_item(hero.inv, "gold"),
             "actioncb": (id) => inv.transfer_item(hero.inv, id),
