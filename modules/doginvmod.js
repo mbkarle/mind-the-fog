@@ -19,7 +19,7 @@ class DogInvModule {
         $(this.btnID).off().click( function() {
             self.toggleMod()
             invmd.hideMod()
-            refreshInfo();
+            refreshOpenMods();
         })
 
         // show button

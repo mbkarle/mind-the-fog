@@ -56,8 +56,8 @@ class Buff extends Effect {
             this.target.effects.push(this);
             for(var i = 0; i < this.attributes.length; i++){
                 this.target[attributes[i]] += this.quantity[i];
-                refreshInfo();
             }
+            refreshOpenMods()
             this.displayEffects(this.target);
             window.setTimeout(function(){
                 self.active = false;
@@ -67,7 +67,7 @@ class Buff extends Effect {
                 if(character.vitality <= 0){
                     character.vitality = 1;
                 }
-                refreshInfo();}
+                refreshOpenMods();}
                 var SpliceIdx = self.target.effects.indexOf(self);
                 self.target.effects.splice(SpliceIdx, 1);
                 self.displayEffects(self.target);
@@ -98,8 +98,8 @@ class Debuff extends Effect {
                     if(character.strength <= 0){
                         character.strength = 0;
                     }
-                    refreshInfo();
                 }
+                refreshOpenMods();
                 this.target.effects.push(this);
                 this.displayEffects(this.target);
                 window.setTimeout(function(){
@@ -107,7 +107,8 @@ class Debuff extends Effect {
                   for(var i = 0; i < self.attributes.length; i++){
                     console.log(self.target[self.attributes[i]] + "+" + self.quantity[i]);
                     self.target[attributes[i]] = self.cached_stats[i];
-                    refreshInfo();}
+                  }
+                    refreshOpenMods();
                     var SpliceIdx = self.target.effects.indexOf(self);
                     self.target.effects.splice(SpliceIdx, 1);
                     self.displayEffects(self.target);

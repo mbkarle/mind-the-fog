@@ -20,7 +20,7 @@ class InventoryModule {
     }
 
     refreshMod() {
-        // For the refreshInfo() function in main
+        // For the refreshOpenMods() function in main
 
         // First get the inventory in question
         var inv = hero.inv

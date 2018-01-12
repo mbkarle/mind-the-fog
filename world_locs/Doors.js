@@ -102,7 +102,7 @@ class Trapdoor extends Location {
 
                 // refresh shield upon descent
                 heroShield.vitality = heroShield.maxVitality;
-                refreshInfo();
+                refreshOpenMods();
 
                 // revert textmod
                 txtmd.revertTxtMd()

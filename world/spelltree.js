@@ -55,7 +55,7 @@ class SpellTreeModule {
                 var learnID = '#learn' + spell;
                 $(learnID).attr('this_spell', $(this).attr('this_spell'));
                 $("#closeWindow").click(function(){
-                    refreshInfo();
+                    refreshOpenMods();
                 })
                 if(!SPELLTREE[$(this).attr('this_spell')]['learned'] && hero.level >= SPELLTREE[$(this).attr('this_spell')]['level'] &&
                 ((SPELLTREE[$(this).attr('this_spell')]['karma'] >= 0 && hero.karma >= SPELLTREE[$(this).attr('this_spell')]['level'] - 3) ||
@@ -70,7 +70,7 @@ class SpellTreeModule {
                         else if(typeof SPELLTREE[$(this).attr('this_spell')]['upgrade'] != 'undefined'){
                             SPELLTREE[$(this).attr('this_spell')]['upgrade'].upgrade();
                         }
-                        refreshInfo();
+                        refreshOpenMods();
 
                     })
                 }

@@ -156,7 +156,7 @@ class Consumable extends Item{
                 CONSUMABLES[this.name]['debuffs'][i]['debuff'].applyDebuff(hero);
             }
         }
-        refreshInfo();
+        refreshOpenMods();
     }
 }
 

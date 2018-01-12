@@ -69,7 +69,7 @@ function move(e) {
             if(!torchlight && hero.inv.useTorch()){
                 console.log("Activating torch")
                 activatedTorch = true;
-                refreshInfo();
+                refreshOpenMods();
                 torchlight = true;
                 setTimeout(function(){
                     torchlight = false;
@@ -114,10 +114,10 @@ function move(e) {
         // heal from moving
         if(hero.vitality + 2 <= hero.maxVitality && didMove) {
             hero.vitality += 2;
-            refreshInfo();
+            refreshOpenMods();
         } else if(hero.vitality + 1 <= hero.maxVitality && didMove){
             hero.vitality += 1;
-            refreshInfo();
+            refreshOpenMods();
         }
 
         // passable loc interactions happen when stepped on!
@@ -130,16 +130,16 @@ function move(e) {
     if (e.keyCode == 73){ // i for inventory
         invmd.toggleMod()
         doginvmd.hideMod(); // there can only be one!
-        refreshInfo();
+        refreshOpenMods();
     }
     else if(doginvmd.avail && e.keyCode == 70) { // f for friend (dog)
         doginvmd.toggleMod()
         invmd.hideMod()
-        refreshInfo();
+        refreshOpenMods();
     }
     else if(e.keyCode == 77){
         splmd.toggleMod()
-        refreshInfo();
+        refreshOpenMods();
     }
     if(fog_radius == 1 && fogDeath == -1){
       fogDeath = setInterval(function(){
@@ -178,7 +178,7 @@ function refillChests(){
     console.log(room_list[1][0]);
 }
 
-function refreshInfo() {
+function refreshOpenMods() {
     //inventory
     if(invmd.open){ invmd.refreshMod() }
 
@@ -187,13 +187,4 @@ function refreshInfo() {
 
     //dog inventory
     if(doginvmd.open){ doginvmd.refreshDogInv() }
-
-    //refresh for combat-module:
-    var healthFraction = hero.vitality/hero.maxVitality;
-    $("#heroHealthBar").html(
-        hero.vitality + " / " + hero.maxVitality +
-        "<div id='heroHealthSlider' class='statusSlider' style='width: " + healthFraction * 100 + "%'></div>"
-    );
-    $("#defendText").html( "Shield: " + heroShield.vitality );
-
 }

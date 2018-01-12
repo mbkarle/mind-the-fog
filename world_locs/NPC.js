@@ -26,7 +26,7 @@ class Pit extends Location{
                 }
                 else{
                     hero.vitality -= 10;
-                    refreshInfo();
+                    refreshOpenMods();
                     return 'You make it to the bottom, slightly worse for wear.';
                 }
             }

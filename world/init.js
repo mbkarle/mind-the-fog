@@ -200,12 +200,12 @@ window.onload = function(){
     document.getElementById("InvOpen").onclick = function() {
         invmd.toggleMod();
         doginvmd.hideMod();
-        refreshInfo();
+        refreshOpenMods();
     }
 
     $("#TreeOpen").click(function(){
         splmd.toggleMod()
-        refreshInfo();
+        refreshOpenMods();
     })
 
     //Slowly remove fog
@@ -349,5 +349,5 @@ function start_game(){
     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
     room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
 
-    refreshInfo();
+    refreshOpenMods();
 }

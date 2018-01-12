@@ -21,7 +21,7 @@ var NPCS = {
                     }
                     refillChests();
                 }
-                refreshInfo();
+                refreshOpenMods();
             }
         },
         "buyBtnTxt": function(item, frac){ return Math.floor(frac * item.value) + " gold" }
@@ -95,7 +95,7 @@ var NPCS = {
                     // unlock + refill chests for finding on this run
                     item.unlocked = true
                     refillChests();
-                    refreshInfo();
+                    refreshOpenMods();
                 }
             }
         },

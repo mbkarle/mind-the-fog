@@ -72,7 +72,7 @@ function fight_enemy(hero, enemy){
 
             // cant go below zero
             hero.vitality = 0;
-            refreshInfo();
+            refreshOpenMods();
 
             // prepare to restart
             var restartFunc = function() {
@@ -195,7 +195,7 @@ function exit_combat(room, customCombat) {
     console.log('exiting combat');
     // Give hero xp
     hero.xp += room.xp;
-    refreshInfo();
+    refreshOpenMods();
 
     // If not a room-clearing fight
     if (room.num_enemies > 0 || customCombat == true ) {
@@ -251,7 +251,7 @@ function Damage(source, target) {
 
     // refresh html indications of damage
     cmbmd.refreshOnDamage(target)
-    refreshInfo();
+    refreshOpenMods();
 
     //if the source was a hero (check based on if target is enemy or boss), and target dead
     if ((target.constructorName == 'Enemy' || customCombat) && target.vitality <= 0) {
@@ -294,7 +294,7 @@ function Shield() {
     else if(hero.vitality + heroShield.healthBoost > hero.maxVitality && hero.vitality < hero.maxVitality){
       hero.vitality = hero.maxVitality;
     }
-    refreshInfo();
+    refreshOpenMods();
     hero_protected = true;
 }
 

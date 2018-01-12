@@ -74,7 +74,7 @@ class CombatModule {
         );
 
         // refresh open mods
-        refreshInfo();
+        refreshOpenMods();
     }
 
     indicateShieldOff() {
