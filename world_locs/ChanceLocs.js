@@ -20,7 +20,7 @@ class Fountain extends Location {
                 if(Math.random() <= .5){
                     hero.maxVitality += 5;
                     hero.vitality = hero.maxVitality;
-                    refreshInfo();
+                    refreshOpenMods();
                     return "The gods have smiled upon you. Your vitality is improved."
                 }
                 else{
@@ -66,7 +66,7 @@ class Altar extends Location {
                     hero.dexterity += Math.ceil(Math.random() * 2);
                     statToImprove = "dexterity";
                 }
-                refreshInfo();
+                refreshOpenMods();
                 return "The gods of death accept your blood sacrifice. Your " +
                     statToImprove + " has improved."
             }

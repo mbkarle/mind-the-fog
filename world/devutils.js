@@ -20,7 +20,7 @@ function dev_keys() {
             hero.equip_inv.equip(hero.inv.size()-1)
             hero.vitality = 100000; //set absurd health stats
             hero.maxVitality = 100000;
-            refreshInfo()
+            refreshOpenMods()
 
             clearAllFog(map)
             room.clearAllFogTimeouts();

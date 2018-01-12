@@ -14,21 +14,9 @@ function setup_combat(hero, enemy){
 
     // refresh enemy health
     enemy.vitality = enemy.maxVitality; //bc we use same objects across mult. fights
-    enemyHealthPCent = enemy.vitality / enemy.maxVitality * 100;
 
     // refresh enemy inventory
     enemy.regenInv()
-
-    // setup HTML
-    $("#enemyHealthBar").html(
-        enemy.vitality + " / " + enemy.maxVitality +
-        "<div id='" + enemy.objid + "HealthSlider' class='statusSlider' style='width: " + enemyHealthPCent + "%'></div>"
-    );
-    var healthFraction = hero.vitality / hero.maxVitality;
-    $("#heroHealthBar").html(
-        hero.vitality + " / " + hero.maxVitality +
-        "<div id='heroHealthSlider' class='statusSlider' style='width: " + healthFraction * 100 + "%'></div>"
-    );
 
     //set spell targets:
     for(var i = 0; i < hero.spells.length; i++){
@@ -59,16 +47,10 @@ function fight_enemy(hero, enemy){
     setup_combat(hero, enemy)
 
     // next begin the fight!
-    console.log("Began fight")
-
     txtmd.commentator("the enemy looms in the dark")
     txtmd.setPosition("combat", hero)
 
-    $("#combat-module").show(500);
-    $("#worldMap").hide();
-
-    $("#defendText").html( "Shield: " + heroShield.vitality );
-    refreshInfo();
+    cmbmd.openMod(hero, enemy) //open combat mod
 
     // Start the onslaught
     enemyAttack = setInterval(function() {
@@ -78,15 +60,8 @@ function fight_enemy(hero, enemy){
             Damage(enemy, hero)
             txtmd.commentator("the enemy strikes!")
         }
-        $("#enemySymbol").animate({
-            top: '25px',
-            left: '-25px'
-        }, 1, function(){
-            $("#enemySymbol").animate({
-                top: '0',
-                left: '0'
-            }, 10000 / (2 * enemy.dexterity))
-        })
+
+        cmbmd.enemyAttackAnimation(enemy)
 
         // if the hero dies
         if (hero.vitality <= 0) {
@@ -97,14 +72,11 @@ function fight_enemy(hero, enemy){
 
             // cant go below zero
             hero.vitality = 0;
-            refreshInfo();
+            refreshOpenMods();
 
             // prepare to restart
             var restartFunc = function() {
-                txtmd.revertTxtMd()
-                $("#worldMap").show();
                 start_game();
-                $("#defendSlider").hide('fast');
             }
 
             var txtmdmsg = {"msgs": [["finfunc", "You died!", "Restart", restartFunc]]}
@@ -114,9 +86,8 @@ function fight_enemy(hero, enemy){
             room_list[curr_floor][curr_room].clearAllFogTimeouts();
 
             // Hide combat stuff
-            $("#combat-module").hide(1000);
+            cmbmd.close()
             shieldUp = -1;
-            $("#shieldascii").html("")
 
             // Save gold
             doge.inv.gold = Math.floor(hero.inv.gold * doge.goldCarryFrac)
@@ -130,11 +101,7 @@ function fight_enemy(hero, enemy){
             shieldUp = -1;
             hero_protected = false;
             heroShield.shieldReady();
-
-            // hide the shield html icons
-            $("#shieldascii").html("")
-            //jquery animation:
-            $("#defendSlider").hide('fast');
+            cmbmd.indicateShieldOff()
         }
     }, 10000 / enemy.dexterity);
 
@@ -173,41 +140,23 @@ function fight_enemy(hero, enemy){
                 txtmd.commentator("You strike for " + hitprint + "damage!")
             }
 
-            //jquery animations:
-            $("#heroSymbol").animate({
-                top: '-25px',
-                left: '25px'
-            }, 1, function(){
-                $("#heroSymbol").animate({
-                    top: '0',
-                    left: '0'
-                }, 10000 / (2 * hero.dexterity));
-            })
-            $("#attackSlider").show();
-            $("#attackSlider").animate({
-                width: '0px'
-            }, 10000 / hero.dexterity, function() {
-                $("#attackSlider").hide();
-                $("#attackSlider").animate({
-                    width: '110px'
-                }, 1);
-            });
+            cmbmd.heroAttackAnimation(hero)
         }
     };
 
     // handle defense
     document.getElementById("defend").onclick = function() {
         if (hero_protected == false && heroShield.vitality > 0 && heroShield.shield_ready) {
-            $("#defendSlider").show(heroShield.weight * 1000);
-                heroShield.shield_ready = false;
-                shieldUp = setTimeout(function(){
-                    Shield();
-                    // show the shield ascii
-                    $("#shieldascii").html(ASCII_SHIELD) //note ASCII_SHIELD loaded from asciiart/ dir
-                    shielded = setInterval(function() {
-                        Shield()
-                    }, heroShield.recovery * 1000);
-                }, heroShield.weight * 1000);
+            heroShield.shield_ready = false;
+            cmbmd.startShieldUp()
+            shieldUp = setTimeout(function(){
+                Shield();
+                // show the shield ascii
+                cmbmd.showShieldUp()
+                shielded = setInterval(function() {
+                    Shield()
+                }, heroShield.recovery * 1000);
+            }, heroShield.weight * 1000);
         }
     }
 
@@ -216,12 +165,10 @@ function fight_enemy(hero, enemy){
         if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
             window.clearInterval(shielded);
             window.clearTimeout(shieldUp);
-            $("#shieldascii").html("") // remove shield symbol
             shieldUp = -1;
             heroShield.shieldReady();
             hero_protected = false;
-            //jquery animation:
-            $("#defendSlider").hide('fast');
+            cmbmd.indicateShieldOff()
         }
     }
 }
@@ -248,7 +195,7 @@ function exit_combat(room, customCombat) {
     console.log('exiting combat');
     // Give hero xp
     hero.xp += room.xp;
-    refreshInfo();
+    refreshOpenMods();
 
     // If not a room-clearing fight
     if (room.num_enemies > 0 || customCombat == true ) {
@@ -303,16 +250,8 @@ function Damage(source, target) {
     target.vitality -= hit;
 
     // refresh html indications of damage
-    $("#defendText").html( "Shield: " + heroShield.vitality );
-    if(target.objid != "defendText"){
-        var targetHealthFrac = target.vitality / target.maxVitality * 100;
-        var targetHealthObjid = "#" + target.objid + "HealthBar";
-        $(targetHealthObjid).html(
-            target.vitality + " / " + target.maxVitality +
-            "<div id='" + target.objid + "HealthSlider' class='statusSlider' style='width: " + targetHealthFrac + "%'></div>"
-        )
-    }
-    refreshInfo();
+    cmbmd.refreshOnDamage(target)
+    refreshOpenMods();
 
     //if the source was a hero (check based on if target is enemy or boss), and target dead
     if ((target.constructorName == 'Enemy' || customCombat) && target.vitality <= 0) {
@@ -327,10 +266,7 @@ function Damage(source, target) {
         heroShield.shieldReady();
 
         // hide appropriate things
-        $("#shieldascii").html("") // remove shield symbol
-        $("#defendSlider").hide('fast');
-        $("#combat-module").hide(1000);
-        $("#combat-module").off('click');
+        cmbmd.close()
 
         //Handle mob drops
         var exitFunc = function() { exit_combat(room, customCombat) }
@@ -358,7 +294,7 @@ function Shield() {
     else if(hero.vitality + heroShield.healthBoost > hero.maxVitality && hero.vitality < hero.maxVitality){
       hero.vitality = hero.maxVitality;
     }
-    refreshInfo();
+    refreshOpenMods();
     hero_protected = true;
 }
 

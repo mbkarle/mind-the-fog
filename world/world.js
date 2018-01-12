@@ -69,7 +69,7 @@ function move(e) {
             if(!torchlight && hero.inv.useTorch()){
                 console.log("Activating torch")
                 activatedTorch = true;
-                refreshInfo();
+                refreshOpenMods();
                 torchlight = true;
                 setTimeout(function(){
                     torchlight = false;
@@ -114,10 +114,10 @@ function move(e) {
         // heal from moving
         if(hero.vitality + 2 <= hero.maxVitality && didMove) {
             hero.vitality += 2;
-            refreshInfo();
+            refreshOpenMods();
         } else if(hero.vitality + 1 <= hero.maxVitality && didMove){
             hero.vitality += 1;
-            refreshInfo();
+            refreshOpenMods();
         }
 
         // passable loc interactions happen when stepped on!
@@ -128,18 +128,18 @@ function move(e) {
 
     //keypresses outside of canMove
     if (e.keyCode == 73){ // i for inventory
-        $("#info-module").toggle(100);
+        invmd.toggleMod()
         doginvmd.hideMod(); // there can only be one!
-        refreshInfo();
+        refreshOpenMods();
     }
     else if(doginvmd.avail && e.keyCode == 70) { // f for friend (dog)
         doginvmd.toggleMod()
-        $("#info-module").hide(100); // there can only be one!
-        refreshInfo();
+        invmd.hideMod()
+        refreshOpenMods();
     }
     else if(e.keyCode == 77){
-        $("#tree-module").toggle(100);
-        refreshInfo();
+        splmd.toggleMod()
+        refreshOpenMods();
     }
     if(fog_radius == 1 && fogDeath == -1){
       fogDeath = setInterval(function(){
@@ -178,22 +178,19 @@ function refillChests(){
     console.log(room_list[1][0]);
 }
 
-function refreshInfo() {
+function refreshOpenMods() {
     //inventory
-    refreshInventoryHTML(hero, heroShield)
+    if(invmd.open){ invmd.refreshMod() }
 
     //spell tree:
-    refreshSpellTreeHTML(hero)
+    if(splmd.open){ splmd.refreshMod() }
 
     //dog inventory
     if(doginvmd.open){ doginvmd.refreshDogInv() }
 
-    //refresh for combat-module:
-    var healthFraction = hero.vitality/hero.maxVitality;
-    $("#heroHealthBar").html(
-        hero.vitality + " / " + hero.maxVitality +
-        "<div id='heroHealthSlider' class='statusSlider' style='width: " + healthFraction * 100 + "%'></div>"
-    );
-    $("#defendText").html( "Shield: " + heroShield.vitality );
+    //vendor module
+    if(vndmd.open){ vndmd.refreshFunc() }
 
+    //txtmd if showing inv
+    if(txtmd.openAndChanging){ txtmd.refreshFunc() }
 }

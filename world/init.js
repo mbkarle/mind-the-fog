@@ -23,6 +23,9 @@ var game_duration = 1800000; //how long before the fog closes in totally
 var txtmd = new TextModule()
 var vndmd = new VendorModule()
 var doginvmd = new DogInvModule()
+var cmbmd = new CombatModule()
+var invmd = new InventoryModule()
+var splmd = new SpellTreeModule()
 
 //variables of hero status
 var canMove;
@@ -195,14 +198,14 @@ window.onload = function(){
     start_game();
     //tutorialStart();
     document.getElementById("InvOpen").onclick = function() {
-            $("#info-module").toggle(100);
-            doginvmd.hideMod();
-            refreshInfo();
-        }
+        invmd.toggleMod();
+        doginvmd.hideMod();
+        refreshOpenMods();
+    }
 
     $("#TreeOpen").click(function(){
-        $("#tree-module").toggle(100);
-        refreshInfo();
+        splmd.toggleMod()
+        refreshOpenMods();
     })
 
     //Slowly remove fog
@@ -346,5 +349,5 @@ function start_game(){
     room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true; //place the hero in his starting position
     room_list[curr_floor][curr_room].buildRoomHTML(avatarX,avatarY, torchlight,fog_radius);
 
-    refreshInfo();
+    refreshOpenMods();
 }

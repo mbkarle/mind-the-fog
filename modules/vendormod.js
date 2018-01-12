@@ -7,6 +7,7 @@ class VendorModule {
         this.tabID = "#vendor-tab"
         this.buying = true //default start w buy items
         this.refreshFunc = null //used to manually update (ie unequip in inv = avail for sale)
+        this.open = false
     }
 
     openModForInvTransfer(buyerInv, sellerInv, sellAvail, buyFunc, buyBtnTxt, buyFrac=1, sellFrac=.8) {
@@ -20,6 +21,7 @@ class VendorModule {
 
         // Show mod
         $(this.modID).show()
+        this.open = true
         $("#worldMap").hide()
         $(this.exitBtnID).show()
         $(this.exitBtnID).off().click(() => this.revertVendorMd())
@@ -38,12 +40,13 @@ class VendorModule {
         // setup the mod_ids and cb's for displaying the inv
         var mod_ids = {"hoverID": this.hoverID, "uniqueID": "vdr"}
         var buy_cbs = {
-            "refresh": () => this.openModForInvTransfer(buyerInv, sellerInv, sellAvail, buyFunc, buyBtnTxt, buyFrac, sellFrac),
             "actioncb": (id) => buyFunc(id, buyerInv, sellerInv, frac),
             "actiontxt": (item) => buyBtnTxt(item, frac)
         }
 
-        this.refreshFunc = buy_cbs["refresh"]
+        this.refreshFunc = function(){
+            this.openModForInvTransfer(buyerInv, sellerInv, sellAvail, buyFunc, buyBtnTxt, buyFrac, sellFrac)
+        }
 
         // generate and set html
         var sellObj = sellerInv.generateHTML(mod_ids, buy_cbs)
@@ -80,6 +83,7 @@ class VendorModule {
         // defaults
         this.buying = true
         this.refreshFrunc = null
+        this.open = false
     }
 
     setTextBox(text) { $(this.textBox).html(text) }

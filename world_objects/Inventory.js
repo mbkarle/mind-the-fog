@@ -225,25 +225,25 @@ class Inventory {
                         //hide hover
                         $(mod_ids["hoverID"]).hide()
                         //redisplay the inventory
-                        mod_cbs["refresh"]()
+                        refreshOpenMods()
                     });
 
                 //handle the drop buttons
                 $(thisDropID).click(function(){
                     mod_cbs["dropcb"]($(this).attr('item_id'))
                     $(mod_ids["hoverID"]).hide()
-                    mod_cbs["refresh"]()
+                    refreshOpenMods()
                 })
             }
 
             // Handle gold + torches seperately
             $("#" + unqID + "_GOLDBtn").click( function() {
                 mod_cbs["goldcb"]()
-                mod_cbs["refresh"]()
+                refreshOpenMods()
             });
             $("#" + unqID + "_TORCHESBtn").click( function() {
                 mod_cbs["torchcb"]()
-                mod_cbs["refresh"]()
+                refreshOpenMods()
             });
         }
 
