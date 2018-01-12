@@ -71,18 +71,20 @@ var itemListMeta = new Array(mobDrops, itemList1, itemList2, itemList3, itemList
 //pass the itemList pointer to the [] to each Item class
 //and if toList is true, it will be pushed to itemList
 var heroShield = new Shields("the shield", "shield", null, null, 30, 1, 3, 4, false, "defendText", [itemList1]);
+
 var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList1]);
 var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null,[itemList1]);
+/*
 var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList1]);
 var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList1, mobDrops]);
 var ritDagger = new effectItem("ritual dagger", "weapon", -2, 2, 5, [indestructible], [.2], [], [], true, null, [itemList1]);
 var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList1]);
 var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList1, mobDrops]);
-var GreatSword = new Item("greatsword", "weapon", 3, null, null, true, null, [[]]);
+*/var GreatSword = new Item("greatsword", "weapon", 3, null, null, true, null, [[]]);/*
 var vikHelm = new effectItem("viking helmet", "headgear", 1, -1, null, [adrenaline], [.3], [], [], true, null, [itemList1, mobDrops]);
 var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, true, null, [itemList2, mobDrops]);
 var WarAxe =  new effectItem("war axe", "weapon", 1, 1, -5, [adrenaline], [.4], [], [], true, null, [mobDrops]);
-var fireSword = new effectItem("blazing sword", "weapon", 2, 1, null, [], [], [fire], [.4], true, null, [[], itemList2]);
+*/var fireSword = new effectItem("blazing sword", "weapon", 2, 1, null, [], [], [fire], [.4], true, null, [[], itemList2]);/*
 var hoodofOmar = new Item("leather hood", "headgear", null, 1, 3, true, null, [itemList1, mobDrops]);
 var ironMail = new Item("iron chainmail", "armor", null, -1, 15, true, null, [itemList2, mobDrops]);
 var enchantedSword = new effectItem("enchanted sword", "weapon", null, null, null, [adrenaline, indestructible], [.1, .1], [fire, ice], [.1, .1], true, null, [itemList1, itemList2, mobDrops]);
@@ -93,7 +95,7 @@ var machete = new Item("machete", "weapon", 3, 1, null, true, null, [itemList2])
 var cutlass = new Item("cutlass", "weapon", 2, 2, 5, true, null, [itemList2, itemList3]);
 var fireStaff = new effectItem("fire staff", "weapon", 3, 1, null, [], [], [fire], [.4], true, null, [itemList2, itemList3]);
 var hellPlate = new effectItem("Hell Knights' breastplate", "armor", null, 1, 10, [], [], [fire], [.3], true, null, [itemList2]);
-var icyShell = new effectItem("icy shell", "armor", 2, -1, 10, [indestructible], [.3], [ice], [.3], true, null, [[], itemList2]);
+*/var icyShell = new effectItem("icy shell", "armor", 2, -1, 10, [indestructible], [.3], [ice], [.3], true, null, [[], itemList2]);/*
 var shadowCloak = new Item("shadow cloak", "armor", 1, 3, 5, true, null, [itemList2]);
 var steelHelm = new Item("steel helm", "headgear", 1, 1, 10, true, null, [itemList2]);
 var enchantedCrown = new effectItem("enchanted crown", "headgear", null, null, 20, [indestructible], [.3], [], [], true, null, [itemList2]);
@@ -105,8 +107,8 @@ var execAxe = new Item("executioner's axe", 'weapon', 9, 1, 10, true, null, [ite
 var unbreakMail = new effectItem("unbreakable chainmail", 'armor', 5, 2, 30, [indestructible], [.3], [],[], true, null, [itemList3]);
 var legionHelm = new Item("legionairre's helmet", 'headgear', 4, 3, 20, true, null, [itemList3]);
 var HammerWrath = new Item("Hammer of Wrath", 'weapon', 15, 2, 20, true, null, [itemList4, mobDrops2]);
-var scythe = new Item("Reaper's Scythe", 'weapon', 12, 6, 15, true, null, [[]]);
-var bladeMor = new Item("Blade of Moranos", 'weapon', 5, 15, -10, true, null, [[]]);
+*/var scythe = new Item("Reaper's Scythe", 'weapon', 12, 6, 15, true, null, [[]]);/*
+*/var bladeMor = new Item("Blade of Moranos", 'weapon', 5, 15, -10, true, null, [[]]);/*
 var belia = new Item("Belia", 'weapon', 10, 10, 10, true, null, [itemList4]);
 var CourDeath = new Item("Courier of Death", 'weapon', 13, 8, null, true, null, [itemList4]);
 var invisCloak = new effectItem("Invisibility Cloak", 'armor', null, 5, 40, [], [], [suppressed], [.3], true, null, [itemList4]);
@@ -124,8 +126,19 @@ var titanMail = new exoticItem("titanium chainmail", "armor", 2, 1, 50, 120, [it
 var titanHelm = new exoticItem("titanium helmet", "headgear", null, null, 40, 100,  [itemList3]);
 var Leeroy = new exoticItem("Leeroy", "weapon", 30, null, null, 200, [itemList3, itemList4]);
 var Gloria = new exoticItem("Gloria", 'weapon', 20, 10, null, 250, [itemList4]);
-
-
+*/
+for(var e in elemItems){
+    e = elemItems[e];
+    var temp = new effectItem(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["buffArray"], e["buffChance"], e["debuffArray"], e["debuffChance"], e["toList"], e["objid"], e["items"], itemListMeta);
+}
+for(var e in items){
+    e = items[e];
+    var temp = new Item(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["toList"], e["objid"], e["items"], itemListMeta);
+}
+for(var e in exotics){
+    e = exotics[e];
+    var temp = new exoticItem(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["value"], e["protoLists"], itemListMeta);
+}
 
 var gold = new Currency("gold", 1, null);
 
@@ -207,11 +220,55 @@ window.onload = function(){
         refreshInfo();
     })
 
+    $(".GUI-button").mouseenter(function(){
+        $(this).css("text-decoration", "underline");
+        }).mouseleave(function(){
+            $(this).css("text-decoration", "none");
+            });
+    $("#restart-game").click(function(){
+       location.reload(); //add more once data persistence is implemented
+    });
+
+    $("#restart-round").click(function(){
+        revertTextModule();
+        start_game();
+    });
+    var insanity = -1;
     //Slowly remove fog
     setInterval(function(){
         if(!room_list[curr_floor][curr_room].roomCleared && fog_radius > 1){
             oldFog = fog_radius;
             fog_radius--;
+            if(fog_radius == 1 && !torchlight && insanity == -1){
+                insanity = setInterval(function(){
+                    console.log("insane");
+                    if(fog_radius==1 && !torchlight && hero.vitality > 0){
+                        hero.vitality -= hero.maxVitality / 5;
+                        $("#worldMap").fadeOut(1).css("background-color", "black").fadeIn(50).fadeOut(200);
+                        refreshInfo();
+                    }
+                    else{
+                        if(hero.vitality <= 0){
+                            console.log("killed by insanity");
+                            print("message", "The fog has consumed you!");
+                            $("#text-module").show();
+                            $("#worldMap").hide();
+                            $("#enter").hide();
+                            $("#descend").show().html('Restart').click(function(){
+                                revertTextModule();
+                                $("#worldMap").show();
+                                start_game();
+                                $("#text-module").animate({
+                                    top: "175px"
+                                }, 1000);
+                                $("#defendSlider").hide('fast');
+                        })}
+
+                        $("#worldMap").fadeIn(10).css("background-color", "white");
+                        clearInterval(insanity);
+                        insanity = -1;
+                    }
+                }, 1000);}
             console.log('fog closes in')
             room_list[curr_floor][curr_room].addFogWhenFogRadiusChanges(avatarX,avatarY, torchlight, oldFog, fog_radius)
         }
@@ -1080,7 +1137,7 @@ function refreshInfo() {
           refreshInfo();
         })
         $(invCarID).mouseenter(function(){
-            $("inv_hoverInfo").html($(this).attr('item_to_print'));
+            $("#inv_hoverInfo").empty().append($(this).attr('item_to_print'));
             $("#inv_hoverInfo").show();
             if(inventory[items_carried[$(this).attr('inv_idx')].type] != null && inventory[items_carried[$(this).attr('inv_idx')].type].name != items_carried[$(this).attr('inv_idx')].name){
 
@@ -1481,7 +1538,6 @@ function print(messageType, message) { //TODO: change so that multiple items can
             itemMessage += "<div class='itemInfo' id='itemInfo" + i + "'>" + items[i].name + "<div id='take" + i + "' class='interact'> Take </div></div>"; //style='top: " + (25 + takeID*25) + "px;'>
 
         }
-        console.log(itemInfos)
         $("#textBox").html( itemMessage );
 
         //need mouse listeners after itemMessage printed...

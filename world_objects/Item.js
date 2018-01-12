@@ -1,5 +1,5 @@
 class Item {
-    constructor(name, type, strength, dexterity, vitality, toList, objid, items) {
+    constructor(name, type, strength, dexterity, vitality, toList, objid, items, listMeta) {
         this.name = name;
         this.type = type;
         this.strength = strength;
@@ -18,7 +18,11 @@ class Item {
 
         if(toList){
             for(var i = 0; i < items.length; i++){
-            items[i].push(this);
+            if(typeof items[i] === "number"){
+                listMeta[items[i]].push(this);
+            }else{
+                items[i].push(this);
+            }
         }
         }
 
@@ -26,8 +30,8 @@ class Item {
 }
 
 class effectItem extends Item {
-    constructor(name, type, strength, dexterity, vitality, buffArray, buffChance, debuffArray, debuffChance, toList, objid, items){
-        super(name, type, strength, dexterity, vitality, toList, objid, items);
+    constructor(name, type, strength, dexterity, vitality, buffArray, buffChance, debuffArray, debuffChance, toList, objid, items, listMeta){
+        super(name, type, strength, dexterity, vitality, toList, objid, items, listMeta);
         this.buffArray = buffArray;
         this.buffChance = buffChance; //pass array to match buffArray
         this.debuffArray = debuffArray;
@@ -54,7 +58,7 @@ class effectItem extends Item {
 }
 
 class exoticItem extends Item {
-    constructor(name, type, strength, dexterity, vitality, value, protoLists){
+    constructor(name, type, strength, dexterity, vitality, value, protoLists, listMeta){
         super(name, type, strength, dexterity, vitality, true, null, [NPCList['blacksmith']['merchandise']]);
         this.constructorName = "exoticItem";
         this.getListIdx = function(){
@@ -69,7 +73,7 @@ class exoticItem extends Item {
             hero.wallet -= item.value;
             successful_transaction = true;
             for(var i = 0; i < item.protoLists.length; i++){
-                item.protoLists[i].push(item);
+               listMeta[ item.protoLists[i]].push(item);
             }
             NPCList['blacksmith']['merchandise'].splice(item.getListIdx(), 1);
             refillChests();

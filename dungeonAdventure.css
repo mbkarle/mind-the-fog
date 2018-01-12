@@ -327,3 +327,17 @@ background-color: white;
     font-size: 12px;
     font-family: cursive;
 }
+.GUI-button {
+    font-size: 12px;
+    font-family: cursive;
+   /* text-decoration: underline;*/
+    position: absolute;
+}
+
+#GUI-panel {
+    position: absolute;
+    top: 95%;
+    left: 80%;
+    height: 10%;
+    width: 20%;
+}
