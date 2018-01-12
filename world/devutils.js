@@ -16,7 +16,7 @@ function dev_keys() {
         if (e.keyCode == "66") {
             console.log("Dev tools activated");
             console.log("So...., you're either a developer, or a cheater, or just lazy...")
-            hero.inv.add(MasterSword); //give absurd weapons
+            hero.inv.add(ITEMS_LOADED["MasterSword"]); //give absurd weapons
             hero.equip_inv.equip(hero.inv.size()-1)
             hero.vitality = 100000; //set absurd health stats
             hero.maxVitality = 100000;

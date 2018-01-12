@@ -1,4 +1,4 @@
-var Exotics = {
+var EXOTICS = {
     "ironSword":{
         "name": "iron sword",
         "type": 'weapon',

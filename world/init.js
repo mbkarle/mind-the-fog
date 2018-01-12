@@ -71,63 +71,26 @@ var mobDrops = [];
 var mobDrops2 = [];
 var itemList4 = [];
 var itemListMeta = new Array(mobDrops, itemList1, itemList2, itemList3, itemList4)
-//pass the itemList pointer to the [] to each Item class
-//and if toList is true, it will be pushed to itemList
 var heroShield = new Shields("the shield", "shield", null, null, 30, 1, 3, 4, false, "defendText", [itemList1]);
-var MasterSword = new Item("the master sword", "weapon", 25, 17, 30, false, null, [itemList1]);
-var startWeapon = new Item("rusty sword", "weapon", 0, 0, 0, false, null,[itemList1]);
-var IronHelm = new Item("iron helm", "headgear", null, -1, 10, true, null, [itemList1]);
-var katana = new Item("katana", "weapon", 1, 1, null, true, null, [itemList1, mobDrops]);
-var ritDagger = new effectItem("ritual dagger", "weapon", -2, 2, 5, [indestructible], [.2], [], [], true, null, [itemList1]);
-var thornArmor = new Item("armor of thorns", "armor", 1, -1, 5, true, null, [itemList1]);
-var chainMail = new Item("light chainmail", "armor", null, null, 5, true, null, [itemList1, mobDrops]);
-var GreatSword = new Item("greatsword", "weapon", 3, null, null, true, null, [[]]);
-var vikHelm = new effectItem("viking helmet", "headgear", 1, -1, null, [adrenaline], [.3], [], [], true, null, [itemList1, mobDrops]);
-var cloakMor = new Item("cloak of Moranos", "armor", null, 2, -5, true, null, [itemList2, mobDrops]);
-var WarAxe =  new effectItem("war axe", "weapon", 1, 1, -5, [adrenaline], [.4], [], [], true, null, [mobDrops]);
-var fireSword = new effectItem("blazing sword", "weapon", 2, 1, null, [], [], [fire], [.4], true, null, [[], itemList2]);
-var hoodofOmar = new Item("leather hood", "headgear", null, 1, 3, true, null, [itemList1, mobDrops]);
-var ironMail = new Item("iron chainmail", "armor", null, -1, 15, true, null, [itemList2, mobDrops]);
-var enchantedSword = new effectItem("enchanted sword", "weapon", null, null, null, [adrenaline, indestructible], [.1, .1], [fire, ice], [.1, .1], true, null, [itemList1, itemList2, mobDrops]);
-var mace = new Item("mace", "weapon", 2, -1, null, true, null, [itemList1]);
-var iceStaff = new effectItem("ice staff", "weapon", 1, null, null, [indestructible], [.1], [ice], [.3], true, null, [mobDrops]);
-var assBlade = new Item("assassin's blade", "weapon", -1, 3, 5, true, null, [itemList2]);
-var machete = new Item("machete", "weapon", 3, 1, null, true, null, [itemList2]);
-var cutlass = new Item("cutlass", "weapon", 2, 2, 5, true, null, [itemList2, itemList3]);
-var fireStaff = new effectItem("fire staff", "weapon", 3, 1, null, [], [], [fire], [.4], true, null, [itemList2, itemList3]);
-var hellPlate = new effectItem("Hell Knights' breastplate", "armor", null, 1, 10, [], [], [fire], [.3], true, null, [itemList2]);
-var icyShell = new effectItem("icy shell", "armor", 2, -1, 10, [indestructible], [.3], [ice], [.3], true, null, [[], itemList2]);
-var shadowCloak = new Item("shadow cloak", "armor", 1, 3, 5, true, null, [itemList2]);
-var steelHelm = new Item("steel helm", "headgear", 1, 1, 10, true, null, [itemList2]);
-var enchantedCrown = new effectItem("enchanted crown", "headgear", null, null, 20, [indestructible], [.3], [], [], true, null, [itemList2]);
-var cultMask = new effectItem("cultist's mask", "headgear", 1, 1, 10, [adrenaline], [.2], [fire], [.2], true, null, [itemList2]);
-var goldChakram = new effectItem("golden chakram", 'weapon', 4, 2, 5, [],[],[fire],[.3], true, null, [itemList3]);
-var steelBlade = new Item("steel sword", 'weapon', 5, 2, null, true, null, [itemList3]);
-var hoodMor = new Item("hood of Moranos", 'headgear', 2, 5, -10, true, null, [itemList3]);
-var execAxe = new Item("executioner's axe", 'weapon', 9, 1, 10, true, null, [itemList3]);
-var unbreakMail = new effectItem("unbreakable chainmail", 'armor', 5, 2, 30, [indestructible], [.3], [],[], true, null, [itemList3]);
-var legionHelm = new Item("legionairre's helmet", 'headgear', 4, 3, 20, true, null, [itemList3]);
-var HammerWrath = new Item("Hammer of Wrath", 'weapon', 15, 2, 20, true, null, [itemList4, mobDrops2]);
-var scythe = new Item("Reaper's Scythe", 'weapon', 12, 6, 15, true, null, [[]]);
-var bladeMor = new Item("Blade of Moranos", 'weapon', 5, 15, -10, true, null, [[]]);
-var belia = new Item("Belia", 'weapon', 10, 10, 10, true, null, [itemList4]);
-var CourDeath = new Item("Courier of Death", 'weapon', 13, 8, null, true, null, [itemList4]);
-var invisCloak = new effectItem("Invisibility Cloak", 'armor', null, 5, 40, [], [], [suppressed], [.3], true, null, [itemList4]);
-var MasterArmor = new effectItem("Master Armor", 'armor', 5, 3, 80, [indestructible], [.5], [], [], true, null, [itemList4]);
-var ImpenetrableArm = new Item("Impenetrable Armor", 'armor', 6, -5, 200, true, null, [itemList4]);
-var MasterHelm = new Item("Master's Helmet", 'headgear', 4, 4, 40, true, null, [itemList4]);
-var enchantedHelm = new effectItem("enchanted helmet", 'headgear', 2, 2, 20, [adrenaline, indestructible], [.4, .4], [fire, ice], [.4, .4], true, null, [itemList4]);
-var unbreakHelm = new Item("Unbreakable helmet", 'headgear', 5, -3, 100, true, null, [itemList4]);
-var ironSword = new exoticItem("iron sword", 'weapon', 1, 2, 10, 30, [itemList1, itemList2]);
-var tungstenSword = new exoticItem("tungsten sword", "weapon", 3, 2, null, 50, [itemList2]);
-var tungstenMail = new exoticItem("tungsten chainmail", "armor", 2, null, 20, 80, [itemList2]);
-var tungstenHelm = new exoticItem("tungsten helmet", "headgear", 1, 1, 10, 70, [itemList2]);
-var titanSword = new exoticItem("titanium sword", "weapon", 5, 2, 10, 100, [itemList3]);
-var titanMail = new exoticItem("titanium chainmail", "armor", 2, 1, 50, 120, [itemList3]);
-var titanHelm = new exoticItem("titanium helmet", "headgear", null, null, 40, 100,  [itemList3]);
-var Leeroy = new exoticItem("Leeroy", "weapon", 30, null, null, 200, [itemList3, itemList4]);
-var Gloria = new exoticItem("Gloria", 'weapon', 20, 10, null, 250, [itemList4]);
 
+for(var attr in ELEMITEMS){
+    e = ELEMITEMS[attr];
+    var temp = new effectItem(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["buffArray"], e["buffChance"], e["debuffArray"], e["debuffChance"], e["toList"], e["objid"], e["items"], itemListMeta);
+
+    ITEMS_LOADED[attr] = temp
+}
+for(var attr in ITEMS){
+    e = ITEMS[attr];
+    var temp = new Item(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["toList"], e["objid"], e["items"], itemListMeta);
+
+    ITEMS_LOADED[attr] = temp
+}
+for(var attr in EXOTICS){
+    e = EXOTICS[attr];
+    var temp = new exoticItem(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["value"], e["protoLists"], itemListMeta);
+
+    ITEMS_LOADED[attr] = temp
+}
 
 //------------------------------------------------------
 //              Initialize Characters
@@ -239,11 +202,11 @@ function start_game(){
     Ogre = new Enemy("Ogre", 9, 1, 60);
     Sorcerer = new Enemy("Sorcerer", 6, 4, 20);
     Vagrant = new Enemy("Wandering Vagrant", 5, 4, 35);
-    HellHound = new Boss("Hell Hound", 5, 6, 50, fireSword.items[0]);
-    Golem = new Boss("Golem", 7, 3, 50, GreatSword.items[0]);
+    HellHound = new Boss("Hell Hound", 5, 6, 50, [ITEMS_LOADED["fireSword"]]);
+    Golem = new Boss("Golem", 7, 3, 50, [ITEMS_LOADED["GreatSword"]]);
     Werewolf = new Enemy("werewolf", 6, 4, 40);
     slime = new Enemy("slime", 8, 2, 50);
-    frostGiant = new Boss("frost giant", 8, 5, 100, icyShell.items[0]);
+    frostGiant = new Boss("frost giant", 8, 5, 100, [ITEMS_LOADED["icyShell"]]);
     ferBeast = new Enemy("feral beast", 9, 3, 20);
     smallWyrm = new Enemy("young wyrm", 10, 4, 300);
     pillager = new Enemy("pillager", 6, 6, 80);
@@ -256,9 +219,9 @@ function start_game(){
     DisOfMoranos = new Enemy("Disciple of Moranos", 11, 3, 200);
     DreadPirate = new Enemy("Dread Pirate Williams", 15, 4, 300);
     AncientWyrm = new Enemy("Ancient Wyrm", 14, 8, 500);
-    Moranos = new Boss("Moranos", 10, 15, 100, bladeMor.items[0]);
+    Moranos = new Boss("Moranos", 10, 15, 100, [ITEMS_LOADED["bladeMor"]]);
     DarkLord = new Enemy("Dark Lord", 9, 9, 300);
-    Reaper = new Boss("Reaper", 20, 2, 200, scythe.items[0]);
+    Reaper = new Boss("Reaper", 20, 2, 200, [ITEMS_LOADED["scythe"]]);
 
     //active spells must be reset
     channelDivSpell = new ActiveSpell("channel divinity", 'channelDivS', hero, null, null, 20000, 3);

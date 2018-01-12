@@ -16,8 +16,8 @@ class Boss extends Character{
     constructor(name, strength, dexterity, vitality, lootList){
         super(name, strength, dexterity, vitality, 'enemy');
         this.constructorName = "Boss";
-        this.inv = new Inventory(lootList, 1, 1)
         this.lootList = lootList
+        this.inv = new PrebuiltInventory(this.lootList)
     }
 
     regenInv(){

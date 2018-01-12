@@ -1,4 +1,4 @@
-var ElemItems = {
+var ELEMITEMS = {
 
     "vikHelm":{
         "name": "viking helmet",

@@ -1,4 +1,6 @@
-var Items = {
+var ITEMS_LOADED = {}
+
+var ITEMS = {
     "MasterSword": {
        "name": "the master sword",
        "type": "weapon",
