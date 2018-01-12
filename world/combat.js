@@ -77,6 +77,7 @@ function fight_enemy(hero, enemy){
             // prepare to restart
             var restartFunc = function() {
                 start_game();
+                txtmd.revertTxtMd()
             }
 
             var txtmdmsg = {"msgs": [["finfunc", "You died!", "Restart", restartFunc]]}
