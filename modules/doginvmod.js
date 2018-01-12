@@ -4,6 +4,7 @@ class DogInvModule {
         this.textBoxID = "#dog-inventory"
         this.hoverID = "#doginv_hoverInfo"
         this.btnID = "#DogInvOpen"
+        this.dogascii = "#doginvascii"
         this.avail = false // use to tell if keylisteners on
         this.open = false // use for whether or not to refresh in refreshInfo
     }
@@ -54,7 +55,7 @@ class DogInvModule {
         // handled by key listeners in move()
 
         // First load the ascii dog (for cuteness :) )
-        // TODO
+        $(this.dogascii).html(ASCII_DOG)
 
         // Next Start the html to display
         var innerhtml = "Dog Inventory: <br><small>(" + doge.inv.size() +

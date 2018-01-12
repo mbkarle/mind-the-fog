@@ -11,6 +11,10 @@ body {
   font-weight: bold;
 }
 
+#doginvascii {
+    margin-top: -35px;
+}
+
 #hero {
   position: relative;
   top: 200px;
