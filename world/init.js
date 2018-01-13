@@ -193,12 +193,29 @@ window.onload = function(){
         vndmd.revertVendorMd();
         start_game();
     });
-
+    
+    var insanity = -1;
     //Slowly remove fog
     setInterval(function(){
         if(!room_list[curr_floor][curr_room].roomCleared && fog_radius > 1){
             oldFog = fog_radius;
             fog_radius--;
+            if(fog_radius == 1 && !torchlight && insanity == -1){
+                insanity = setInterval(function(){
+                    if(fog_radius==1 && !torchlight && hero.vitality > 0 && !room_list[curr_floor][curr_room].roomCleared){
+                        hero.vitality -= Math.floor(hero.maxVitality / 5);
+                        if(!cmbmd.open){
+                            $("#worldMap").fadeOut(10).fadeIn(1000);
+                        }
+                        refreshOpenMods();
+                        if(hero.vitality <= 0){
+                            killPlayer("The fog consumed you!");
+                            window.clearInterval(insanity);
+                            insanity = -1;
+                        }
+                    }
+                }, 2000);
+            }
             console.log('fog closes in')
             room_list[curr_floor][curr_room].addFogWhenFogRadiusChanges(avatarX,avatarY, torchlight, oldFog, fog_radius)
         }

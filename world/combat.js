@@ -65,33 +65,7 @@ function fight_enemy(hero, enemy){
 
         // if the hero dies
         if (hero.vitality <= 0) {
-            // Stop the onslaught
-            window.clearInterval(enemyAttack);
-            window.clearInterval(shielded);
-            window.clearTimeout(shieldUp);
-
-            // cant go below zero
-            hero.vitality = 0;
-            refreshOpenMods();
-
-            // prepare to restart
-            var restartFunc = function() {
-                start_game();
-                txtmd.revertTxtMd()
-            }
-
-            var txtmdmsg = {"msgs": [["finfunc", "You died!", "Restart", restartFunc]]}
-            txtmd.parseTxtMdJSON(txtmdmsg)
-
-            // Clear the timeouts in this room
-            room_list[curr_floor][curr_room].clearAllFogTimeouts();
-
-            // Hide combat stuff
-            cmbmd.close()
-            shieldUp = -1;
-
-            // Save gold
-            doge.inv.gold = Math.floor(hero.inv.gold * doge.goldCarryFrac)
+            killPlayer("You died!");
         }
 
         // if the hero shield breaks
@@ -302,4 +276,34 @@ function Shield() {
 function readyUp() {
     ready = true;
     return ready;
+}
+
+function killPlayer(deathMessage){
+    // Stop the onslaught
+    window.clearInterval(enemyAttack);
+    window.clearInterval(shielded);
+    window.clearTimeout(shieldUp);
+
+    // cant go below zero
+    hero.vitality = 0;
+    refreshOpenMods();
+
+    // prepare to restart
+    var restartFunc = function() {
+        start_game();
+        txtmd.revertTxtMd()
+    }
+
+    var txtmdmsg = {"msgs": [["finfunc", deathMessage, "Restart", restartFunc]]}
+    txtmd.parseTxtMdJSON(txtmdmsg)
+
+    // Clear the timeouts in this room
+    room_list[curr_floor][curr_room].clearAllFogTimeouts();
+
+    // Hide combat stuff
+    cmbmd.close()
+    shieldUp = -1;
+
+    // Save gold
+    doge.inv.gold = Math.floor(hero.inv.gold * doge.goldCarryFrac)
 }

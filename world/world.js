@@ -157,7 +157,7 @@ function move(e) {
         splmd.toggleMod()
         refreshOpenMods();
     }
-    if(fog_radius == 1 && fogDeath == -1){
+    /*if(fog_radius == 1 && fogDeath == -1){
       fogDeath = setInterval(function(){
          if(fog_radius == 1 && hero.vitality > 0){
              Damage({strength: 5}, hero);
@@ -172,6 +172,7 @@ function move(e) {
          }
          }, 1000);
     }
+    */
 }
 
 function checkLocation(avX, avY){
