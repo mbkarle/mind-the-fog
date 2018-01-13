@@ -3,8 +3,6 @@
  * including global variables called throughout
  */
 
-console.log("made it to init")
-
 Array.prototype.move = function(old_index, new_index){
     if (new_index >= this.length) {
         var k = new_index - this.length;
@@ -279,6 +277,7 @@ function start_game(){
     heroShield.vitality = heroShield.maxVitality;
     $("#compassascii").html(ASCII_COMPASS_N)
     dir_facing = 'N'
+    $("#torchascii").html(TORCHES[0])
 
     //message globals
     messageArray = [];
@@ -337,7 +336,7 @@ function start_game(){
     avatarY = Math.floor(room_list[curr_floor][curr_room].room_height/2);
 
     loc_facing = [avatarX+1, avatarY];
-    last_key_press = 'd';
+    last_key_press = 'w';
 
     //establish NPCs
     if(inactiveNPCs.length > 0){

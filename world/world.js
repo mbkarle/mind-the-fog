@@ -45,7 +45,6 @@ function update_loc_facing(key_press){
 function move(e) {
     if (canMove == true) {
         var didMove = false;
-        var activatedTorch = false;
         var oldPos = [avatarX,avatarY]
         var room = room_list[curr_floor][curr_room]
         var map = room.room_map
@@ -81,24 +80,6 @@ function move(e) {
                 map[avatarY][avatarX].hero_present = true;
                 didMove = true;
             }
-        } else if (e.keyCode == "84"){ //t for torch
-            if(!torchlight && hero.inv.useTorch()){
-                console.log("Activating torch")
-                activatedTorch = true;
-                refreshOpenMods();
-                torchlight = true;
-                setTimeout(function(){
-                    torchlight = false;
-                    // if(!room_list[curr_floor][curr_room].roomCleared){
-                    var room = room_list[curr_floor][curr_room]
-                    if(!room.fog_free_room){
-                        room.addFogWhenTorchBurnsOut(avatarX,avatarY,fog_radius);
-                        var newPos = [avatarX,avatarY];
-                        room.updateRoomHTML(newPos,newPos,torchlight,fog_radius);
-                    }
-                    console.log("Your torch fades to nothing."
-                )}, 10000)
-            }
         }
         else if(e.keyCode == '69'){
             //e for interact (#81 issues)
@@ -117,7 +98,7 @@ function move(e) {
         }
         else{ doginvmd.deactivateMod() }
 
-        if(didMove || activatedTorch){
+        if(didMove){
             var newPos = [avatarX,avatarY];
             room.updateRoomHTML(oldPos,newPos,torchlight,fog_radius);
         }
@@ -143,6 +124,43 @@ function move(e) {
     }
 
     //keypresses outside of canMove
+    if (e.keyCode == "84"){ //t for torch
+        // If dont have a torch
+        if(!torchlight && hero.inv.useTorch()){
+            console.log("Activating torch")
+
+            // Show ascii
+            $("#torchascii").html(TORCHES[4])
+            var torch_to_show = 4
+            var torch_decay = setInterval(function(){
+                torch_to_show--;
+                $("#torchascii").html(TORCHES[torch_to_show])
+            }, 10000 / 4)
+
+            // Refresh mods
+            refreshOpenMods();
+
+            // Rebuild room
+            torchlight = true;
+            var pos = [avatarX,avatarY];
+            room_list[curr_floor][curr_room].updateRoomHTML(pos,pos,torchlight,fog_radius);
+
+            // Set timeout for torch burnout
+            setTimeout(function(){
+                torchlight = false;
+                // if(!room_list[curr_floor][curr_room].roomCleared){
+                var room = room_list[curr_floor][curr_room]
+                if(!room.fog_free_room){
+                    room.addFogWhenTorchBurnsOut(avatarX,avatarY,fog_radius);
+                    var newPos = [avatarX,avatarY];
+                    room.updateRoomHTML(newPos,newPos,torchlight,fog_radius);
+                }
+                $("#torchascii").html(TORCHES[0])
+                clearInterval(torch_decay)
+                console.log("Your torch fades to nothing."
+            )}, 10000)
+        }
+    }
     if (e.keyCode == 73){ // i for inventory
         invmd.toggleMod()
         doginvmd.hideMod(); // there can only be one!

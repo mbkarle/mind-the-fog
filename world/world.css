@@ -15,6 +15,12 @@ body {
     margin-top: -35px;
 }
 
+#torchascii {
+    position: fixed;
+    bottom: 40px;
+    right: 10px;
+}
+
 #compassascii {
     position: fixed;
     bottom: 20px;
