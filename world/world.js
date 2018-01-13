@@ -109,13 +109,13 @@ function move(e) {
 
         if(didMove){
             doge.hero_move_update_dog(last_key_press,avatarX, avatarY, map);
-
-            // Check dist btw dog & hero and activate doginvmd if needed!
-            if(doge.manhat_dist_from_hero(avatarX, avatarY) <= 1){
-                doginvmd.activateMod()
-            }
-            else{ doginvmd.deactivateMod() }
         }
+
+        // Check dist btw dog & hero and activate doginvmd if needed!
+        if(room_list[curr_floor][curr_room].room_map[loc_facing[1]][loc_facing[0]].dog_present){
+            doginvmd.activateMod()
+        }
+        else{ doginvmd.deactivateMod() }
 
         if(didMove || activatedTorch){
             var newPos = [avatarX,avatarY];
