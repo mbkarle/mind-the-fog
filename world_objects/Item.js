@@ -91,6 +91,7 @@ class exoticItem extends Item {
         this.unlocked = false
         this.value = value;
         this.protoLists = protoLists;
+        this.listMeta = listMeta
 
         // Push to Blacksmith
         NPCS["blacksmith"]["merchandise"][name] = this

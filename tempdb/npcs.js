@@ -105,7 +105,7 @@ var NPCS = {
                 if( buyerInv.pay(sellerInv, Math.floor(frac * item.value), "You can't afford this item!") ){
                     // Add item to all of its protoLists so it will be findable
                     for(var i = 0; i < item.protoLists.length; i++){
-                        item.protoLists[i].push(item);
+                        item.listMeta[item.protoLists[i]].push(item);
                     }
                     // unlock + refill chests for finding on this run
                     item.unlocked = true
