@@ -8,16 +8,32 @@ function update_loc_facing(key_press){
     switch (key_press) {
         case 'w':
             loc_facing = [avatarX, avatarY-1];
+            if(dir_facing !== 'N'){
+                dir_facing = 'N'
+                $("#compassascii").html(ASCII_COMPASS_N)
+            }
             break;
         case 's':
             loc_facing = [avatarX, avatarY+1];
+            if(dir_facing !== 'S'){
+                dir_facing = 'S'
+                $("#compassascii").html(ASCII_COMPASS_S)
+            }
             break;
         case 'a':
             loc_facing = [avatarX-1, avatarY];
+            if(dir_facing !== 'W'){
+                dir_facing = 'W'
+                $("#compassascii").html(ASCII_COMPASS_W)
+            }
             break;
 
         case 'd':
             loc_facing = [avatarX+1, avatarY];
+            if(dir_facing !== 'E'){
+                dir_facing = 'E'
+                $("#compassascii").html(ASCII_COMPASS_E)
+            }
             break;
 
         default:

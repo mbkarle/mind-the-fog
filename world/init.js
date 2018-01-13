@@ -33,6 +33,7 @@ var canMove;
 var hero_protected;
 var last_key_press;
 var loc_facing;
+var dir_facing;
 var ready;
 var shielded;
 var shieldUp;
@@ -238,6 +239,8 @@ function start_game(){
     //combat-module must be reset
     $('#combat-module').html(start_combatModule);
     heroShield.vitality = heroShield.maxVitality;
+    $("#compassascii").html(ASCII_COMPASS_N)
+    dir_facing = 'N'
 
     //message globals
     messageArray = [];
