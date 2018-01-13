@@ -97,6 +97,7 @@ var NPCS = {
         "symbol": "B",
         "description": "The blacksmith will fill the dungeon with his finest crafts.",
         "merchandise": {},
+        "buyFrac": 0.5,
         "buyFunc": function(id, buyerInv, sellerInv, frac) {
             var item = sellerInv.get(id)
 

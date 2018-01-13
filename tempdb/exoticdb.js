@@ -5,7 +5,7 @@ var EXOTICS = {
         "strength": 1,
         "dexterity": 2,
         "vitality": 10,
-        "value": 30,
+        "value": 150,
         "protoLists": [1, 2]
     },
 
@@ -16,7 +16,7 @@ var EXOTICS = {
         "strength": 3,
         "dexterity": 2,
         "vitality": null,
-        "value": 50,
+        "value": 250,
         "protoLists": [2]
     },
 
@@ -26,7 +26,7 @@ var EXOTICS = {
         "strength": 2,
         "dexterity": null,
         "vitality": 20,
-        "value": 80,
+        "value": 180,
         "protoLists": [2]
     },
 
@@ -36,7 +36,7 @@ var EXOTICS = {
         "strength": 1,
         "dexterity": 1,
         "vitality": 10,
-        "value": 70,
+        "value": 170,
         "protoLists": [2]
     },
 
@@ -46,7 +46,7 @@ var EXOTICS = {
         "strength": 5,
         "dexterity": 2,
         "vitality": 10,
-        "value": 100,
+        "value": 300,
         "protoLists": [3]
     },
 
@@ -56,7 +56,7 @@ var EXOTICS = {
         "strength": 2,
         "dexterity": 1,
         "vitality": 50,
-        "value": 120,
+        "value": 320,
         "protoLists": [3]
     },
 
@@ -66,7 +66,7 @@ var EXOTICS = {
         "strength": null,
         "dexterity": null,
         "vitality": 40,
-        "value": 100,
+        "value": 300,
         "protoLists": [3]
     },
 
@@ -76,7 +76,7 @@ var EXOTICS = {
         "strength": 30,
         "dexterity": null,
         "vitality": null,
-        "value": 200,
+        "value": 1200,
         "protoLists": [3, 4]
     },
 
@@ -86,7 +86,7 @@ var EXOTICS = {
         "strength": 20,
         "dexterity": 10,
         "vitality": null,
-        "value": 250,
+        "value": 1550,
         "protoLists": [4]
     }
 }

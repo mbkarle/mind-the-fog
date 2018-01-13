@@ -12,7 +12,8 @@ var ELEMITEMS = {
         "debuffChance": [],
         "toList": true,
         "objid": null,
-        "items": [1, 0]
+        "items": [1, 0],
+        "value": 30
     },
 
     "WarAxe":{
@@ -20,14 +21,15 @@ var ELEMITEMS = {
         "type": "weapon",
         "strength": 1,
         "dexterity": 1,
-        "vitality": -5,
+        "vitality": -3,
         "buffArray": [adrenaline],
         "buffChance": [.4],
         "debuffArray": [],
         "debuffChance": [],
         "toList": true,
         "objid": null,
-        "items": [0]
+        "items": [0],
+        "value": 50
     },
 
     "fireSword":{
@@ -42,7 +44,8 @@ var ELEMITEMS = {
         "debuffChance": [.4],
         "toList": true,
         "objid": null,
-        "items": [[]]
+        "items": [[]],
+        "value": 200
     },
 
     "enchantedSword":{
@@ -57,7 +60,8 @@ var ELEMITEMS = {
         "debuffChance": [.1, .1],
         "toList": true,
         "objid": null,
-        "items": [1, 2, 0]
+        "items": [1, 2, 0],
+        "value": 120
     },
 
     "iceStaff":{
@@ -72,7 +76,8 @@ var ELEMITEMS = {
         "debuffChance": [.3],
         "toList": true,
         "objid": null,
-        "items": [0]
+        "items": [0],
+        "value": 100
     },
 
     "fireStaff":{
@@ -87,7 +92,8 @@ var ELEMITEMS = {
         "debuffChance": [.4],
         "toList": true,
         "objid": null,
-        "items": [2, 3]
+        "items": [2, 3],
+        "value": 250
     },
 
     "hellPlate":{
@@ -102,7 +108,8 @@ var ELEMITEMS = {
         "debuffChance": [.3],
         "toList": true,
         "objid": null,
-        "items": [2]
+        "items": [2],
+        "value": 300
     },
 
     "icyShell":{
@@ -117,7 +124,8 @@ var ELEMITEMS = {
         "debuffChance": [.3],
         "toList": true,
         "objid": null,
-        "items": [[]]
+        "items": [[]],
+        "value": 200
     },
 
     "enchantedCrown":{
@@ -132,7 +140,8 @@ var ELEMITEMS = {
         "debuffChance": [],
         "toList": true,
         "objid": null,
-        "items": [2]
+        "items": [2],
+        "value": 250
     },
 
     "cultMask":{
@@ -147,7 +156,8 @@ var ELEMITEMS = {
         "debuffChance": [.2],
         "toList": true,
         "objid": null,
-        "items": [2]
+        "items": [2],
+        "value": 300
     },
 
     "goldChakram":{
@@ -162,7 +172,8 @@ var ELEMITEMS = {
         "debuffChance": [.3],
         "toList": true,
         "objid": null,
-        "items": [3]
+        "items": [3],
+        "value": 450
     },
 
     "unbreakMail":{
@@ -177,7 +188,8 @@ var ELEMITEMS = {
         "debuffChance": [],
         "toList": true,
         "objid": null,
-        "items": [3]
+        "items": [3],
+        "value": 500
     },
 
     "invisCloak":{
@@ -192,7 +204,8 @@ var ELEMITEMS = {
         "debuffChance": [.3],
         "toList": true,
         "objid": null,
-        "items": [4]
+        "items": [4],
+        "value": 600
     },
 
     "MasterArmor":{
@@ -207,7 +220,8 @@ var ELEMITEMS = {
         "debuffChance": [],
         "toList": true,
         "objid": null,
-        "items": [4]
+        "items": [4],
+        "value": 800
     },
 
     "enchantedHelm":{
@@ -222,7 +236,8 @@ var ELEMITEMS = {
         "debuffChance": [.4, .4],
         "toList": true,
         "objid": null,
-        "items": [4]
+        "items": [4],
+        "value": 500
     }
 
 }

@@ -1,5 +1,5 @@
 class Item {
-    constructor(name, type, strength, dexterity, vitality, toList, objid, items, listMeta) {
+    constructor(name, type, strength, dexterity, vitality, toList, objid, items, listMeta, value) {
         this.name = name;
         this.type = type;
         this.strength = strength;
@@ -9,7 +9,7 @@ class Item {
         this.toList = toList;
         this.objid = objid;
         this.items = items;
-        this.value = null;
+        this.value = value;
         this.constructorName = "Item";
         this.getOgIdx = function(room){
             return room.itemList.indexOf(this);
@@ -43,8 +43,8 @@ class Item {
 }
 
 class effectItem extends Item {
-    constructor(name, type, strength, dexterity, vitality, buffArray, buffChance, debuffArray, debuffChance, toList, objid, items, listMeta){
-        super(name, type, strength, dexterity, vitality, toList, objid, items, listMeta);
+    constructor(name, type, strength, dexterity, vitality, buffArray, buffChance, debuffArray, debuffChance, toList, objid, items, listMeta, value){
+        super(name, type, strength, dexterity, vitality, toList, objid, items, listMeta, value);
         this.buffArray = buffArray;
         this.buffChance = buffChance; //pass array to match buffArray
         this.debuffArray = debuffArray;

@@ -2,14 +2,15 @@ var ITEMS_LOADED = {}
 
 var ITEMS = {
     "MasterSword": {
-       "name": "the master sword",
-       "type": "weapon",
-       "strength": 25,
-       "dexterity": 17,
-       "vitality": 30,
-       "toList": false,
-       "objid": null,
-       "items": [1]
+        "name": "the master sword",
+        "type": "weapon",
+        "strength": 25,
+        "dexterity": 17,
+        "vitality": 30,
+        "toList": false,
+        "objid": null,
+        "items": [1],
+        "value": 10000
     },
 
     "startWeapon": {
@@ -20,7 +21,8 @@ var ITEMS = {
        "vitality": 0,
        "toList": false,
        "objid": null,
-       "items": [1]
+       "items": [1],
+       "value": 10
     },
 
     "IronHelm": {
@@ -31,7 +33,8 @@ var ITEMS = {
        "vitality": 10,
        "toList": true,
        "objid": null,
-       "items": [1]
+       "items": [1],
+       "value": 50
     },
 
     "katana": {
@@ -42,7 +45,8 @@ var ITEMS = {
        "vitality": null,
        "toList": true,
        "objid": null,
-       "items": [1, 0]
+       "items": [1, 0],
+       "value": 120
     },
 
     "thornArmor": {
@@ -53,7 +57,8 @@ var ITEMS = {
        "vitality": 5,
        "toList": true,
        "objid": null,
-       "items": [1]
+       "items": [1],
+       "value": 50
     },
 
     "chainMail": {
@@ -64,7 +69,8 @@ var ITEMS = {
        "vitality": 5,
        "toList": true,
        "objid": null,
-       "items": [1, 0]
+       "items": [1, 0],
+       "value": 100
     },
 
     "GreatSword": {
@@ -75,7 +81,8 @@ var ITEMS = {
        "vitality": null,
        "toList": true,
        "objid": null,
-       "items": [[]]
+       "items": [[]],
+       "value": 300
     },
 
     "cloakMor": {
@@ -86,7 +93,8 @@ var ITEMS = {
        "vitality": -5,
        "toList": true,
        "objid": null,
-       "items": [2, 0]
+       "items": [2, 0],
+       "value": 150
     },
 
     "hoodofOmar": {
@@ -97,7 +105,8 @@ var ITEMS = {
        "vitality": 3,
        "toList": true,
        "objid": null,
-       "items": [1, 0]
+       "items": [1, 0],
+       "value": 120
     },
 
     "ironMail": {
@@ -108,7 +117,8 @@ var ITEMS = {
        "vitality": 15,
        "toList": true,
        "objid": null,
-       "items": [2, 0]
+       "items": [2, 0],
+       "value": 150
     },
 
     "mace": {
@@ -119,7 +129,8 @@ var ITEMS = {
        "vitality": null,
        "toList": true,
        "objid": null,
-       "items": [1]
+       "items": [1],
+       "value": 50
     },
 
     "assBlade": {
@@ -130,7 +141,8 @@ var ITEMS = {
        "vitality": 5,
        "toList": true,
        "objid": null,
-       "items": [2]
+       "items": [2],
+       "value": 180
     },
 
     "machete": {
@@ -141,7 +153,8 @@ var ITEMS = {
        "vitality": null,
        "toList": true,
        "objid": null,
-       "items": [2]
+       "items": [2],
+       "value": 250
     },
 
     "cutlass": {
@@ -152,7 +165,8 @@ var ITEMS = {
        "vitality": 5,
        "toList": true,
        "objid": null,
-       "items": [2, 3]
+       "items": [2, 3],
+       "value": 330
     },
 
     "shadowCloak": {
@@ -163,7 +177,8 @@ var ITEMS = {
        "vitality": 5,
        "toList": true,
        "objid": null,
-       "items": [2]
+       "items": [2],
+       "value": 300
     },
 
     "steelHelm": {
@@ -174,7 +189,8 @@ var ITEMS = {
        "vitality": 10,
        "toList": true,
        "objid": null,
-       "items": [2]
+       "items": [2],
+       "value": 250
     },
 
     "steelBlade": {
@@ -185,7 +201,8 @@ var ITEMS = {
        "vitality": null,
        "toList": true,
        "objid": null,
-       "items": [3]
+       "items": [3],
+       "value": 400
     },
 
     "hoodMor": {
@@ -196,7 +213,8 @@ var ITEMS = {
        "vitality": -10,
        "toList": true,
        "objid": null,
-       "items": [3]
+       "items": [3],
+       "value": 350
     },
 
     "execAxe": {
@@ -207,7 +225,8 @@ var ITEMS = {
        "vitality": 10,
        "toList": true,
        "objid": null,
-       "items": [3]
+       "items": [3],
+       "value": 500
     },
 
     "legionHelm": {
@@ -218,7 +237,8 @@ var ITEMS = {
        "vitality": 20,
        "toList": true,
        "objid": null,
-       "items": [3]
+       "items": [3],
+       "value": 400
     },
 
     "HammerWrath": {
@@ -229,7 +249,8 @@ var ITEMS = {
        "vitality": 20,
        "toList": true,
        "objid": null,
-       "items": [4]
+       "items": [4],
+       "value": 1000
     },
 
     "scythe": {
@@ -240,7 +261,8 @@ var ITEMS = {
        "vitality": 15,
        "toList": true,
        "objid": null,
-       "items": [[]]
+       "items": [[]],
+       "value": 1200
     },
 
     "bladeMor": {
@@ -251,7 +273,8 @@ var ITEMS = {
        "vitality": -10,
        "toList": true,
        "objid": null,
-       "items": [[]]
+       "items": [[]],
+       "value": 1000
     },
 
     "belia": {
@@ -262,7 +285,8 @@ var ITEMS = {
        "vitality": 10,
        "toList": true,
        "objid": null,
-       "items": [4]
+       "items": [4],
+       "value": 1500
     },
 
     "CourDeath": {
@@ -273,7 +297,8 @@ var ITEMS = {
        "vitality": null,
        "toList": true,
        "objid": null,
-       "items": [4]
+       "items": [4],
+       "value": 1200
     },
 
     "ImpenetrableArm": {
@@ -284,7 +309,8 @@ var ITEMS = {
        "vitality": 200,
        "toList": true,
        "objid": null,
-       "items": [4]
+       "items": [4],
+       "value": 1000
     },
 
     "MasterHelm": {
@@ -295,7 +321,8 @@ var ITEMS = {
        "vitality": 40,
        "toList": true,
        "objid": null,
-       "items": [4]
+       "items": [4],
+       "value": 1000
     },
 
     "unbreakHelm": {
@@ -306,6 +333,7 @@ var ITEMS = {
        "vitality": 100,
        "toList": true,
        "objid": null,
-       "items": [4]
+       "items": [4],
+       "value": 1000
     }
 }

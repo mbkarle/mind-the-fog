@@ -87,7 +87,7 @@ class NPC extends Location {
             // set up the opening of the vendor mod
             var shopFunc = function(){
                 txtmd.revertTxtMd();
-                vndmd.openModForInvTransfer(hero.inv, npc.inv, false, buyFunc, buyBtnTxt)
+                vndmd.openModForInvTransfer(hero.inv, npc.inv, false, buyFunc, buyBtnTxt, NPCS[npc.name]['buyFrac'])
             }
 
             // use text module to decide to display vendor mod (shopfunc)

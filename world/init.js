@@ -76,13 +76,13 @@ var heroShield = new Shields("the shield", "shield", null, null, 30, 1, 3, 4, fa
 
 for(var attr in ELEMITEMS){
     e = ELEMITEMS[attr];
-    var temp = new effectItem(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["buffArray"], e["buffChance"], e["debuffArray"], e["debuffChance"], e["toList"], e["objid"], e["items"], itemListMeta);
+    var temp = new effectItem(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["buffArray"], e["buffChance"], e["debuffArray"], e["debuffChance"], e["toList"], e["objid"], e["items"], itemListMeta, e["value"]);
 
     ITEMS_LOADED[attr] = temp
 }
 for(var attr in ITEMS){
     e = ITEMS[attr];
-    var temp = new Item(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["toList"], e["objid"], e["items"], itemListMeta);
+    var temp = new Item(e["name"], e["type"], e["strength"], e["dexterity"], e["vitality"], e["toList"], e["objid"], e["items"], itemListMeta, e['value']);
 
     ITEMS_LOADED[attr] = temp
 }
