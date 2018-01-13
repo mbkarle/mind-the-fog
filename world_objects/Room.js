@@ -461,29 +461,19 @@ function buildRoomOfSize(height, width){
     return map;
 }
 
-//TODO: doesn't scale w small maps / high num_locs due to random sampling w few spaces per 8 rooks
 function rollLocations(num_locs, height, width){
-    //locs is a 2D array of locations not to be placed on...
-    //locs[0] is a 2 element array (row / col)
-    locs = []
+    // Generate possible height / widths
+    var hPoss = Array.from({length: height - 4}, (x,i) => i + 2);
+    var wPoss = Array.from({length: width - 4}, (x,i) => i + 2);
+
+    var locs = [] // array of [y,x] coords
     for(var n = 0; n < num_locs; n++){
-        var loc = [-1,-1];
-        found = false;
-        while(!found){
-            //NOTE: as of doge update, items don't spawn adjacent to walls so that you can't 'trap' the dog!
-            loc = [Math.floor((height-4)*Math.random())+2, Math.floor((width-4)*Math.random())+2] //new random location
-            passed = true;
-            for(var i = 0; i < locs.length; i++){ //check it really is unique as per 8 rooks problem
-                if(locs[i].indexOf(loc[0]) >= 0 || locs[i].indexOf(loc[1]) >= 0){ //if row or col not unique...
-                    passed = false;
-                    break;
-                }
-            }
-            if(passed){
-                found = true;
-                locs.push(loc)
-            }
-        }
+        // Pick random x & y from poss (w/out replacement)
+        var x = wPoss.splice(Math.random()*wPoss.length, 1)
+        var y = hPoss.splice(Math.random()*hPoss.length, 1)
+
+        // Push to locs
+        locs.push([y[0],x[0]])
     }
 
     return locs;
