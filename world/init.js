@@ -173,6 +173,27 @@ window.onload = function(){
         refreshOpenMods();
     })
 
+    $(".GUI-button").mouseenter(function(){
+        $(this).css("text-decoration", "underline");
+    }).mouseleave(function(){
+        $(this).css("text-decoration", "none");
+    });
+
+    $("#restart-game").click(function(){
+        location.reload(); //add more once data persistence is implemented
+    });
+
+    $("#restart-round").click(function(){
+        exit_combat(room_list[curr_floor][curr_room]);
+        txtmd.revertTxtMd();
+        window.clearInterval(enemyAttack);
+        window.clearInterval(shielded);
+        window.clearInterval(shieldUp);
+        cmbmd.close();
+        vndmd.revertVendorMd();
+        start_game();
+    });
+
     //Slowly remove fog
     setInterval(function(){
         if(!room_list[curr_floor][curr_room].roomCleared && fog_radius > 1){

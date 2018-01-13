@@ -174,6 +174,7 @@ adding this class just for world so I can scrap fog.*/
     position: absolute;
     display: none;
     background-color: white;
+    z-index: 3;
 }
 
 .infoBox {
@@ -367,4 +368,21 @@ background-color: white;
     color: white;
     font-size: 12px;
     font-family: cursive;
+}
+
+
+
+.GUI-button {
+    font-size: 12px;
+    font-family: cursive;
+   /* text-decoration: underline;*/
+    position: absolute;
+}
+    
+#GUI-panel {
+    position: absolute;
+    top: 95%;
+    left: 80%;
+    height: 10%;
+    width: 20%;
 }
