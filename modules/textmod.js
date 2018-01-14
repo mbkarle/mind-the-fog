@@ -84,7 +84,7 @@ class TextModule {
     }
 
 
-    startDialog(speakerID, dialogID, speakerName) {
+    startDialog(speakerID, dialogID, speakerName, cb) {
         // A function for a character dialogue
         // Given @speaker and @dialogID, starts the appropriate dialogue in
         // dialogues.json
@@ -98,7 +98,8 @@ class TextModule {
             msgs.push(["trans", convo[i]])
         }
         // last message is final text
-        msgs.push(["fin", convo[i]])
+        if(typeof cb === 'undefined'){ msgs.push(["fin", convo[i]]) }
+        else{ msgs.push(["finfunc", convo[i], '-->', cb]) }
 
         // assemble json w speaker and use parse func to do dialogue
         var txtmodmsg = { "speaker": speakerName, "msgs": msgs }
@@ -249,7 +250,6 @@ class TextModule {
     revertTxtMd() {
         // Revert back to normal, make disappear
         // hide module
-        console.log("reverting..." + this.modID)
         this.setPosition("norm")
         canMove = true;
         this.revertBtns();

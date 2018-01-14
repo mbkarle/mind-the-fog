@@ -64,11 +64,12 @@ class LockedDoor extends Location{
 
 class Trapdoor extends Location {
     constructor(rowID, colID){
-        super(rowID, colID, 'Trapdoor', 'trapdoor','ø',  'A gaping black hole stares at you from the floor of the dungeon... you wonder what is on the other side',true, true);
+        super(rowID, colID, 'Trapdoor', 'trapdoor','ø',  'A gaping black hole stares at you from the floor of the dungeon... you wonder what is on the other side',false, true);
+
+        this.keeperSpawned = false
     }
 
     hero_interact(){
-        console.log("descend?")
         var descendFunc = function(){
             //TODO: shouldnt have to check this... just dont build trapdoors on last floornew map!
             if(curr_floor < num_floors - 1){
@@ -109,8 +110,29 @@ class Trapdoor extends Location {
             }
         }
 
-        txtmd.parseTxtMdJSON({ "msgs": [ ["dec", this.message, "Descend", "Stay", descendFunc] ] });
+        var self = this
+        var gatekeepWarning = function() {
+            txtmd.revertTxtMd()
+            self.symbol = 'C'
+            self.keeperSpawned = true
+            self.refreshInnerHTML()
+            $(self.htmlID).fadeOut(1).fadeIn(3000, function(){
+                txtmd.startDialog('gatekeeper', 'Floor'+curr_floor, 'gatekeeper', function(){
+                        txtmd.parseTxtMdJSON({ "speaker": 'gatekeeper',
+                            "msgs": [["dec", "Are you sure you want to descend?",
+                            "Descend", "Stay", descendFunc]] })
+                    }
+                )
+            })
+        }
 
+        if(!this.keeperSpawned){
+            txtmd.parseTxtMdJSON({ "msgs": [ ["dec", this.message, "Descend", "Stay", gatekeepWarning] ] });
+        }
+        else{
+            txtmd.parseTxtMdJSON({"speaker": 'gatekeeper',
+                "msgs": [["dec", "Are you sure you want to descend?", "Descend", "Stay", descendFunc]] })
+        }
     }
 }
 

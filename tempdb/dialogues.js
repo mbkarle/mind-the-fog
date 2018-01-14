@@ -7,6 +7,7 @@ var DIALOGUES = {
             "Good fortune to you, adventurer.",
             "Mind the fog!"
         ],
+        "Floor0": ["It's dangerous down there... you can still turn back!"],
         "Floor1": [
             "It's a bit darker down here, so you'll need to find better equipment as soon as possible.",
             "Mind the fog!"
