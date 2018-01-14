@@ -119,7 +119,7 @@ class Trapdoor extends Location {
             $(self.htmlID).fadeOut(1).fadeIn(3000, function(){
                 txtmd.startDialog('gatekeeper', 'Floor'+curr_floor, 'gatekeeper', function(){
                         txtmd.parseTxtMdJSON({ "speaker": 'gatekeeper',
-                            "msgs": [["dec", "Are you sure you want to descend?",
+                            "msgs": [["dec", "Are you sure you want to descend? If you do, remember, mind the fog!",
                             "Descend", "Stay", descendFunc]] })
                     }
                 )
@@ -131,7 +131,7 @@ class Trapdoor extends Location {
         }
         else{
             txtmd.parseTxtMdJSON({"speaker": 'gatekeeper',
-                "msgs": [["dec", "Are you sure you want to descend?", "Descend", "Stay", descendFunc]] })
+                "msgs": [["dec", "Are you sure you want to descend? If you do, remember, mind the fog!", "Descend", "Stay", descendFunc]] })
         }
     }
 }

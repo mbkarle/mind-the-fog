@@ -10,31 +10,31 @@ var DIALOGUES = {
         "Floor0": ["It's dangerous down there... you can still turn back!"],
         "Floor1": [
             "It's a bit darker down here, so you'll need to find better equipment as soon as possible.",
-            "Mind the fog!"
+            "It can be scary in the fog... you can still turn back!",
         ],
         "Floor2": [
-            "You'll see a mix of enemies down here, I'd recommend you prepare for the worst.",
-            "Mind the fog!"
+            "The enemies get stronger with every floor.",
+            "I would recommend you stop while you're ahead."
         ],
         "Floor3": [
-            "We're nearly halfway to floor 7.",
-            "Mind the fog!"
+            "It gets darker and darker... I can barely see you.",
+            "It's not too late to turn back!"
         ],
         "Floor4": [
-            "It's getting dark down here, but you may want to start conserving torches as it will only get worse.",
-            "Mind the fog!"
+            "If the fog closes in... who knows what will happen. Maybe save a torch.",
+            "Alternatively, you can stop now!"
         ],
         "Floor5": [
-            "Only three more floors remain. Make sure you have the best possible equipment before moving on, though.",
-            "Mind the fog!"
+            "Only three more floors remain... you really want to see this Warden",
+            "I understand, I was like you once...",
         ],
         "Floor6": [
-            "We're getting close, I can sense it.",
-            "Mind the fog!"
+            "Ah, the end is so close! I'm getting excited for you...",
+            "But maybe you shouldn't go..."
         ],
         "Floor7": [
-            "The warden's floor. Let us end this.",
-            "Mind the fog!"
+            "The Warden's floor... you've made it this far, go see what awaits",
+            "Remember, I told you you could turn back."
         ]
     },
 
