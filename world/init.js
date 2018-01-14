@@ -17,6 +17,7 @@ Array.prototype.move = function(old_index, new_index){
 //          Some magical game variables...
 //------------------------------------------------------
 var game_duration = 1800000; //how long before the fog closes in totally
+var PLAYER_NAME = ''
 
 // Modules -- #120
 var txtmd = new TextModule()
@@ -191,7 +192,7 @@ window.onload = function(){
         vndmd.revertVendorMd();
         start_game();
     });
-    
+
     var insanity = -1;
     //Slowly remove fog
     setInterval(function(){

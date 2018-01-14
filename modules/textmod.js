@@ -14,6 +14,7 @@ class TextModule {
         this.textID = "#textBox_";
         this.botBtn = "#tmbtn_bot"
         this.topBtn = "#tmbtn_top"
+        this.input = "#inputBox"
 
         //reset each parse, indicates whether player completed parse
         this.parseCompleted = false;
@@ -255,6 +256,7 @@ class TextModule {
         this.revertBtns();
         $(this.modID).hide()
         $(this.hoverID).hide()
+        $(this.input).hide()
         this.refreshFunc = null
         this.openAndChanging = false
         return this.parseCompleted
@@ -332,4 +334,21 @@ class TextModule {
         }
         $(this.textID).html(spkrtext + text)
     }
+
+    showPrompt(text, speaker, cb) {
+        this.setTextBox(text, speaker)
+        $(this.input).show()
+        $(this.modID).show()
+        $(this.input).html("<form> <input id='PLAYERNAME' type='text' name='firstname'><br>")
+        this.revertBtns()
+        var self = this
+        $(this.botBtn).html('Done').show().click(function(){
+            PLAYER_NAME = $("#PLAYERNAME").val()
+            $(self.input).hide()
+            if(typeof cb !== 'undefined'){ cb() }
+            else{ txtmd.revertTxtMd() }
+        })
+    }
+
+
 }
