@@ -59,8 +59,7 @@ function tutorialStart(){ //TODO: add fight simulation; make more interactive
             "msgs": [
                 ["trans", "You're awake at last!"],
                 ["trans", "Welcome to the dungeon. I've been trapped down here for millenia, and have learned a few tricks along the way."],
-                ["trans", "What is your name weary traveler?"],
-                ["trans", "PROMPT PLACEHOLDER"],
+                ["prompt", "What is your name weary traveler?", USER_INFO, "name"],
                 ["dec", "Would you like some instruction on how to survive?", "Yes", "No"],
                 ["trans", "Great, I'll show you the ropes."],
                 ["trans", "First, start by walking over to me. I'm about 7 steps up and 16 paces to the left"],

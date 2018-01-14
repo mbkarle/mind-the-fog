@@ -17,7 +17,7 @@ Array.prototype.move = function(old_index, new_index){
 //          Some magical game variables...
 //------------------------------------------------------
 var game_duration = 1800000; //how long before the fog closes in totally
-var PLAYER_NAME = ''
+var USER_INFO = {}
 
 // Modules -- #120
 var txtmd = new TextModule()
@@ -153,14 +153,14 @@ var pitActive;
 
 //LetsiGO!
 var DEVUTILS = true
-// key listener
 if(DEVUTILS){ dev_keys() }
-else{ window.addEventListener("keydown", move, false); }
+// key listener
+window.addEventListener("keydown", move, false);
 
 window.onload = function(){
     start_combatModule = document.getElementById('combat-module').innerHTML;
     start_game();
-    //tutorialStart();
+    tutorialStart();
     document.getElementById("InvOpen").onclick = function() {
         invmd.toggleMod();
         doginvmd.hideMod();

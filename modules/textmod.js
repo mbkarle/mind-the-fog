@@ -242,6 +242,9 @@ class TextModule {
             case "finfunc":
                 this.finalFunc(...args)
                 break;
+            case "prompt":
+                this.showPrompt(...args)
+                break;
             default:
                 alert("UNKNOWN TEXTMOD CASE")
                 break;
@@ -335,18 +338,36 @@ class TextModule {
         $(this.textID).html(spkrtext + text)
     }
 
-    showPrompt(text, speaker, cb) {
+    showPrompt(text, saveobj, savekey, cb, speaker) {
+        // Display text in text box (above input box)
         this.setTextBox(text, speaker)
+        // Set input html
+        $(this.input).html("<form id='TXTFORM'> <input id='TXTMDINPUT' type='text' name='firstname'><br>")
+        // Disable form submit
+        $('#TXTFORM').submit(function() {
+          return false;
+        });
+        // Show the input and box
         $(this.input).show()
         $(this.modID).show()
-        $(this.input).html("<form> <input id='PLAYERNAME' type='text' name='firstname'><br>")
+
+        // Remove the normal key listeners
+        window.removeEventListener('keydown', move)
+
+        // Show button and save the input to the @saveloc
         this.revertBtns()
         var self = this
         $(this.botBtn).html('Done').show().click(function(){
-            PLAYER_NAME = $("#PLAYERNAME").val()
+            // save input
+            saveobj[savekey] = $("#TXTMDINPUT").val()
+            // hide the input
             $(self.input).hide()
+            // restore move listener
+            window.addEventListener('keydown', move, false);
+            // call the cbs
             if(typeof cb !== 'undefined'){ cb() }
             else{ txtmd.revertTxtMd() }
+
         })
     }
 

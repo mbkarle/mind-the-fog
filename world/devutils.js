@@ -8,8 +8,6 @@ function dev_keys() {
     window.addEventListener('keydown', devMove, false);
 
     function devMove(e) {
-        move(e);
-
         // Add dev keys here!
         var room = room_list[curr_floor][curr_room]
         var map = room.room_map
