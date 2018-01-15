@@ -14,6 +14,7 @@ class SpellTreeModule {
     }
 
     refreshMod(){
+        var thisModule = this;
         $(this.modID).html('')
         for(var spell in Object.getOwnPropertyNames(SPELLTREE)){
             if(typeof Object.getOwnPropertyNames(SPELLTREE)[spell] != 'function'){
@@ -32,7 +33,14 @@ class SpellTreeModule {
                 left = 35 + '%';
             }
             var toDisplay;
-            if(hero.level < SPELLTREE[this_spell]['level']){
+            function isLearnable(spellName){
+            
+            var learnable = (hero.levelCheck() >= SPELLTREE[spellName]['level'] &&
+                ((SPELLTREE[spellName]['karma'] >= 0 && hero.karma >= SPELLTREE[spellName]['level'] - 3) ||
+                (SPELLTREE[spellName]['karma'] <= 0 && hero.karma <= SPELLTREE[spellName]['level'] * -1 + 3)));
+            return learnable;
+            }
+            if(!isLearnable(Object.getOwnPropertyNames(SPELLTREE)[spell])){
               toDisplay = "?";
             }
             else{
@@ -44,22 +52,18 @@ class SpellTreeModule {
             }
             $(objid).attr('this_spell', this_spell);
             $(objid).click(function(){
-                console.log($(this).attr('this_spell'))
-                console.log(SPELLTREE[$(this).attr('this_spell')])
-                $(this.modID).html("<div style='text-align:center;font-size:12px;font-family:cursive;'>" +
+                $(thisModule.modID).html("<div style='text-align:center;font-size:12px;font-family:cursive;'>" +
                 $(this).attr('this_spell') + "<br><br>" +
                 SPELLTREE[$(this).attr('this_spell')]['description'] + "<br><br> Required Level: " +
                 SPELLTREE[$(this).attr('this_spell')]['level'] + "<div id='closeWindow' class='interact'>Close</div></div>");
-                $(this.modID).append("<div id='learn" + spell + "' class='interact' style='left:0; width:40px;display:none;'>Learn</div>");
+                $(thisModule.modID).append("<div id='learn" + spell + "' class='interact' style='left:0; width:40px;display:none;'>Learn</div>");
 
                 var learnID = '#learn' + spell;
                 $(learnID).attr('this_spell', $(this).attr('this_spell'));
                 $("#closeWindow").click(function(){
                     refreshOpenMods();
                 })
-                if(!SPELLTREE[$(this).attr('this_spell')]['learned'] && hero.level >= SPELLTREE[$(this).attr('this_spell')]['level'] &&
-                ((SPELLTREE[$(this).attr('this_spell')]['karma'] >= 0 && hero.karma >= SPELLTREE[$(this).attr('this_spell')]['level'] - 3) ||
-                (SPELLTREE[$(this).attr('this_spell')]['karma'] <= 0 && hero.karma <= SPELLTREE[$(this).attr('this_spell')]['level'] * -1 + 3))){
+                if(!SPELLTREE[$(this).attr('this_spell')]['learned'] && isLearnable($(this).attr('this_spell'))){
                     $(learnID).show();
                     $(learnID).click(function(){
                         SPELLTREE[$(this).attr('this_spell')]['learned'] = true;
