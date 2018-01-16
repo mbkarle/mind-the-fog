@@ -113,6 +113,7 @@ class Trapdoor extends Location {
         var self = this
         var gatekeepWarning = function() {
             txtmd.revertTxtMd()
+            canMove = false
             self.symbol = 'C'
             self.keeperSpawned = true
             self.refreshInnerHTML()
