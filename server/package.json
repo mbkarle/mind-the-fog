@@ -1,0 +1,14 @@
+{
+  "name": "mtf_server",
+  "version": "1.0.0",
+  "description": "Mind the Fog server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alexander Karle, Matthew Karle",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
