@@ -29,3 +29,11 @@ cd server
 npm install
 npm start
 ```
+
+## Compatibility
+
+Currently, we have only tested the game on the latest versions of Firefox and Chrome.
+
+Given the large role of CSS in the game, it is quite likely that aspects may be broken in various degrees on other platforms.
+
+If you find any issues, please let us know! [Open an issue](https://github.com/akarle/mind-the-fog/issues/new) and make sure you mention the platform you are using!
