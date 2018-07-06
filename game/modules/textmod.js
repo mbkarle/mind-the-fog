@@ -353,6 +353,9 @@ class TextModule {
 
         // Remove the normal key listeners
         window.removeEventListener('keydown', move)
+        if(DEVUTILS) {
+            window.removeEventListener('keydown', dev_keys)
+        }
 
         // Show button and save the input to the @saveloc
         this.revertBtns()
@@ -363,7 +366,10 @@ class TextModule {
             // hide the input
             $(self.input).hide()
             // restore move listener
-            window.addEventListener('keydown', move, false);
+            window.addEventListener('keydown', move, false)
+            if(DEVUTILS) {
+                window.addEventListener('keydown', dev_keys, false)
+            }
             // call the cbs
             if(typeof cb !== 'undefined'){ cb() }
             else{ txtmd.revertTxtMd() }

@@ -153,7 +153,9 @@ var pitActive;
 
 //LetsiGO!
 var DEVUTILS = true
-if(DEVUTILS){ dev_keys() }
+if(DEVUTILS){
+    window.addEventListener("keydown", dev_keys, false);
+}
 // key listener
 window.addEventListener("keydown", move, false);
 
