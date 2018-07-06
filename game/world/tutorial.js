@@ -15,6 +15,9 @@ function tutorialStart(){ //TODO: add fight simulation; make more interactive
     room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY, torchlight, fog_radius);
 
     // fade in as if from a dream
+    $("#GUI-panel").fadeOut(1).fadeIn(4000)
+    $("#InvOpen").fadeOut(1).fadeIn(4000)
+    $("#TreeOpen").fadeOut(1).fadeIn(4000)
     $("#worldMap").fadeOut(1).fadeIn(4000, function(){
 
         // extra tutorial function, if go this route
