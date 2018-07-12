@@ -20,7 +20,7 @@ Hopefully eventually we'll have a website running up at [mindthefog.com](http://
 
 The easiest way to play is just to open [game/index.html](game/index.html) in a browser. Believe it or not, this should work!
 
-**Caveat:** Cookies do not work in this mode [as file:// is not supported](https://stackoverflow.com/a/8180656). To support saves between games, see server play below!
+**Caveat:** Cookies do not work in this mode [as file:// is not supported](https://stackoverflow.com/a/6232366). To support saves between games, see server play below!
 
 ### Server Play
 
