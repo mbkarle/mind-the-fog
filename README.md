@@ -20,6 +20,8 @@ Hopefully eventually we'll have a website running up at [mindthefog.com](http://
 
 The easiest way to play is just to open [game/index.html](game/index.html) in a browser. Believe it or not, this should work!
 
+**Caveat:** Cookies do not work in this mode [as file:// is not supported](https://stackoverflow.com/a/8180656). To support saves between games, see server play below!
+
 ### Server Play
 
 If you want to test out our simple server, or you want to host the game for all computers on your network, we've added our server to this repo as well!
