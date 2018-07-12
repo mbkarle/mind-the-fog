@@ -17,7 +17,16 @@ Array.prototype.move = function(old_index, new_index){
 //          Some magical game variables...
 //------------------------------------------------------
 var game_duration = 1800000; //how long before the fog closes in totally
-var USER_INFO = {}
+
+// Restore old game info
+if (typeof Cookies.get('USER_INFO') === "undefined") {
+    console.log("Couldn't find USER_INFO in cookies, init to {}")
+    USER_INFO = {}
+} else {
+    USER_INFO = JSON.parse(Cookies.get('USER_INFO'))
+    console.log("Restored game from old cookie:")
+    console.log(USER_INFO)
+}
 
 // Modules -- #120
 var txtmd = new TextModule()
@@ -156,8 +165,14 @@ var DEVUTILS = true
 if(DEVUTILS){
     window.addEventListener("keydown", dev_keys, false);
 }
+
 // key listener
 window.addEventListener("keydown", move, false);
+
+// Add recurring save
+setInterval(function() {
+  Cookies.set('USER_INFO', USER_INFO);
+}, 10000);
 
 window.onload = function(){
     start_combatModule = document.getElementById('combat-module').innerHTML;
