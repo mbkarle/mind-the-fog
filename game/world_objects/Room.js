@@ -26,7 +26,7 @@ class Room {
     this.floor = floor
     this.tier = tier
     this.darkness = tierToDarkness(tier)
-    this.fogFreeRoom = (tier == 0)
+    this.fogFreeRoom = (tier === 0)
 
     this.roomMap = this.buildRoom(roomType, this.locations, this.itemList, this.tier, floor, npcRoom)
     this.roomWidth = this.roomMap[0].length
@@ -345,7 +345,7 @@ class Room {
 function makeNormalRoom (height, width, map, locations, itemList, tier, floor, npcRoom) {
   map = buildRoomOfSize(height, width)
 
-  if (roomList[floor].length == npcRoom && floor % 2 == 1) {
+  if (roomList[floor].length === npcRoom && floor % 2 === 1) {
     locations.push('pit')
   }
 
@@ -382,9 +382,9 @@ function makeNormalRoom (height, width, map, locations, itemList, tier, floor, n
       case 'pit':
         var thisNPC
         var npcDiscoverable = true
-        if (floor == 1 && !NPCS['shieldMaker']['active']) {
+        if (floor === 1 && !NPCS['shieldMaker']['active']) {
           thisNPC = NPCS['shieldMaker']
-        } else if (floor == 3 && !NPCS['alchemist']['active']) {
+        } else if (floor === 3 && !NPCS['alchemist']['active']) {
           thisNPC = NPCS['alchemist']
         }
         // floor 5 dog trainer
@@ -469,13 +469,13 @@ function tierToNumEnemies (tier) {
 
 // copy me down
 function tierToItems (tier) {
-  if (tier == 1) {
+  if (tier === 1) {
     return itemList1
-  } else if (tier == 2) {
+  } else if (tier === 2) {
     return itemList2
-  } else if (tier == 3) {
+  } else if (tier === 3) {
     return itemList3
-  } else if (tier == 4) {
+  } else if (tier === 4) {
     return itemList4
   }
 }
@@ -489,13 +489,13 @@ function tierToXp (tier) {
 function tierToEnemies (tier) {
   // TODO: randomize using larger lists and numEnemies
   var enemies = []
-  if (tier == 1) {
+  if (tier === 1) {
     enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre, Cultist, Bandit, DarkSquire]
-  } else if (tier == 2) {
+  } else if (tier === 2) {
     enemies = [Sorcerer, DireRat2, Ogre, Vagrant, HellHound, Werewolf, slime, ferBeast, pillager]
-  } else if (tier == 3) {
+  } else if (tier === 3) {
     enemies = [pillager, frostGiant, smallWyrm, DisOfMoranos, DarkKnight, CrimsonRider]
-  } else if (tier == 4) {
+  } else if (tier === 4) {
     enemies = [AncientWyrm, Moranos, Reaper, DreadPirate, DarkLord, smallWyrm, CrimsonRider]
   } else {
     enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre, Vagrant, HellHound, Werewolf, slime, frostGiant, ferBeast, smallWyrm, pillager]
@@ -510,17 +510,17 @@ function tierToLocations (tier, maxLocs) {
   var addedLocs = []
   if (typeof maxLocs === 'undefined') {
     var locationList = ['chest', 'trapdoor', 'chest']
-  } else if (maxLocs == 1) {
+  } else if (maxLocs === 1) {
     var locationList = ['trapdoor']
-  } else if (maxLocs == 2 || maxLocs == 3) {
+  } else if (maxLocs === 2 || maxLocs === 3) {
     var locationList = ['chest']
   }
 
-  if (tier == 1) {
+  if (tier === 1) {
     possAddedLocs = ['chest', 'statue', 'fountain', 'merchant', 'trapdoor' ]
-  } else if (tier == 2) {
+  } else if (tier === 2) {
     possAddedLocs = ['chest', 'cave', 'fountain', 'altar', 'merchant', 'trapdoor']
-  } else if (tier == 3) {
+  } else if (tier === 3) {
     possAddedLocs = ['chest', 'cave', 'altar', 'merchant', 'trapdoor']
   } else {
     possAddedLocs = ['chest', 'cave', 'altar', 'merchant', 'trapdoor']
@@ -537,18 +537,18 @@ function tierToLocations (tier, maxLocs) {
     for (var i = 0; i < numAddedLocs; i++) {
       locToAdd = Math.floor(Math.random() * possAddedLocs.length)
       addedLocs.push(possAddedLocs[locToAdd])
-      // if(possAddedLocs[locToAdd] == 'pit'){
+      // if(possAddedLocs[locToAdd] === 'pit'){
       //   pitActive = true;
       //   console.log("pit is present");
       // }
       for (var j = 0; j < i; j++) { // no repeats in addedLocs !
-        if (addedLocs[i] == addedLocs[j]) {
+        if (addedLocs[i] === addedLocs[j]) {
           addedLocs.splice(i, 1)
           i--
         }
       }
     }
-    //    if(addedLocs.length == numAddedLocs){
+    //    if(addedLocs.length === numAddedLocs){
     for (var n = 0; n < addedLocs.length; n++) {
       locationList.push(addedLocs[n])
     }

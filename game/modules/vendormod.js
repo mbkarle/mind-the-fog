@@ -11,13 +11,13 @@ class VendorModule {
   }
 
   openModForInvTransfer (buyerInv, sellerInv, sellAvail, buyFunc, buyBtnTxt, buyFrac = 1, sellFrac = 0.8) {
-    // buyerInv == the person doing the buying
-    // sellerInv == the person doing the selling
-    // sellAvail == show tab or not
-    // buyFunc == func to execute on buy
-    // buyBtnTxt == button text on the item buttons
-    // buyFrac == buy things full price
-    // sellFrac == sell at discount
+    // buyerInv === the person doing the buying
+    // sellerInv === the person doing the selling
+    // sellAvail === show tab or not
+    // buyFunc === func to execute on buy
+    // buyBtnTxt === button text on the item buttons
+    // buyFrac === buy things full price
+    // sellFrac === sell at discount
 
     canMove = false
 

@@ -70,7 +70,7 @@ class InventoryModule {
     // The equipped section ------------------------------------------------
     var inventoryMessage = 'Equipped: <br><br>'
     for (var attribute in eqinv.inv) {
-      if (eqinv.inv[attribute] != null) {
+      if (eqinv.inv[attribute] !== null) {
         inventoryMessage += attribute + ': ' + eqinv.inv[attribute].name + '<br><br>'
       }
     }

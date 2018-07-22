@@ -41,12 +41,12 @@ function updateLocFacing (keyPress) {
 }
 
 function move (e) {
-  if (canMove == true) {
+  if (canMove === true) {
     var didMove = false
     var oldPos = [avatarX, avatarY]
     var room = roomList[currFloor][currRoom]
     var map = room.roomMap
-    if (e.keyCode == '87' && avatarY > 0) { // up
+    if (e.keyCode === 87 && avatarY > 0) { // up
       lastKeyPress = 'w'
       if (map[avatarY - 1][avatarX].passable) {
         map[avatarY][avatarX].heroPresent = false
@@ -54,7 +54,7 @@ function move (e) {
         map[avatarY][avatarX].heroPresent = true
         didMove = true
       }
-    } else if (e.keyCode == '83' && avatarY < room.roomHeight - 1) { // down
+    } else if (e.keyCode === 83 && avatarY < room.roomHeight - 1) { // down
       lastKeyPress = 's'
       if (map[avatarY + 1][avatarX].passable) {
         map[avatarY][avatarX].heroPresent = false
@@ -62,7 +62,7 @@ function move (e) {
         map[avatarY][avatarX].heroPresent = true
         didMove = true
       }
-    } else if (e.keyCode == '65' && avatarX > 0) { // left
+    } else if (e.keyCode === 65 && avatarX > 0) { // left
       lastKeyPress = 'a'
       if (map[avatarY][avatarX - 1].passable) {
         map[avatarY][avatarX].heroPresent = false
@@ -70,7 +70,7 @@ function move (e) {
         map[avatarY][avatarX].heroPresent = true
         didMove = true
       }
-    } else if (e.keyCode == '68' && avatarX < room.roomWidth - 1) { // right
+    } else if (e.keyCode === 68 && avatarX < room.roomWidth - 1) { // right
       lastKeyPress = 'd'
       if (map[avatarY][avatarX + 1].passable) {
         map[avatarY][avatarX].heroPresent = false
@@ -78,7 +78,7 @@ function move (e) {
         map[avatarY][avatarX].heroPresent = true
         didMove = true
       }
-    } else if (e.keyCode == '69') {
+    } else if (e.keyCode === 69) {
       // e for interact (#81 issues)
       // do a checkLocation with the locFacing
       checkLocation(locFacing[0], locFacing[1])
@@ -120,7 +120,7 @@ function move (e) {
   }
 
   // keypresses outside of canMove
-  if (e.keyCode == '84') { // t for torch
+  if (e.keyCode === 84) { // t for torch
     // If dont have a torch
     if (!torchlight && hero.inv.useTorch()) {
       console.log('Activating torch')
@@ -158,21 +158,21 @@ function move (e) {
       }, 10000)
     }
   }
-  if (e.keyCode == 73) { // i for inventory
+  if (e.keyCode === 73) { // i for inventory
     invmd.toggleMod()
     doginvmd.hideMod() // there can only be one!
     refreshOpenMods()
-  } else if (doginvmd.avail && e.keyCode == 70) { // f for friend (dog)
+  } else if (doginvmd.avail && e.keyCode === 70) { // f for friend (dog)
     doginvmd.toggleMod()
     invmd.hideMod()
     refreshOpenMods()
-  } else if (e.keyCode == 77) {
+  } else if (e.keyCode === 77) {
     splmd.toggleMod()
     refreshOpenMods()
   }
-  /* if(fogRadius == 1 && fogDeath == -1){
+  /* if(fogRadius === 1 && fogDeath === -1){
       fogDeath = setInterval(function(){
-         if(fogRadius == 1 && hero.vitality > 0){
+         if(fogRadius === 1 && hero.vitality > 0){
              Damage({strength: 5}, hero);
          }
          else if(hero.vitality <= 0){

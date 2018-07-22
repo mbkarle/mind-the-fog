@@ -100,7 +100,7 @@ class CombatModule {
 
   refreshOnDamage (target) {
     $(this.defTxt).html('Shield: ' + heroShield.vitality)
-    if (target.objid != 'defendText') {
+    if (target.objid !== 'defendText') {
       var targetHealthFrac = target.vitality / target.maxVitality * 100
       var targetHealthObjid = '#' + target.objid + 'HealthBar'
       $(targetHealthObjid).html(

@@ -22,9 +22,9 @@ class SpellTreeModule {
         var objid = '#' + SPELLTREE[thisSpell]['objid']
         var top = 60 * (SPELLTREE[Object.getOwnPropertyNames(SPELLTREE)[spell]]['level'] - 2)
         var left
-        if (SPELLTREE[Object.getOwnPropertyNames(SPELLTREE)[spell]]['karma'] == 1) {
+        if (SPELLTREE[Object.getOwnPropertyNames(SPELLTREE)[spell]]['karma'] === 1) {
           left = 5 + '%'
-        } else if (SPELLTREE[Object.getOwnPropertyNames(SPELLTREE)[spell]]['karma'] == -1) {
+        } else if (SPELLTREE[Object.getOwnPropertyNames(SPELLTREE)[spell]]['karma'] === -1) {
           left = 64 + '%'
         } else {
           left = 35 + '%'

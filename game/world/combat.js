@@ -51,7 +51,7 @@ function fightEnemy (hero, enemy) {
 
   // Start the onslaught
   enemyAttack = setInterval(function () {
-    if (heroProtected == true) {
+    if (heroProtected === true) {
       Damage(enemy, heroShield)
     } else {
       Damage(enemy, hero)
@@ -85,21 +85,21 @@ function fightEnemy (hero, enemy) {
 
       // Handle effect item buffs ----------------
       var weapon = hero.equipInv.inv.weapon
-      if (weapon != null && weapon.constructorName == 'effectItem') {
+      if (weapon !== null && weapon.constructorName === 'effectItem') {
         console.log('buffing up')
         weapon.buffUp(hero)
         weapon.debuffUp(enemy)
       }
       var armor = hero.equipInv.inv.armor
-      if (armor != null) {
-        if (armor.constructorName == 'effectItem') {
+      if (armor !== null) {
+        if (armor.constructorName === 'effectItem') {
           armor.buffUp(hero)
           armor.debuffUp(enemy)
         }
       }
       var headgear = hero.equipInv.inv.headgear
-      if (headgear != null) {
-        if (headgear.constructorName == 'effectItem') {
+      if (headgear !== null) {
+        if (headgear.constructorName === 'effectItem') {
           headgear.buffUp(hero)
           headgear.debuffUp(enemy)
         }
@@ -117,7 +117,7 @@ function fightEnemy (hero, enemy) {
 
   // handle defense
   document.getElementById('defend').onclick = function () {
-    if (heroProtected == false && heroShield.vitality > 0 && heroShield.shieldReady) {
+    if (heroProtected === false && heroShield.vitality > 0 && heroShield.shieldReady) {
       heroShield.shieldReady = false
       cmbmd.startShieldUp()
       shieldUp = setTimeout(function () {
@@ -133,7 +133,7 @@ function fightEnemy (hero, enemy) {
 
   // if you click the module, stop shielding
   document.getElementById('combat-module').onclick = function () {
-    if (heroShield.shieldReady == false && heroProtected == true || heroShield.vitality <= 0) {
+    if (heroShield.shieldReady === false && heroProtected === true || heroShield.vitality <= 0) {
       window.clearInterval(shielded)
       window.clearTimeout(shieldUp)
       shieldUp = -1
@@ -169,7 +169,7 @@ function exitCombat (room, customCombat) {
   refreshOpenMods()
 
   // If not a room-clearing fight
-  if (room.numEnemies > 0 || customCombat == true) {
+  if (room.numEnemies > 0 || customCombat === true) {
     $('#worldMap').show()
     txtmd.revertTxtMd()
   }
@@ -211,7 +211,7 @@ function exitCombat (room, customCombat) {
 function Damage (source, target) {
   // Check if custom combat (determines mob-drops)
   var customCombat = false
-  if (target.constructorName == 'Boss') {
+  if (target.constructorName === 'Boss') {
     customCombat = true
   }
   room = roomList[currFloor][currRoom]
@@ -225,7 +225,7 @@ function Damage (source, target) {
   refreshOpenMods()
 
   // if the source was a hero (check based on if target is enemy or boss), and target dead
-  if ((target.constructorName == 'Enemy' || customCombat) && target.vitality <= 0) {
+  if ((target.constructorName === 'Enemy' || customCombat) && target.vitality <= 0) {
     // set vit to 0 (nonneg)
     target.vitality = 0
 

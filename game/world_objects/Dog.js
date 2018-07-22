@@ -199,7 +199,7 @@ function aStarSearch (startLoc, endLoc, map) {
     var neighs = getValidNeighsFromHtmlID(current, map)
 
     // If its the end, return
-    if (current == endLoc) {
+    if (current === endLoc) {
       return reconstructPath(cameFrom, current)
     }
 

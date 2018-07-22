@@ -61,11 +61,11 @@ class TextModule {
         this.posID = 'combat'
         // need to determine from hero how many spells
         // to leave space for
-        if (hero.spells.length % 2 != 0) {
+        if (hero.spells.length % 2 !== 0) {
           $(this.modID).animate({
             top: 300 + 50 * hero.spells.length + 'px'
           })
-        } else if (hero.spells.length % 2 == 0 && hero.spells.length != 0) {
+        } else if (hero.spells.length % 2 === 0 && hero.spells.length !== 0) {
           $(this.modID).animate({
             top: 300 + 50 * (hero.spells.length - 1) + 'px'
           })
@@ -210,7 +210,7 @@ class TextModule {
 
     // go through all messages, build nested function
     // easiest to do by recursively calling this function
-    if (msgs.length == 1) {
+    if (msgs.length === 1) {
       // base case! no recursive cb
       // execute the function in arg0 using type map with all else as args
       var args = [...msgs[0].splice(1), speaker]

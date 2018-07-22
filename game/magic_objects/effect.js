@@ -164,7 +164,7 @@ class damageDebuff extends Debuff {
         }, self.interval)
         if (self.target.vitality <= 0 || hero.vitality <= 0) {
           window.clearInterval(damageInterval)
-          if (self.target == hero) {
+          if (self.target === hero) {
             hero.vitality = 1
           }
         } else {

@@ -8,7 +8,7 @@ class Floor {
     this.fightRoomTypes = ['MidNorm', 'HorizHallNorm', 'VertHallNorm', 'SmallNorm', 'norm']
     this.safeRoomTypes = ['MidNorm', 'HorizHallNorm', 'VertHallNorm', 'SmallNorm', 'Exit']
     this.buildFloor = function () {
-      if (this.custom == null) {
+      if (this.custom === null) {
         for (var i = 0; i < this.numRooms; i++) {
           var type
           var maxLocs
@@ -16,9 +16,9 @@ class Floor {
           if (Math.random() < 0.75) {
             type = this.fightRoomTypes[Math.floor(Math.random() * this.fightRoomTypes.length)]
 
-            if (type == 'MidNorm' || type == 'HorizHallNorm' || type == 'VertHallNorm') {
+            if (type === 'MidNorm' || type === 'HorizHallNorm' || type === 'VertHallNorm') {
               maxLocs = Math.ceil(Math.random() * 2) + 1
-            } else if (type == 'SmallNorm') {
+            } else if (type === 'SmallNorm') {
               maxLocs = 1
             } else {
               maxLocs = undefined
@@ -26,9 +26,9 @@ class Floor {
             roomList[this.floorNum][i] = new FightRoom('', type, this.tierList[Math.floor(Math.random() * this.tierList.length)], this.floorNum, maxLocs, this.npcRoom)
           } else {
             type = this.safeRoomTypes[Math.floor(Math.random() * this.safeRoomTypes.length)]
-            if (type == 'MidNorm', 'HorizHallNorm', 'VertHallNorm') {
+            if (type === 'MidNorm' || type === 'HorizHallNorm' || type === 'VertHallNorm') {
               maxLocs = Math.ceil(Math.random() * 2) + 1
-            } else if (type == 'SmallNorm') {
+            } else if (type === 'SmallNorm') {
               maxLocs = 1
             } else {
               maxLocs = undefined
@@ -53,14 +53,14 @@ class Floor {
       function buildDoors (self, roomList, i, numRooms) {
         if (i < numRooms - 1) {
           var nextRoomDoor = new Door(Math.floor(roomList[self.floorNum][i].roomExit[0]), roomList[self.floorNum][i].roomWidth - 1, i, i + 1)
-          if (roomList[self.floorNum][i].constructor.name == 'SafeRoom') {
+          if (roomList[self.floorNum][i].constructor.name === 'SafeRoom') {
             nextRoomDoor.fog = false
           }
           roomList[self.floorNum][i].roomMap[nextRoomDoor.rowID][nextRoomDoor.colID] = nextRoomDoor
         }
         if (i > 0) {
           var prevRoomDoor = new Door(roomList[self.floorNum][i].roomEntry[0], 0, i, i - 1)
-          if (roomList[self.floorNum][i].constructor.name == 'SafeRoom') {
+          if (roomList[self.floorNum][i].constructor.name === 'SafeRoom') {
             prevRoomDoor.fog = false
           }
           roomList[self.floorNum][i].roomMap[prevRoomDoor.rowID][prevRoomDoor.colID] = prevRoomDoor

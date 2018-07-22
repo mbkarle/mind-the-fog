@@ -45,7 +45,7 @@ function tutorialStart () { // TODO: add fight simulation; make more interactive
 
       function moveAndCheck (e) {
         move(e)
-        if (e.keyCode == '69') { // if you leave the room without approaching tutorial
+        if (e.keyCode === 69) { // if you leave the room without approaching tutorial
           window.removeEventListener('keydown', moveAndCheck)
           window.addEventListener('keydown', move, false)
         }

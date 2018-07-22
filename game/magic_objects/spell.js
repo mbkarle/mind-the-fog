@@ -105,7 +105,7 @@ class Upgrade {
               console.log(SPELL_UPGRADES[this.name][target]['effectAdd']['effect'])
               ACTIVE_SPELL_EFFECTS[hero.spells[i].name][SPELL_UPGRADES[this.name][target]['effectAdd']['type']].push(SPELL_UPGRADES[this.name][target]['effectAdd']['effect'])
             }
-          } else if (target == 'hero') {
+          } else if (target === 'hero') {
             for (var n = 0; n < SPELL_UPGRADES[this.name][target]['characteristics'].length; n++) {
               hero[SPELL_UPGRADES[this.name][target]['characteristics'][n]] += SPELL_UPGRADES[this.name][target]['changes'][n]
             }

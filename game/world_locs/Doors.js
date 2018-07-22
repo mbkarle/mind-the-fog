@@ -24,7 +24,7 @@ class Door extends Location { // highly experimental content at hand here
 
       // change currRoom + update hero position coords
       currRoom = self.nextRoomID
-      if (avatarX == 1) {
+      if (avatarX === 1) {
         avatarX = roomList[currFloor][currRoom].roomWidth - 2
         avatarY = roomList[currFloor][currRoom].roomExit[0]
         updateLocFacing(lastKeyPress)

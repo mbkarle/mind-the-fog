@@ -27,7 +27,7 @@ class Item {
   genHoverInfoHTML () {
     var innerhtml = this.name + '<br>'
     for (var attribute in this) {
-      if (typeof this[attribute] === 'number' && attribute != 'value') {
+      if (typeof this[attribute] === 'number' && attribute !== 'value') {
         if (this[attribute] >= 0) {
           innerhtml += attribute + ': +' + this[attribute] + '<br>'
         } else { // issue #49
@@ -189,7 +189,7 @@ class ShieldUpgrade {
   genHoverInfoHTML () {
     var innerhtml = this.name + '<br>'
     for (var attribute in this) {
-      if (typeof this[attribute] === 'number' && attribute != 'value' && attribute != 'tier') {
+      if (typeof this[attribute] === 'number' && attribute !== 'value' && attribute !== 'tier') {
         innerhtml += attribute + ': ' + this[attribute] + '<br>'
       }
     }
@@ -203,7 +203,7 @@ class ShieldUpgrade {
     hero.shieldUpgradeName = this.name // set hero's shield upg
     // set stats to be this shield
     for (var attribute in SHIELDS[this.name]) {
-      if (attribute != 'value') {
+      if (attribute !== 'value') {
         heroShield[attribute] = SHIELDS[this.name][attribute]
       }
     }
@@ -212,7 +212,7 @@ class ShieldUpgrade {
   unequipShield () {
     hero.shieldUpgradeName = 'wood' // reset hero's shield upg
     for (var attribute in SHIELDS['wood']) {
-      if (attribute != 'value') {
+      if (attribute !== 'value') {
         heroShield[attribute] = SHIELDS['wood'][attribute]
       }
     }
@@ -226,7 +226,7 @@ class ShieldUpgrade {
 
 // Load in shields into NPCS
 for (var shield in SHIELDS) {
-  if (shield != 'wood') {
+  if (shield !== 'wood') {
     var newShield = new ShieldUpgrade(shield)
     var id = newShield.name
     NPCS['shieldMaker']['merchandise'][id] = newShield

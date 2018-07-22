@@ -8,7 +8,7 @@ function devKeys (e) {
   // Add dev keys here!
   var room = roomList[currFloor][currRoom]
   var map = room.roomMap
-  if (e.keyCode == '66') {
+  if (e.keyCode === '66') {
     console.log('Dev tools activated')
     console.log("So...., you're either a developer, or a cheater, or just lazy...")
     hero.inv.add(ITEMS_LOADED['MasterSword']) // give absurd weapons
@@ -20,7 +20,7 @@ function devKeys (e) {
     clearAllFog(map)
     room.clearAllFogTimeouts()
     room.buildRoomHTML(avatarX, avatarY, torchlight, fogRadius)
-  } else if (e.keyCode == '189') {
+  } else if (e.keyCode === '189') {
     // '-' removes monsters!
     // for debugging only
     openAlert('****removing monsters from the game!****')
@@ -29,7 +29,7 @@ function devKeys (e) {
         roomList[i][j].fightChance = 0
       }
     }
-  } else if (e.keyCode == '187') {
+  } else if (e.keyCode === '187') {
     // '=' clears room!
     // for debugging only
     openAlert('****clearing room!****')

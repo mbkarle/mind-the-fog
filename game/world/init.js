@@ -215,9 +215,9 @@ window.onload = function () {
     if (!roomList[currFloor][currRoom].roomCleared && fogRadius > 1) {
       oldFog = fogRadius
       fogRadius--
-      if (fogRadius == 1 && !torchlight && insanity == -1) {
+      if (fogRadius === 1 && !torchlight && insanity === -1) {
         insanity = setInterval(function () {
-          if (fogRadius == 1 && !torchlight && hero.vitality > 0 && !roomList[currFloor][currRoom].roomCleared) {
+          if (fogRadius === 1 && !torchlight && hero.vitality > 0 && !roomList[currFloor][currRoom].roomCleared) {
             hero.vitality -= Math.floor(hero.maxVitality / 5)
             if (!cmbmd.open) {
               $('#worldMap').fadeOut(10).fadeIn(1000)
