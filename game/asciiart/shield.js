@@ -4,4 +4,4 @@ let ASCII_SHIELD = String.raw`
 |_||_|
 \ \/ /
  \__/
-`;
+`

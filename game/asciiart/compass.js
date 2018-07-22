@@ -10,7 +10,7 @@ let ASCII_COMPASS_N = String.raw`
        -_             _-     
          --._     _.--       
              ''-''         
-`;
+`
 let ASCII_COMPASS_S = String.raw`
             _..-.._          
         _--'       '--_      
@@ -23,7 +23,7 @@ let ASCII_COMPASS_S = String.raw`
        -_    '.|.'    _-     
          --._  v  _.--       
              ''-''         
-`;
+`
 let ASCII_COMPASS_E = String.raw`
             _..-.._          
         _--'       '--_      
@@ -36,7 +36,7 @@ let ASCII_COMPASS_E = String.raw`
        -_             _-     
          --._     _.--       
              ''-''         
-`;
+`
 let ASCII_COMPASS_W = String.raw`
             _..-.._          
         _--'       '--_      
@@ -49,18 +49,4 @@ let ASCII_COMPASS_W = String.raw`
        -_             _-     
          --._     _.--       
              ''-''         
-`;
-
-/* ORIGINAL:
-            _..-.._          
-        _--'  .^.  '--_      
-       -     ' | '     -     
-      /        |        \    
-     :   .  //'-'\\  .   :   
-     | <:---|. O .|---:> |   
-     :   '  \\.-.//  '   :   
-      \        |        /    
-       -_    '.|.'    _-     
-         --._  v  _.--       
-             ''-''         
-*/
+`

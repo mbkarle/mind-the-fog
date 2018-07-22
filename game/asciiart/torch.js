@@ -10,7 +10,7 @@ let TORCH_4 = String.raw`
           |.|           
           |:|           
           \_/           
-`;
+`
 let TORCH_3 = String.raw`
                         
                         
@@ -23,7 +23,7 @@ let TORCH_3 = String.raw`
           |.|           
           |:|           
           \_/           
-`;
+`
 let TORCH_2 = String.raw`
                         
                         
@@ -36,7 +36,7 @@ let TORCH_2 = String.raw`
           |.|           
           |:|           
           \_/           
-`;
+`
 let TORCH_1 = String.raw`
                         
                         
@@ -49,7 +49,7 @@ let TORCH_1 = String.raw`
           |.|           
           |:|           
           \_/           
-`;
+`
 let TORCH_0 = String.raw`
                         
                         
@@ -62,6 +62,6 @@ let TORCH_0 = String.raw`
           |.|           
           |:|           
           \_/           
-`;
+`
 
 var TORCHES = [ TORCH_0, TORCH_1, TORCH_2, TORCH_3, TORCH_4 ]
