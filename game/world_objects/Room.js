@@ -6,46 +6,46 @@
 * The boss, if applicable
 */
 class Room {
-  constructor (name, room_type, tier, floor, roomCleared, boss, fightChance, maxLocs, npcRoom) {
+  constructor (name, roomType, tier, floor, roomCleared, boss, fightChance, maxLocs, npcRoom) {
     this.name = name
     this.maxLocs = maxLocs
     if (typeof this.maxLocs === 'undefined') {
-      this.locations = tier_to_locations(tier)
+      this.locations = tierToLocations(tier)
     } else {
-      this.locations = tier_to_locations(tier, this.maxLocs)
+      this.locations = tierToLocations(tier, this.maxLocs)
     }
-    this.itemList = tier_to_items(tier)
+    this.itemList = tierToItems(tier)
     this.npcRoom = npcRoom
-    this.room_type = room_type
+    this.roomType = roomType
     this.roomCleared = roomCleared
-    this.enemy_list = tier_to_enemies(tier)
-    this.num_enemies = tier_to_num_enemies(tier)
-    this.xp = tier_to_xp(tier)
+    this.enemyList = tierToEnemies(tier)
+    this.numEnemies = tierToNumEnemies(tier)
+    this.xp = tierToXp(tier)
     this.boss = boss
     this.fightChance = fightChance
     this.floor = floor
     this.tier = tier
-    this.darkness = tier_to_darkness(tier)
-    this.fog_free_room = (tier == 0)
+    this.darkness = tierToDarkness(tier)
+    this.fogFreeRoom = (tier == 0)
 
-    this.room_map = this.buildRoom(room_type, this.locations, this.itemList, this.tier, floor, npcRoom)
-    this.room_width = this.room_map[0].length
-    this.room_height = this.room_map.length
-    this.room_entry = [Math.floor(this.room_height / (1 + Math.ceil(Math.random() * 7))), Math.floor(this.room_width / (1 + Math.ceil(Math.random() * 7)))]
-    this.room_exit = [Math.floor(this.room_height / (1 + Math.ceil(Math.random() * 7))), this.room_width - 1]
-    this.yoff = Math.floor((30 - this.room_height) / 2)
-    this.xoff = Math.floor((40 - this.room_width) / 2)
+    this.roomMap = this.buildRoom(roomType, this.locations, this.itemList, this.tier, floor, npcRoom)
+    this.roomWidth = this.roomMap[0].length
+    this.roomHeight = this.roomMap.length
+    this.roomEntry = [Math.floor(this.roomHeight / (1 + Math.ceil(Math.random() * 7))), Math.floor(this.roomWidth / (1 + Math.ceil(Math.random() * 7)))]
+    this.roomExit = [Math.floor(this.roomHeight / (1 + Math.ceil(Math.random() * 7))), this.roomWidth - 1]
+    this.yoff = Math.floor((30 - this.roomHeight) / 2)
+    this.xoff = Math.floor((40 - this.roomWidth) / 2)
 
-    center_map(this.room_map, this.yoff, this.xoff)
+    centerMap(this.roomMap, this.yoff, this.xoff)
   }
 
   howManyHeroPresents () {
     // This is a function that should NEVER be called, but is useful for debugging
-    var map = this.room_map
+    var map = this.roomMap
     var count = 0
-    for (var i = 0; i < this.room_height; i++) {
-      for (var j = 0; j < this.room_width; j++) {
-        if (map[i][j].hero_present) {
+    for (var i = 0; i < this.roomHeight; i++) {
+      for (var j = 0; j < this.roomWidth; j++) {
+        if (map[i][j].heroPresent) {
           count++
         }
       }
@@ -126,7 +126,7 @@ class Room {
         var gateKeeper = new CharDialogue(9, 30, 'gatekeeper', 'the gatekeeper', 'DungeonEntrance')
         map[gateKeeper.rowID][gateKeeper.colID] = gateKeeper
 
-        map[doge.dogY][doge.dogX].dog_present = true
+        map[doge.dogY][doge.dogX].dogPresent = true
         map[doge.dogY][doge.dogX].passable = false
 
         // after creating all special locations, turn fog off!
@@ -143,141 +143,141 @@ class Room {
   }
 
   clearAllFogTimeouts () {
-    for (var i = 0; i < this.room_map.length; i++) {
-      for (var j = 0; j < this.room_map[0].length; j++) {
-        clearInterval(this.room_map[i][j].fogTimeout)
+    for (var i = 0; i < this.roomMap.length; i++) {
+      for (var j = 0; j < this.roomMap[0].length; j++) {
+        clearInterval(this.roomMap[i][j].fogTimeout)
       }
     }
   }
 
-  buildRoomHTML (avatarX, avatarY, torchlight, fog_rad) {
+  buildRoomHTML (avatarX, avatarY, torchlight, fogRad) {
     var worldContents = ''
 
     // add fog to whole map (in case room has been seen before)
-    if (!this.fog_free_room) {
-      for (var i = 0; i < this.room_map.length; i++) {
-        for (var j = 0; j < this.room_map[0].length; j++) {
-          this.room_map[i][j].fog = true
+    if (!this.fogFreeRoom) {
+      for (var i = 0; i < this.roomMap.length; i++) {
+        for (var j = 0; j < this.roomMap[0].length; j++) {
+          this.roomMap[i][j].fog = true
         }
       }
     }
 
-    var hero_sight = fog_rad
+    var heroSight = fogRad
     if (this.roomCleared) {
-      hero_sight = this.darkness
+      heroSight = this.darkness
     }
 
     // Remove the fog around the hero
-    var neigh = this.getNeighborLocations([avatarX, avatarY], torchlight, hero_sight)
+    var neigh = this.getNeighborLocations([avatarX, avatarY], torchlight, heroSight)
     for (var i = 0; i < neigh.length; i++) {
       neigh[i].fog = false
     }
 
     // Build the worldContents HTML string
-    for (var i = 0; i < this.room_map.length; i++) {
-      for (var j = 0; j < this.room_map[0].length; j++) {
-        var symbol = this.room_map[i][j].getSymbol() // accounts for fog, dog, hero
-        worldContents += "<div id='" + this.room_map[i][j].htmlID.substring(1) + "' style='top:" + this.room_map[i][j].yCoord + 'px; left:' + this.room_map[i][j].xCoord + "px; position: absolute;'>" + symbol + '</div>'
+    for (var i = 0; i < this.roomMap.length; i++) {
+      for (var j = 0; j < this.roomMap[0].length; j++) {
+        var symbol = this.roomMap[i][j].getSymbol() // accounts for fog, dog, hero
+        worldContents += "<div id='" + this.roomMap[i][j].htmlID.substring(1) + "' style='top:" + this.roomMap[i][j].yCoord + 'px; left:' + this.roomMap[i][j].xCoord + "px; position: absolute;'>" + symbol + '</div>'
       }
     }
     $('#worldContent').html(worldContents)
   }
 
-  addFogWhenTorchBurnsOut (avX, avY, fog_rad) {
+  addFogWhenTorchBurnsOut (avX, avY, fogRad) {
     // Since the addition of "addFogBackAfterTimeout", all we need to do here
     // is find the coords that used to be in the radius of the torch and add
     // their fog back after a timeout!
-    if (!this.fog_free_room) {
-      var hero_sight = fog_rad
+    if (!this.fogFreeRoom) {
+      var heroSight = fogRad
       if (this.roomCleared) {
-        hero_sight = this.darkness
+        heroSight = this.darkness
       }
-      var torch_coords = this.getValidCoords(avX, avY, true, hero_sight)
-      var no_torch_coords = this.getValidCoords(avX, avY, false, hero_sight)
+      var torchCoords = this.getValidCoords(avX, avY, true, heroSight)
+      var noTorchCoords = this.getValidCoords(avX, avY, false, heroSight)
 
-      var coords_to_update = []
-      var haystack = JSON.stringify(no_torch_coords)
-      for (var i = 0; i < torch_coords.length; i++) {
-        var coord = torch_coords[i]
+      var coordsToUpdate = []
+      var haystack = JSON.stringify(noTorchCoords)
+      for (var i = 0; i < torchCoords.length; i++) {
+        var coord = torchCoords[i]
         if (haystack.indexOf(JSON.stringify(coord)) === -1) {
-          coords_to_update.push(coord)
+          coordsToUpdate.push(coord)
         }
       }
 
-      for (var i = 0; i < coords_to_update.length; i++) {
-        var cx = coords_to_update[i][0]
-        var cy = coords_to_update[i][1]
-        this.room_map[cy][cx].addFogBackAfterTimeout(this.tier)
+      for (var i = 0; i < coordsToUpdate.length; i++) {
+        var cx = coordsToUpdate[i][0]
+        var cy = coordsToUpdate[i][1]
+        this.roomMap[cy][cx].addFogBackAfterTimeout(this.tier)
       }
     }
   }
 
-  addFogWhenFogRadiusChanges (avX, avY, torchlight, old_rad, new_rad) {
-    var old_rad_coords = this.getValidCoords(avX, avY, torchlight, old_rad)
-    var new_rad_coords = this.getValidCoords(avX, avY, torchlight, new_rad)
+  addFogWhenFogRadiusChanges (avX, avY, torchlight, oldRad, newRad) {
+    var oldRadCoords = this.getValidCoords(avX, avY, torchlight, oldRad)
+    var newRadCoords = this.getValidCoords(avX, avY, torchlight, newRad)
 
-    var coords_to_update = []
-    var haystack = JSON.stringify(new_rad_coords)
-    for (var i = 0; i < old_rad_coords.length; i++) {
-      var coord = old_rad_coords[i]
+    var coordsToUpdate = []
+    var haystack = JSON.stringify(newRadCoords)
+    for (var i = 0; i < oldRadCoords.length; i++) {
+      var coord = oldRadCoords[i]
       if (haystack.indexOf(JSON.stringify(coord)) === -1) {
-        coords_to_update.push(coord)
+        coordsToUpdate.push(coord)
       }
     }
 
-    for (var i = 0; i < coords_to_update.length; i++) {
-      var cx = coords_to_update[i][0]
-      var cy = coords_to_update[i][1]
-      this.room_map[cy][cx].addFogBackAfterTimeout(this.tier)
+    for (var i = 0; i < coordsToUpdate.length; i++) {
+      var cx = coordsToUpdate[i][0]
+      var cy = coordsToUpdate[i][1]
+      this.roomMap[cy][cx].addFogBackAfterTimeout(this.tier)
     }
   }
 
-  updateRoomHTML (oldPos, newPos, torchlight, fog_rad) { // in [x,y] format
+  updateRoomHTML (oldPos, newPos, torchlight, fogRad) { // in [x,y] format
     // If youre in a special room that has no fog (GreatHall), you REALLY only need
     // to update the character position (no fog updates necessary!)
-    if (this.fog_free_room) {
+    if (this.fogFreeRoom) {
       var oldX = oldPos[0] // checkme
       var oldY = oldPos[1]
-      $(this.room_map[oldY][oldX].htmlID).html(this.room_map[oldY][oldX].symbol)
+      $(this.roomMap[oldY][oldX].htmlID).html(this.roomMap[oldY][oldX].symbol)
 
       var newX = newPos[0]
       var newY = newPos[1]
-      $(this.room_map[newY][newX].htmlID).html('x')
+      $(this.roomMap[newY][newX].htmlID).html('x')
     } else { // Else, theres fog work to be done
-      // hero_visible_locs need their fog timeouts cleared.
-      var hero_sight = fog_rad
+      // heroVisibleLocs need their fog timeouts cleared.
+      var heroSight = fogRad
       if (this.roomCleared) {
-        hero_sight = this.darkness
+        heroSight = this.darkness
       }
-      var hero_visible_locs = this.getNeighborLocations(newPos, torchlight, hero_sight)
-      for (var i = 0; i < hero_visible_locs.length; i++) {
-        hero_visible_locs[i].removeFogBecauseHeroPresent()
+      var heroVisibleLocs = this.getNeighborLocations(newPos, torchlight, heroSight)
+      for (var i = 0; i < heroVisibleLocs.length; i++) {
+        heroVisibleLocs[i].removeFogBecauseHeroPresent()
       }
 
-      // out_of_date_coords are coords no longer visible to the player that need
+      // outOfDateCoords are coords no longer visible to the player that need
       // their fog regenerated.
-      var out_of_date_coords = this.getOutOfDateCoords(oldPos, newPos, torchlight, hero_sight)
-      for (var i = 0; i < out_of_date_coords.length; i++) {
-        var cx = out_of_date_coords[i][0]
-        var cy = out_of_date_coords[i][1]
-        this.room_map[cy][cx].addFogBackAfterTimeout(this.tier)
+      var outOfDateCoords = this.getOutOfDateCoords(oldPos, newPos, torchlight, heroSight)
+      for (var i = 0; i < outOfDateCoords.length; i++) {
+        var cx = outOfDateCoords[i][0]
+        var cy = outOfDateCoords[i][1]
+        this.roomMap[cy][cx].addFogBackAfterTimeout(this.tier)
       }
     }
   }
 
   // Returns the actual Location objects of the visible places around a position
-  getNeighborLocations (position, torchlight, fog_rad) {
+  getNeighborLocations (position, torchlight, fogRad) {
     var neigh = []
-    var validCoords = this.getValidCoords(position[0], position[1], torchlight, fog_rad)
+    var validCoords = this.getValidCoords(position[0], position[1], torchlight, fogRad)
     for (var i = 0; i < validCoords.length; i++) {
       var cx = validCoords[i][0]
       var cy = validCoords[i][1]
-      neigh.push(this.room_map[cy][cx])
+      neigh.push(this.roomMap[cy][cx])
     }
     return neigh
   }
 
-  getOutOfDateCoords (oldPos, newPos, torchlight, fog_rad) {
+  getOutOfDateCoords (oldPos, newPos, torchlight, fogRad) {
     // The reason to call this is to decide which parts of the html to update.
     // In this case, we care about the new position, the old position, and the difference
     // between them.
@@ -289,39 +289,39 @@ class Room {
     // The idea was that in a SafeRoom, you really only need to update the Location of the character.
     // Now this function should be called just for out of date coords, as all coords in view
     // of the hero need their fog timeout cleared.
-    var map = this.room_map
+    var map = this.roomMap
 
     // If you are on a higher tier which fog regenerates:
-    // Now, we need to find all old_coords that were NOT in new_coords,
+    // Now, we need to find all oldCoords that were NOT in newCoords,
     // because these are no longer visible to the player...
-    var validCoords_newPos = this.getValidCoords(newPos[0], newPos[1], torchlight, fog_rad)
-    var validCoords_oldPos = this.getValidCoords(oldPos[0], oldPos[1], torchlight, fog_rad)
+    var validCoordsNewPos = this.getValidCoords(newPos[0], newPos[1], torchlight, fogRad)
+    var validCoordsOldPos = this.getValidCoords(oldPos[0], oldPos[1], torchlight, fogRad)
 
-    var out_of_date_coords = []
+    var outOfDateCoords = []
 
-    var haystack = JSON.stringify(validCoords_newPos)
-    for (var i = 0; i < validCoords_oldPos.length; i++) {
-      var coord = validCoords_oldPos[i]
+    var haystack = JSON.stringify(validCoordsNewPos)
+    for (var i = 0; i < validCoordsOldPos.length; i++) {
+      var coord = validCoordsOldPos[i]
       if (haystack.indexOf(JSON.stringify(coord)) === -1) {
-        out_of_date_coords.push(coord)
+        outOfDateCoords.push(coord)
       }
     }
 
-    return out_of_date_coords
+    return outOfDateCoords
   }
 
-  getValidCoords (avX, avY, torchlight, fog_rad) {
+  getValidCoords (avX, avY, torchlight, fogRad) {
     // getValidCoords is a function which will return all visible coordinates
     // IN [X,Y] ORDERING around a [x,y] position.
     var possCoords = []
     if (torchlight) {
-      fog_rad += 3
+      fogRad += 3
     }
 
-    for (var y = avY - fog_rad; y <= avY + fog_rad; y++) {
-      for (var x = avX - fog_rad; x <= avX + fog_rad; x++) {
-        var dist_from_hero = Math.sqrt((x - avX) ** 2 + (y - avY) ** 2)
-        if (dist_from_hero < fog_rad) {
+    for (var y = avY - fogRad; y <= avY + fogRad; y++) {
+      for (var x = avX - fogRad; x <= avX + fogRad; x++) {
+        var distFromHero = Math.sqrt((x - avX) ** 2 + (y - avY) ** 2)
+        if (distFromHero < fogRad) {
           possCoords.push([x, y])
         }
       }
@@ -338,14 +338,14 @@ class Room {
 
   isValidCoord (avX, avY) {
     // Simple function to tell if a coord is a valid coord. Used with the getValidCoords function
-    return (avX >= 0 && avY >= 0 && avX < this.room_width && avY < this.room_height)
+    return (avX >= 0 && avY >= 0 && avX < this.roomWidth && avY < this.roomHeight)
   }
 }
 
 function makeNormalRoom (height, width, map, locations, itemList, tier, floor, npcRoom) {
   map = buildRoomOfSize(height, width)
 
-  if (room_list[floor].length == npcRoom && floor % 2 == 1) {
+  if (roomList[floor].length == npcRoom && floor % 2 == 1) {
     locations.push('pit')
   }
 
@@ -407,21 +407,21 @@ function makeNormalRoom (height, width, map, locations, itemList, tier, floor, n
 }
 
 class SafeRoom extends Room {
-  constructor (name, room_type, tier, floor, maxLocs, npcRoom) {
-    super(name, room_type, tier, floor, true, null, 0, maxLocs, npcRoom)
+  constructor (name, roomType, tier, floor, maxLocs, npcRoom) {
+    super(name, roomType, tier, floor, true, null, 0, maxLocs, npcRoom)
   }
 }
 
 class FightRoom extends Room {
-  constructor (name, room_type, tier, floor, maxLocs, npcRoom) {
-    super(name, room_type, tier, floor, false, tier_to_boss(tier), tier_to_fightChance(tier), maxLocs, npcRoom)
+  constructor (name, roomType, tier, floor, maxLocs, npcRoom) {
+    super(name, roomType, tier, floor, false, tierToBoss(tier), tierToFightChance(tier), maxLocs, npcRoom)
   }
 }
 
-function clearAllFog (room_map) {
-  for (var i = 0; i < room_map.length; i++) {
-    for (var j = 0; j < room_map[0].length; j++) {
-      room_map[i][j].fog = false
+function clearAllFog (roomMap) {
+  for (var i = 0; i < roomMap.length; i++) {
+    for (var j = 0; j < roomMap[0].length; j++) {
+      roomMap[i][j].fog = false
     }
   }
 }
@@ -444,13 +444,13 @@ function buildRoomOfSize (height, width) {
   return map
 }
 
-function rollLocations (num_locs, height, width) {
+function rollLocations (numLocs, height, width) {
   // Generate possible height / widths
   var hPoss = Array.from({length: height - 4}, (x, i) => i + 2)
   var wPoss = Array.from({length: width - 4}, (x, i) => i + 2)
 
   var locs = [] // array of [y,x] coords
-  for (var n = 0; n < num_locs; n++) {
+  for (var n = 0; n < numLocs; n++) {
     // Pick random x & y from poss (w/out replacement)
     var x = wPoss.splice(Math.random() * wPoss.length, 1)
     var y = hPoss.splice(Math.random() * hPoss.length, 1)
@@ -462,13 +462,13 @@ function rollLocations (num_locs, height, width) {
   return locs
 }
 
-function tier_to_num_enemies (tier) {
+function tierToNumEnemies (tier) {
   // TODO: create mapping
   return 3 + 2 * tier
 }
 
 // copy me down
-function tier_to_items (tier) {
+function tierToItems (tier) {
   if (tier == 1) {
     return itemList1
   } else if (tier == 2) {
@@ -479,15 +479,15 @@ function tier_to_items (tier) {
     return itemList4
   }
 }
-function tier_to_xp (tier) {
+function tierToXp (tier) {
   return 75 + tier * 25
 }
-function tier_to_xp (tier) {
+function tierToXp (tier) {
   return 75 + tier * 25
 }
 
-function tier_to_enemies (tier) {
-  // TODO: randomize using larger lists and num_enemies
+function tierToEnemies (tier) {
+  // TODO: randomize using larger lists and numEnemies
   var enemies = []
   if (tier == 1) {
     enemies = [Troglodyte, DireRat, DireRat2, Sorcerer, Ogre, Cultist, Bandit, DarkSquire]
@@ -504,10 +504,10 @@ function tier_to_enemies (tier) {
   return enemies
 }
 
-function tier_to_locations (tier, maxLocs) {
-  // TODO: more locations!!! this code sets the framework for full randomization but it's meaningless with such small poss_addedLocs lists
-  var poss_addedLocs
-  var added_locs = []
+function tierToLocations (tier, maxLocs) {
+  // TODO: more locations!!! this code sets the framework for full randomization but it's meaningless with such small possAddedLocs lists
+  var possAddedLocs
+  var addedLocs = []
   if (typeof maxLocs === 'undefined') {
     var locationList = ['chest', 'trapdoor', 'chest']
   } else if (maxLocs == 1) {
@@ -517,40 +517,40 @@ function tier_to_locations (tier, maxLocs) {
   }
 
   if (tier == 1) {
-    poss_addedLocs = ['chest', 'statue', 'fountain', 'merchant', 'trapdoor' ]
+    possAddedLocs = ['chest', 'statue', 'fountain', 'merchant', 'trapdoor' ]
   } else if (tier == 2) {
-    poss_addedLocs = ['chest', 'cave', 'fountain', 'altar', 'merchant', 'trapdoor']
+    possAddedLocs = ['chest', 'cave', 'fountain', 'altar', 'merchant', 'trapdoor']
   } else if (tier == 3) {
-    poss_addedLocs = ['chest', 'cave', 'altar', 'merchant', 'trapdoor']
+    possAddedLocs = ['chest', 'cave', 'altar', 'merchant', 'trapdoor']
   } else {
-    poss_addedLocs = ['chest', 'cave', 'altar', 'merchant', 'trapdoor']
+    possAddedLocs = ['chest', 'cave', 'altar', 'merchant', 'trapdoor']
   }
   // if(Math.random() < .2 - activeNPCs.length/50 && !pitActive){
-  //     poss_addedLocs.push('pit');
+  //     possAddedLocs.push('pit');
   // }
   if (typeof maxLocs === 'undefined') {
-    var num_added_locs = Math.ceil(Math.random() * 3)
+    var numAddedLocs = Math.ceil(Math.random() * 3)
   } else {
-    var num_added_locs = Math.ceil(Math.random() * maxLocs)
+    var numAddedLocs = Math.ceil(Math.random() * maxLocs)
   }
   if (tier > 0) {
-    for (var i = 0; i < num_added_locs; i++) {
-      locToAdd = Math.floor(Math.random() * poss_addedLocs.length)
-      added_locs.push(poss_addedLocs[locToAdd])
-      // if(poss_addedLocs[locToAdd] == 'pit'){
+    for (var i = 0; i < numAddedLocs; i++) {
+      locToAdd = Math.floor(Math.random() * possAddedLocs.length)
+      addedLocs.push(possAddedLocs[locToAdd])
+      // if(possAddedLocs[locToAdd] == 'pit'){
       //   pitActive = true;
       //   console.log("pit is present");
       // }
-      for (var j = 0; j < i; j++) { // no repeats in added_locs !
-        if (added_locs[i] == added_locs[j]) {
-          added_locs.splice(i, 1)
+      for (var j = 0; j < i; j++) { // no repeats in addedLocs !
+        if (addedLocs[i] == addedLocs[j]) {
+          addedLocs.splice(i, 1)
           i--
         }
       }
     }
-    //    if(added_locs.length == num_added_locs){
-    for (var n = 0; n < added_locs.length; n++) {
-      locationList.push(added_locs[n])
+    //    if(addedLocs.length == numAddedLocs){
+    for (var n = 0; n < addedLocs.length; n++) {
+      locationList.push(addedLocs[n])
     }
     // return locationList;
   }
@@ -558,16 +558,16 @@ function tier_to_locations (tier, maxLocs) {
   return locationList
 }
 
-function tier_to_fightChance (tier) {
+function tierToFightChance (tier) {
   return 0.02 + tier / 100
 }
 
-function tier_to_boss (tier) {
+function tierToBoss (tier) {
   // TODO: create mapping
   return HellHound
 }
 
-function center_map (map, yoff, xoff) {
+function centerMap (map, yoff, xoff) {
   for (var i = 0; i < map.length; i++) {
     for (var j = 0; j < map[0].length; j++) {
       map[i][j].computeCoordsWithOffset(yoff, xoff)
@@ -575,6 +575,6 @@ function center_map (map, yoff, xoff) {
   }
 }
 
-function tier_to_darkness (tier) {
+function tierToDarkness (tier) {
   return Math.floor(8 - (1.5 * tier))
 }

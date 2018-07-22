@@ -92,7 +92,7 @@ class Upgrade {
   constructor (name, addedFunction) {
     this.name = name
     this.addedFunction = addedFunction
-    this.cached_function
+    this.cachedFunction
     var self = this
     this.upgrade = function () {
       for (var target in SPELL_UPGRADES[this.name]) {
@@ -111,15 +111,15 @@ class Upgrade {
             }
           }
           if (typeof this.addedFunction !== 'undefined') {
-            if (typeof this.cached_function !== 'undefined') {
-              hero.spells[i].castSpell = this.cached_function
+            if (typeof this.cachedFunction !== 'undefined') {
+              hero.spells[i].castSpell = this.cachedFunction
             }
             hero.spells[i].castSpell = (function () {
-              self.cached_function = hero.spells[i].castSpell
+              self.cachedFunction = hero.spells[i].castSpell
 
               return function () {
                 self.addedFunction()
-                self.cached_function.apply(this, arguments)
+                self.cachedFunction.apply(this, arguments)
               }
             }())
           }

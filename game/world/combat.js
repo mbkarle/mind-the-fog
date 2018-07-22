@@ -3,7 +3,7 @@
  */
 
 // Necesary resets before combat
-function setup_combat (hero, enemy) {
+function setupCombat (hero, enemy) {
   // cant move
   canMove = false
 
@@ -39,9 +39,9 @@ function setup_combat (hero, enemy) {
 }
 
 // Where the combat really happens
-function fight_enemy (hero, enemy) {
+function fightEnemy (hero, enemy) {
   // first set up the fight
-  setup_combat(hero, enemy)
+  setupCombat(hero, enemy)
 
   // next begin the fight!
   txtmd.commentator('the enemy looms in the dark')
@@ -51,7 +51,7 @@ function fight_enemy (hero, enemy) {
 
   // Start the onslaught
   enemyAttack = setInterval(function () {
-    if (hero_protected == true) {
+    if (heroProtected == true) {
       Damage(enemy, heroShield)
     } else {
       Damage(enemy, hero)
@@ -71,8 +71,8 @@ function fight_enemy (hero, enemy) {
       window.clearInterval(shielded)
       window.clearTimeout(shieldUp)
       shieldUp = -1
-      hero_protected = false
-      heroShield.shieldReady()
+      heroProtected = false
+      heroShield.readyShield()
       cmbmd.indicateShieldOff()
     }
   }, 10000 / enemy.dexterity)
@@ -84,20 +84,20 @@ function fight_enemy (hero, enemy) {
       window.setTimeout(readyUp, 10000 / hero.dexterity)
 
       // Handle effect item buffs ----------------
-      var weapon = hero.equip_inv.inv.weapon
+      var weapon = hero.equipInv.inv.weapon
       if (weapon != null && weapon.constructorName == 'effectItem') {
         console.log('buffing up')
         weapon.buffUp(hero)
         weapon.debuffUp(enemy)
       }
-      var armor = hero.equip_inv.inv.armor
+      var armor = hero.equipInv.inv.armor
       if (armor != null) {
         if (armor.constructorName == 'effectItem') {
           armor.buffUp(hero)
           armor.debuffUp(enemy)
         }
       }
-      var headgear = hero.equip_inv.inv.headgear
+      var headgear = hero.equipInv.inv.headgear
       if (headgear != null) {
         if (headgear.constructorName == 'effectItem') {
           headgear.buffUp(hero)
@@ -117,8 +117,8 @@ function fight_enemy (hero, enemy) {
 
   // handle defense
   document.getElementById('defend').onclick = function () {
-    if (hero_protected == false && heroShield.vitality > 0 && heroShield.shield_ready) {
-      heroShield.shield_ready = false
+    if (heroProtected == false && heroShield.vitality > 0 && heroShield.shieldReady) {
+      heroShield.shieldReady = false
       cmbmd.startShieldUp()
       shieldUp = setTimeout(function () {
         Shield()
@@ -133,43 +133,43 @@ function fight_enemy (hero, enemy) {
 
   // if you click the module, stop shielding
   document.getElementById('combat-module').onclick = function () {
-    if (heroShield.shield_ready == false && hero_protected == true || heroShield.vitality <= 0) {
+    if (heroShield.shieldReady == false && heroProtected == true || heroShield.vitality <= 0) {
       window.clearInterval(shielded)
       window.clearTimeout(shieldUp)
       shieldUp = -1
-      heroShield.shieldReady()
-      hero_protected = false
+      heroShield.readyShield()
+      heroProtected = false
       cmbmd.indicateShieldOff()
     }
   }
 }
 
-// As of new txtmd, enter_combat is only for normal combat
-function enter_combat (room) {
-  // Its a normal combat, choose randomly from the en_list of the room
-  enemy = room.enemy_list[Math.floor(Math.random() * room.enemy_list.length)]
+// As of new txtmd, enterCombat is only for normal combat
+function enterCombat (room) {
+  // Its a normal combat, choose randomly from the enList of the room
+  enemy = room.enemyList[Math.floor(Math.random() * room.enemyList.length)]
 
   // set up enemy loot
   enemy.lootId = Math.floor(Math.random() * mobDrops.length)
 
   // decrease room's enemy count
-  room.num_enemies--
+  room.numEnemies--
 
   // now actually fight the enemy
   var entermsg = 'A fearsome ' + enemy.name + ' emerges from the shadows!'
-  var enterfunc = function () { txtmd.revertTxtMd(); fight_enemy(hero, enemy) }
+  var enterfunc = function () { txtmd.revertTxtMd(); fightEnemy(hero, enemy) }
 
   txtmd.parseTxtMdJSON({'msgs': [['finfunc', entermsg, 'Engage', enterfunc]]})
 }
 
-function exit_combat (room, customCombat) {
+function exitCombat (room, customCombat) {
   console.log('exiting combat')
   // Give hero xp
   hero.xp += room.xp
   refreshOpenMods()
 
   // If not a room-clearing fight
-  if (room.num_enemies > 0 || customCombat == true) {
+  if (room.numEnemies > 0 || customCombat == true) {
     $('#worldMap').show()
     txtmd.revertTxtMd()
   }
@@ -188,8 +188,8 @@ function exit_combat (room, customCombat) {
 
     // Clear room and redraw map (fog changes)
     room.roomCleared = true
-    room_list[curr_floor][curr_room].clearAllFogTimeouts()
-    room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY, torchlight, fog_radius)
+    roomList[currFloor][currRoom].clearAllFogTimeouts()
+    roomList[currFloor][currRoom].buildRoomHTML(avatarX, avatarY, torchlight, fogRadius)
   }
 
   // Handle the spells @mbkarle is responsible here down
@@ -214,7 +214,7 @@ function Damage (source, target) {
   if (target.constructorName == 'Boss') {
     customCombat = true
   }
-  room = room_list[curr_floor][curr_room]
+  room = roomList[currFloor][currRoom]
 
   // calculate damage and deal it
   hit = Math.floor(Math.random() * source.strength + source.strength)
@@ -233,14 +233,14 @@ function Damage (source, target) {
     window.clearInterval(enemyAttack)
     window.clearInterval(shielded)
     window.clearInterval(shieldUp)
-    hero_protected = false
-    heroShield.shieldReady()
+    heroProtected = false
+    heroShield.readyShield()
 
     // hide appropriate things
     cmbmd.close()
 
     // Handle mob drops
-    var exitFunc = function () { exit_combat(room, customCombat) }
+    var exitFunc = function () { exitCombat(room, customCombat) }
     if (target.inv.size() > 0) {
       var txtmodmsg = {'msgs': [
         ['trans', "You've defeated the beast!"],
@@ -264,7 +264,7 @@ function Shield () {
     hero.vitality = hero.maxVitality
   }
   refreshOpenMods()
-  hero_protected = true
+  heroProtected = true
 }
 
 function readyUp () {
@@ -284,7 +284,7 @@ function killPlayer (deathMessage) {
 
   // prepare to restart
   var restartFunc = function () {
-    start_game()
+    startGame()
     txtmd.revertTxtMd()
   }
 
@@ -292,7 +292,7 @@ function killPlayer (deathMessage) {
   txtmd.parseTxtMdJSON(txtmdmsg)
 
   // Clear the timeouts in this room
-  room_list[curr_floor][curr_room].clearAllFogTimeouts()
+  roomList[currFloor][currRoom].clearAllFogTimeouts()
 
   // Hide combat stuff
   cmbmd.close()

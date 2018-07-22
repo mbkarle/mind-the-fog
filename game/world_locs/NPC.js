@@ -14,7 +14,7 @@ class Pit extends Location {
     this.used = false
   }
 
-  hero_interact () {
+  heroInteract () {
     if (!this.used) {
       var self = this
 
@@ -62,7 +62,7 @@ class CharDialogue extends Location {
     this.dialogId = dialogId
   }
 
-  hero_interact () {
+  heroInteract () {
     txtmd.startDialog(this.charId, this.dialogId, this.charDisplay)
   }
 }
@@ -75,7 +75,7 @@ class NPC extends Location {
     this.inv = new PrebuiltInventory(Object.values(NPCS[name]['merchandise']))
   }
 
-  hero_interact () {
+  heroInteract () {
     if (this.inv.size() > 0) {
       var npc = this
       // load buyFunc and buyBtnTxt for vendor mod

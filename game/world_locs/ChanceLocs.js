@@ -10,7 +10,7 @@ class Fountain extends Location {
     super(rowID, colID, 'Fountain', 'fountain', 'f', 'A beautiful fountain, flowing with divine grace.', false, true)
     this.used = false
   }
-  hero_interact () {
+  heroInteract () {
     if (!this.used) {
       var fountain = this
 
@@ -45,7 +45,7 @@ class Altar extends Location {
     super(rowID, colID, 'Altar', 'altar', 'a', 'A blood-stained altar. Sacrifice here might make the gods of death smile upon you.', false, true)
     this.used = false
   }
-  hero_interact () {
+  heroInteract () {
     if (!this.used) {
       var altar = this
 

@@ -14,7 +14,7 @@ function getNPCs () {
   }
 }
 
-function addNPC (name, room_map, yCoord, xCoord) {
+function addNPC (name, roomMap, yCoord, xCoord) {
   var newNPC = new NPC(yCoord, xCoord, name)
-  room_map[yCoord][xCoord] = newNPC
+  roomMap[yCoord][xCoord] = newNPC
 }

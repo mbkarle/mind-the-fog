@@ -10,7 +10,7 @@ var NPCS = {
     'merchandise': {},
     'buyFunc': function (id, buyerInv, sellerInv, frac) {
       // Try to buy and transfer (but keepOrig=true)
-      if (sellerInv.transfer_for_gold(buyerInv, id, undefined, frac, true)) {
+      if (sellerInv.transferForGold(buyerInv, id, undefined, frac, true)) {
         // Consumables are prototyped the first time and
         // thus added to the chests in the dungeon
         var item = sellerInv.get(id)

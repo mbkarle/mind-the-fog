@@ -2,7 +2,7 @@ class DogInvModule {
   constructor () {
     this.modID = '#dog-info-module'
     this.textBoxID = '#dog-inventory'
-    this.hoverID = '#doginv_hoverInfo'
+    this.hoverID = '#doginvHoverInfo'
     this.btnID = '#DogInvOpen'
     this.dogascii = '#doginvascii'
     this.avail = false // use to tell if keylisteners on
@@ -61,19 +61,19 @@ class DogInvModule {
             '/' + doge.inv.capacity + ')</small><br><br>'
 
     // Show the dog inventory
-    var dog_ids = { 'hoverID': this.hoverID, 'uniqueID': 'doginv' }
+    var dogIds = { 'hoverID': this.hoverID, 'uniqueID': 'doginv' }
 
     // Should account for being able to tell dog to drop items
     // (without transfer), and a transfer could affect an
     // ongoing sale
-    var dog_cbs = {
-      'actioncb': (id) => doge.inv.transfer_item(hero.inv, id),
+    var dogCbs = {
+      'actioncb': (id) => doge.inv.transferItem(hero.inv, id),
       'actiontxt': () => 'Take',
-      'goldcb': () => doge.inv.transfer_item(hero.inv, 'gold'),
+      'goldcb': () => doge.inv.transferItem(hero.inv, 'gold'),
       'dropcb': (id) => doge.inv.remove(id)
     }
 
-    var dogInvHTMLObj = doge.inv.generateHTML(dog_ids, dog_cbs)
+    var dogInvHTMLObj = doge.inv.generateHTML(dogIds, dogCbs)
     innerhtml += dogInvHTMLObj['innerhtml']
 
     // Show the hero inventory
@@ -81,14 +81,14 @@ class DogInvModule {
     innerhtml += 'Hero Inventory: <br><small>(' + hero.inv.size() +
             '/' + hero.inv.capacity + ')</small><br><br>'
 
-    var hero_ids = {'hoverID': this.hoverID, 'uniqueID': 'heroToDogInv'}
-    var hero_cbs = {
-      'actioncb': (id) => hero.inv.transfer_item(doge.inv, id),
+    var heroIds = {'hoverID': this.hoverID, 'uniqueID': 'heroToDogInv'}
+    var heroCbs = {
+      'actioncb': (id) => hero.inv.transferItem(doge.inv, id),
       'actiontxt': () => 'Give',
       'dropcb': (id) => hero.inv.remove(id)
     }
 
-    var heroInvHTMLObj = hero.inv.generateHTML(hero_ids, hero_cbs)
+    var heroInvHTMLObj = hero.inv.generateHTML(heroIds, heroCbs)
     innerhtml += heroInvHTMLObj['innerhtml']
 
     $(this.textBoxID).html(innerhtml)

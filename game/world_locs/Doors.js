@@ -14,30 +14,30 @@ class Door extends Location { // highly experimental content at hand here
     this.nextRoomID = nextRoomID
   }
 
-  hero_interact () {
+  heroInteract () {
     var self = this
     var nextRoomFunc = function () {
       // remove hero from old room + clear fog
-      room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false
-      room_list[curr_floor][curr_room].clearAllFogTimeouts()
-      var old_map = room_list[curr_floor][curr_room].room_map
+      roomList[currFloor][currRoom].roomMap[avatarY][avatarX].heroPresent = false
+      roomList[currFloor][currRoom].clearAllFogTimeouts()
+      var oldMap = roomList[currFloor][currRoom].roomMap
 
-      // change curr_room + update hero position coords
-      curr_room = self.nextRoomID
+      // change currRoom + update hero position coords
+      currRoom = self.nextRoomID
       if (avatarX == 1) {
-        avatarX = room_list[curr_floor][curr_room].room_width - 2
-        avatarY = room_list[curr_floor][curr_room].room_exit[0]
-        update_loc_facing(last_key_press)
+        avatarX = roomList[currFloor][currRoom].roomWidth - 2
+        avatarY = roomList[currFloor][currRoom].roomExit[0]
+        updateLocFacing(lastKeyPress)
       } else {
         avatarX = 2
-        avatarY = room_list[curr_floor][curr_room].room_entry[0]
-        update_loc_facing(last_key_press)
+        avatarY = roomList[currFloor][currRoom].roomEntry[0]
+        updateLocFacing(lastKeyPress)
       }
 
       // update room to have hero + spawn dog
-      room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true
-      doge.spawn_dog(avatarX, avatarY, old_map, room_list[curr_floor][curr_room])
-      room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY, torchlight, fog_radius)
+      roomList[currFloor][currRoom].roomMap[avatarY][avatarX].heroPresent = true
+      doge.spawnDog(avatarX, avatarY, oldMap, roomList[currFloor][currRoom])
+      roomList[currFloor][currRoom].buildRoomHTML(avatarX, avatarY, torchlight, fogRadius)
 
       txtmd.revertTxtMd()
     }
@@ -56,7 +56,7 @@ class LockedDoor extends Location {
     super(rowID, colID, 'Locked Door', 'lockedDoor', '□', "It appears to be the way out of here, but it's locked. If only you had a key...", false, true)
   }
 
-  hero_interact () {
+  heroInteract () {
     txtmd.parseTxtMdJSON({ 'msgs': [ ['fin', this.message] ] })
   }
 }
@@ -68,37 +68,37 @@ class Trapdoor extends Location {
     this.keeperSpawned = false
   }
 
-  hero_interact () {
+  heroInteract () {
     var descendFunc = function () {
       // TODO: shouldnt have to check this... just dont build trapdoors on last floornew map!
-      if (curr_floor < num_floors - 1) {
-        if (curr_floor > 0) {
-          for (var i = 0; i < room_list[curr_floor][curr_room].enemy_list.length; i++) { // scale recurring enemies
+      if (currFloor < numFloors - 1) {
+        if (currFloor > 0) {
+          for (var i = 0; i < roomList[currFloor][currRoom].enemyList.length; i++) { // scale recurring enemies
             // make enemies stronger and revive them
-            room_list[curr_floor][curr_room].enemy_list[i].maxVitality += 5
-            room_list[curr_floor][curr_room].enemy_list[i].vitality = room_list[curr_floor][curr_room].enemy_list[i].maxVitality
-            room_list[curr_floor][curr_room].enemy_list[i].strength += 1
+            roomList[currFloor][currRoom].enemyList[i].maxVitality += 5
+            roomList[currFloor][currRoom].enemyList[i].vitality = roomList[currFloor][currRoom].enemyList[i].maxVitality
+            roomList[currFloor][currRoom].enemyList[i].strength += 1
           }
         }
 
         // clear fog
-        room_list[curr_floor][curr_room].clearAllFogTimeouts()
+        roomList[currFloor][currRoom].clearAllFogTimeouts()
 
         // remove hero
-        var oldmap = room_list[curr_floor][curr_room].room_map
-        oldmap[avatarY][avatarX].hero_present = false
+        var oldmap = roomList[currFloor][currRoom].roomMap
+        oldmap[avatarY][avatarX].heroPresent = false
 
         // spawn hero next floor
-        curr_floor++
-        curr_room = 0
-        avatarY = room_list[curr_floor][curr_room].room_entry[0]
-        avatarX = room_list[curr_floor][curr_room].room_entry[1]
-        update_loc_facing(last_key_press)
-        room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true
+        currFloor++
+        currRoom = 0
+        avatarY = roomList[currFloor][currRoom].roomEntry[0]
+        avatarX = roomList[currFloor][currRoom].roomEntry[1]
+        updateLocFacing(lastKeyPress)
+        roomList[currFloor][currRoom].roomMap[avatarY][avatarX].heroPresent = true
 
         // build room then spawn dog
-        room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY, torchlight, fog_radius)
-        doge.spawn_dog(avatarX, avatarY, oldmap, room_list[curr_floor][curr_room])
+        roomList[currFloor][currRoom].buildRoomHTML(avatarX, avatarY, torchlight, fogRadius)
+        doge.spawnDog(avatarX, avatarY, oldmap, roomList[currFloor][currRoom])
 
         // refresh shield upon descent
         heroShield.vitality = heroShield.maxVitality
@@ -117,7 +117,7 @@ class Trapdoor extends Location {
       self.keeperSpawned = true
       self.refreshInnerHTML()
       $(self.htmlID).fadeOut(1).fadeIn(3000, function () {
-        txtmd.startDialog('gatekeeper', 'Floor' + curr_floor, 'gatekeeper', function () {
+        txtmd.startDialog('gatekeeper', 'Floor' + currFloor, 'gatekeeper', function () {
           txtmd.parseTxtMdJSON({ 'speaker': 'gatekeeper',
             'msgs': [['dec', 'Are you sure you want to descend? If you do, remember, mind the fog!',
               'Descend', 'Stay', descendFunc]] })

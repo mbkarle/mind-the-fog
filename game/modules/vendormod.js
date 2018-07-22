@@ -38,9 +38,9 @@ class VendorModule {
       var tabTxt = 'Buy'
     }
 
-    // setup the mod_ids and cb's for displaying the inv
-    var mod_ids = {'hoverID': this.hoverID, 'uniqueID': 'vdr'}
-    var buy_cbs = {
+    // setup the modIds and cb's for displaying the inv
+    var modIds = {'hoverID': this.hoverID, 'uniqueID': 'vdr'}
+    var buyCbs = {
       'actioncb': (id) => buyFunc(id, buyerInv, sellerInv, frac),
       'actiontxt': (item) => buyBtnTxt(item, frac)
     }
@@ -50,7 +50,7 @@ class VendorModule {
     }
 
     // generate and set html
-    var sellObj = sellerInv.generateHTML(mod_ids, buy_cbs)
+    var sellObj = sellerInv.generateHTML(modIds, buyCbs)
     this.setTextBox(header + sellObj['innerhtml']) // set html
     sellObj['setClicks']() // set click listeners
 

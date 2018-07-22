@@ -46,7 +46,7 @@ class Hero extends Character {
     this.inv.torches = 3
 
     // hero's equipped inventory (linked to inv)
-    this.equip_inv = new EquippedInventory(this, this.inv)
+    this.equipInv = new EquippedInventory(this, this.inv)
   }
 }
 

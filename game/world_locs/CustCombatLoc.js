@@ -8,16 +8,16 @@
 class Statue extends Location {
   constructor (rowID, colID) {
     super(rowID, colID, 'Statue', 'statue', 's', 'A mysterious statue stands impassively in front of you. It clutches a steel blade in its stony fingers which glimmers with a menacing edge.', false, true)
-    this.destroyed_statue = false
+    this.destroyedStatue = false
   }
 
-  hero_interact () {
-    if (!this.destroyed_statue) {
+  heroInteract () {
+    if (!this.destroyedStatue) {
       var statue = this
       var enterFightFunc = function () {
-        statue.destroyed_statue = true
+        statue.destroyedStatue = true
         txtmd.revertTxtMd()
-        fight_enemy(hero, Golem)
+        fightEnemy(hero, Golem)
       }
       var txtmodmsg = { 'msgs': [
         ['dec', this.message, 'Take Sword', 'Leave'],
@@ -36,13 +36,13 @@ class Cave extends Location {
     this.empty = false
   }
 
-  hero_interact () {
+  heroInteract () {
     if (!this.empty) {
       var cave = this
       var enterFightFunc = function () {
         cave.empty = true
         txtmd.revertTxtMd()
-        fight_enemy(hero, frostGiant)
+        fightEnemy(hero, frostGiant)
       }
       var txtmodmsg = { 'msgs': [
         ['dec', this.message, 'Enter', 'Leave'],

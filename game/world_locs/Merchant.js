@@ -13,12 +13,12 @@ class Merchant extends Location {
     this.inv = new Inventory(itemList, 10, 3, 1000) // items, maxItems, minItems, maxGoldSpawn
   }
 
-  hero_interact () {
+  heroInteract () {
     var merch = this
     var shopFunc = function () {
       txtmd.revertTxtMd()
       var actioncb = function (id, buyerInv, sellerInv, frac) {
-        sellerInv.transfer_for_gold(buyerInv, id, undefined, frac)
+        sellerInv.transferForGold(buyerInv, id, undefined, frac)
       }
       var actiontxt = function (item, frac) {
         return Math.floor(frac * item.value) + ' gold'

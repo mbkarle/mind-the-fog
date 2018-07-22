@@ -12,8 +12,8 @@ class TextModule {
     // The html id of the html element.
     this.modID = '#text-module_'
     this.textID = '#textBox_'
-    this.botBtn = '#tmbtn_bot'
-    this.topBtn = '#tmbtn_top'
+    this.botBtn = '#tmbtnBot'
+    this.topBtn = '#tmbtnTop'
     this.input = '#inputBox'
 
     // reset each parse, indicates whether player completed parse
@@ -194,7 +194,7 @@ class TextModule {
     //      "msgs" : [
     //           ["dec", "Stay or go now?", "stay", "go"],
     //           ["transit", "Glad you stayed..."],
-    //           ["finfunc", "Now I will eat you! muahahaha", fight_enemy(hero, Boss)]
+    //           ["finfunc", "Now I will eat you! muahahaha", fightEnemy(hero, Boss)]
     //      ]
     //  }
     //  This starts with a decision, shows transition text,
@@ -280,20 +280,20 @@ class TextModule {
     this.openAndChanging = true
 
     // Necessary info for generating inv html:
-    var mod_ids = {
+    var modIds = {
       'hoverID': this.hoverID,
       'uniqueID': 'txtmd'
     }
 
-    var mod_cbs = {
-      'torchcb': () => inv.transfer_item(hero.inv, 'torches'),
-      'goldcb': () => inv.transfer_item(hero.inv, 'gold'),
-      'actioncb': (id) => inv.transfer_item(hero.inv, id),
+    var modCbs = {
+      'torchcb': () => inv.transferItem(hero.inv, 'torches'),
+      'goldcb': () => inv.transferItem(hero.inv, 'gold'),
+      'actioncb': (id) => inv.transferItem(hero.inv, id),
       'actiontxt': () => 'Take'
     }
 
     // Display the inner html ------------------------------
-    var invHTMLObj = inv.generateHTML(mod_ids, mod_cbs)
+    var invHTMLObj = inv.generateHTML(modIds, modCbs)
 
     var innerhtml = invHTMLObj['innerhtml']
     var header = 'You Find: <br>'
@@ -347,7 +347,7 @@ class TextModule {
     // Remove the normal key listeners
     window.removeEventListener('keydown', move)
     if (DEVUTILS) {
-      window.removeEventListener('keydown', dev_keys)
+      window.removeEventListener('keydown', devKeys)
     }
 
     // Show button and save the input to the @saveloc
@@ -361,7 +361,7 @@ class TextModule {
       // restore move listener
       window.addEventListener('keydown', move, false)
       if (DEVUTILS) {
-        window.addEventListener('keydown', dev_keys, false)
+        window.addEventListener('keydown', devKeys, false)
       }
       // call the cbs
       if (typeof cb !== 'undefined') { cb() } else { txtmd.revertTxtMd() }

@@ -29,11 +29,11 @@ class Effect {
     for (var i = 0; i < target.effects.length; i++) {
       effectInfos.push(target.effects[i].name)
       var effectID = '#effect' + i + target.objid
-      var effect_to_print = (' ' + effectInfos[i]).slice(1)
-      $(effectID).attr('eff_to_print', effect_to_print)
+      var effectToPrint = (' ' + effectInfos[i]).slice(1)
+      $(effectID).attr('effToPrint', effectToPrint)
       $(effectID).mouseenter(function () {
         console.log('entered')
-        $('#effectsHover').html($(this).attr('eff_to_print'))
+        $('#effectsHover').html($(this).attr('effToPrint'))
         $('#effectsHover').show()
       })
       $(effectID).mouseleave(function () {
@@ -82,14 +82,14 @@ class Debuff extends Effect {
   constructor (name, target, duration, attributes, quantity, symbol) {
     super(name, target, duration, attributes, quantity, symbol)
     var self = this
-    this.cached_stats = []
+    this.cachedStats = []
     this.constructorName = 'Debuff'
     this.applyDebuff = function (character) {
       this.target = character
       if (!this.active) {
         this.active = true
         for (var i = 0; i < this.attributes.length; i++) {
-          this.cached_stats.push(this.target[attributes[i]])
+          this.cachedStats.push(this.target[attributes[i]])
           this.target[attributes[i]] -= this.quantity[i]
 
           if (character.dexterity <= 0) { // no dividing by 0!!
@@ -106,7 +106,7 @@ class Debuff extends Effect {
           self.active = false
           for (var i = 0; i < self.attributes.length; i++) {
             console.log(self.target[self.attributes[i]] + '+' + self.quantity[i])
-            self.target[attributes[i]] = self.cached_stats[i]
+            self.target[attributes[i]] = self.cachedStats[i]
           }
           refreshOpenMods()
           var SpliceIdx = self.target.effects.indexOf(self)

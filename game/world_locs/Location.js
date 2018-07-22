@@ -4,12 +4,12 @@ class Location {
     this.message = message // message displayed on print()
     this.objid = objid // object id
     this.symbol = symbol // symbol to display on map
-    this.hero_present = false // whether or not the hero is on this Location
-    this.dog_present = false // whether the dog is on this spot
+    this.heroPresent = false // whether or not the hero is on this Location
+    this.dogPresent = false // whether the dog is on this spot
     this.xCoord = colID * 15 // pixel coords
     this.yCoord = rowID * 15
-    this.rowID = rowID // row index in world_map
-    this.colID = colID // col index in world_map
+    this.rowID = rowID // row index in worldMap
+    this.colID = colID // col index in worldMap
     this.fog = true // whether or not fog is present
     this.passable = passable
     this.fogTimeout
@@ -20,18 +20,18 @@ class Location {
       this.yCoord = (this.rowID * 15) + yoff * 15
     }
     if (typeof interactable !== 'undefined') {
-      this.is_interactive = interactable
+      this.isInteractive = interactable
     } else {
-      this.is_interactive = false
+      this.isInteractive = false
     }
   }
 
   getSymbol () {
     if (this.fog) {
       return ''
-    } else if (this.hero_present) {
+    } else if (this.heroPresent) {
       return 'x'
-    } else if (this.dog_present) {
+    } else if (this.dogPresent) {
       return 'd'
     } else {
       return this.symbol

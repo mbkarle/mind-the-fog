@@ -3,20 +3,20 @@
  * including global variables called throughout
  */
 
-Array.prototype.move = function (old_index, new_index) {
-  if (new_index >= this.length) {
-    var k = new_index - this.length
+Array.prototype.move = function (oldIndex, newIndex) {
+  if (newIndex >= this.length) {
+    var k = newIndex - this.length
     while ((k--) + 1) {
       this.push(undefined)
     }
   }
-  this.splice(new_index, 0, this.splice(old_index, 1)[0])
+  this.splice(newIndex, 0, this.splice(oldIndex, 1)[0])
   return this
 }
 // ------------------------------------------------------
 //          Some magical game variables...
 // ------------------------------------------------------
-var game_duration = 1800000 // how long before the fog closes in totally
+var gameDuration = 1800000 // how long before the fog closes in totally
 
 // Restore old game info
 if (typeof Cookies.get('USER_INFO') === 'undefined') {
@@ -38,10 +38,10 @@ var splmd = new SpellTreeModule()
 
 // variables of hero status
 var canMove
-var hero_protected
-var last_key_press
-var loc_facing
-var dir_facing
+var heroProtected
+var lastKeyPress
+var locFacing
+var dirFacing
 var ready
 var shielded
 var shieldUp
@@ -49,8 +49,8 @@ var shieldReadyup
 var magicReady
 var enemyAttack
 var torchlight
-var initial_fog_radius
-var fog_radius
+var initialFogRadius
+var fogRadius
 var fogDeath = -1
 
 // dog related variables! mans best friend :)
@@ -105,7 +105,7 @@ for (var attr in EXOTICS) {
 // ------------------------------------------------------
 //              Initialize Characters
 // ------------------------------------------------------
-// As of start_game's introduction, initialization happens in start_game;
+// As of startGame's introduction, initialization happens in startGame;
 var hero
 var tutorial
 var Troglodyte
@@ -143,12 +143,12 @@ var GreatHall = new SafeRoom('Great Hall', 'GreatHall', 0, 0)
 var TutRoom = new SafeRoom('TutRoom', 'tutRoom', 0, 0)
 var exitRoom = new SafeRoom('exitRoom', 'exitRoom', 0, 0)
 
-var num_floors
+var numFloors
 
-var room_list
+var roomList
 
-var curr_room
-var curr_floor
+var currRoom
+var currFloor
 
 // MOAR magic game variables
 // variables to track the current position of hero
@@ -156,13 +156,13 @@ var avatarX
 var avatarY
 
 // variables for resets
-var start_combatModule
+var startCombatModule
 var pitActive
 
 // LetsiGO!
 var DEVUTILS = true
 if (DEVUTILS) {
-  window.addEventListener('keydown', dev_keys, false)
+  window.addEventListener('keydown', devKeys, false)
 }
 
 // key listener
@@ -174,8 +174,8 @@ setInterval(function () {
 }, 10000)
 
 window.onload = function () {
-  start_combatModule = document.getElementById('combat-module').innerHTML
-  start_game()
+  startCombatModule = document.getElementById('combat-module').innerHTML
+  startGame()
   tutorialStart()
   document.getElementById('InvOpen').onclick = function () {
     invmd.toggleMod()
@@ -199,25 +199,25 @@ window.onload = function () {
   })
 
   $('#restart-round').click(function () {
-    exit_combat(room_list[curr_floor][curr_room])
+    exitCombat(roomList[currFloor][currRoom])
     txtmd.revertTxtMd()
     window.clearInterval(enemyAttack)
     window.clearInterval(shielded)
     window.clearInterval(shieldUp)
     cmbmd.close()
     vndmd.revertVendorMd()
-    start_game()
+    startGame()
   })
 
   var insanity = -1
   // Slowly remove fog
   setInterval(function () {
-    if (!room_list[curr_floor][curr_room].roomCleared && fog_radius > 1) {
-      oldFog = fog_radius
-      fog_radius--
-      if (fog_radius == 1 && !torchlight && insanity == -1) {
+    if (!roomList[currFloor][currRoom].roomCleared && fogRadius > 1) {
+      oldFog = fogRadius
+      fogRadius--
+      if (fogRadius == 1 && !torchlight && insanity == -1) {
         insanity = setInterval(function () {
-          if (fog_radius == 1 && !torchlight && hero.vitality > 0 && !room_list[curr_floor][curr_room].roomCleared) {
+          if (fogRadius == 1 && !torchlight && hero.vitality > 0 && !roomList[currFloor][currRoom].roomCleared) {
             hero.vitality -= Math.floor(hero.maxVitality / 5)
             if (!cmbmd.open) {
               $('#worldMap').fadeOut(10).fadeIn(1000)
@@ -232,16 +232,16 @@ window.onload = function () {
         }, 2000)
       }
       console.log('fog closes in')
-      room_list[curr_floor][curr_room].addFogWhenFogRadiusChanges(avatarX, avatarY, torchlight, oldFog, fog_radius)
+      roomList[currFloor][currRoom].addFogWhenFogRadiusChanges(avatarX, avatarY, torchlight, oldFog, fogRadius)
     }
-  }, game_duration / (initial_fog_radius - 1))
+  }, gameDuration / (initialFogRadius - 1))
 }
 
 //= ===============================================================
 //                          START GAME
 //= ===============================================================
 
-function start_game () {
+function startGame () {
   // This is a function to set or reset all the relevant global game variables.
   // Additionally, this function builds a brand new world (except for the First
   // floor, since the GreatHall should be added to.)
@@ -289,10 +289,10 @@ function start_game () {
   }
 
   // combat-module must be reset
-  $('#combat-module').html(start_combatModule)
+  $('#combat-module').html(startCombatModule)
   heroShield.vitality = heroShield.maxVitality
   $('#compassascii').html(ASCII_COMPASS_N)
-  dir_facing = 'N'
+  dirFacing = 'N'
   $('#torchascii').html(TORCHES[0])
 
   // message globals
@@ -301,24 +301,24 @@ function start_game () {
 
   // hero globals
   canMove = true
-  hero_protected = false
-  heroShield.shield_ready = true
+  heroProtected = false
+  heroShield.shieldReady = true
   ready = true
   clearInterval(shielded)
   clearTimeout(shieldUp)
   shieldUp = -1
   magicReady = true
   torchlight = false
-  initial_fog_radius = 5
-  fog_radius = initial_fog_radius
+  initialFogRadius = 5
+  fogRadius = initialFogRadius
 
-  // Build room_list
-  num_floors = 8
-  room_list = []
+  // Build roomList
+  numFloors = 8
+  roomList = []
 
   // have an array of rooms per floor
-  for (var i = 0; i < num_floors; i++) {
-    room_list.push([])
+  for (var i = 0; i < numFloors; i++) {
+    roomList.push([])
   }
 
   var Floor0 = new Floor(0, 3, [0], [exitRoom, GreatHall, TutRoom])
@@ -332,27 +332,27 @@ function start_game () {
 
   doge.dogY = 8 // reset from last game
   doge.dogX = 6
-  doge.dog_radius = fog_radius
+  doge.dogRadius = fogRadius
 
-  room_list[0] = Floor0.build_floor()
-  room_list[1] = Floor1.build_floor()
-  room_list[2] = Floor2.build_floor()
-  room_list[3] = Floor3.build_floor()
-  room_list[4] = Floor4.build_floor()
-  room_list[5] = Floor5.build_floor()
-  room_list[6] = Floor6.build_floor()
-  room_list[7] = Floor7.build_floor()
+  roomList[0] = Floor0.buildFloor()
+  roomList[1] = Floor1.buildFloor()
+  roomList[2] = Floor2.buildFloor()
+  roomList[3] = Floor3.buildFloor()
+  roomList[4] = Floor4.buildFloor()
+  roomList[5] = Floor5.buildFloor()
+  roomList[6] = Floor6.buildFloor()
+  roomList[7] = Floor7.buildFloor()
 
-  curr_room = 1
-  curr_floor = 0
+  currRoom = 1
+  currFloor = 0
 
   // MOAR magic game variables
   // variables to track the current position of hero
-  avatarX = Math.floor(room_list[curr_floor][curr_room].room_width / 8)
-  avatarY = Math.floor(room_list[curr_floor][curr_room].room_height / 2)
+  avatarX = Math.floor(roomList[currFloor][currRoom].roomWidth / 8)
+  avatarY = Math.floor(roomList[currFloor][currRoom].roomHeight / 2)
 
-  loc_facing = [avatarX + 1, avatarY]
-  last_key_press = 'w'
+  locFacing = [avatarX + 1, avatarY]
+  lastKeyPress = 'w'
 
   // establish NPCs
   if (inactiveNPCs.length > 0) {
@@ -360,14 +360,14 @@ function start_game () {
   }
   getNPCs()
   for (var i = 0; i < activeNPCs.length; i++) {
-    addNPC(activeNPCs[i]['charID'], room_list[0][activeNPCs[i]['roomIdx']].room_map, activeNPCs[i]['coords'][0], activeNPCs[i]['coords'][1])
-    room_list[0][activeNPCs[i]['roomIdx']].room_map[activeNPCs[i]['coords'][0]][activeNPCs[i]['coords'][1]].computeCoordsWithOffset(room_list[0][activeNPCs[i]['roomIdx']].yoff, room_list[0][activeNPCs[i]['roomIdx']].xoff)
-    clearAllFog(room_list[0][1].room_map)
+    addNPC(activeNPCs[i]['charID'], roomList[0][activeNPCs[i]['roomIdx']].roomMap, activeNPCs[i]['coords'][0], activeNPCs[i]['coords'][1])
+    roomList[0][activeNPCs[i]['roomIdx']].roomMap[activeNPCs[i]['coords'][0]][activeNPCs[i]['coords'][1]].computeCoordsWithOffset(roomList[0][activeNPCs[i]['roomIdx']].yoff, roomList[0][activeNPCs[i]['roomIdx']].xoff)
+    clearAllFog(roomList[0][1].roomMap)
   }
 
   // get ready to start...
-  room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true // place the hero in his starting position
-  room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY, torchlight, fog_radius)
+  roomList[currFloor][currRoom].roomMap[avatarY][avatarX].heroPresent = true // place the hero in his starting position
+  roomList[currFloor][currRoom].buildRoomHTML(avatarX, avatarY, torchlight, fogRadius)
 
   refreshOpenMods()
 }

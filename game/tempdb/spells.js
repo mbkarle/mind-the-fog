@@ -155,7 +155,7 @@ var ACTIVE_SPELL_EFFECTS = {
     'debuffs': [
       { 'debuff': fire,
         'chance': 0.3,
-        'target': 'enemy' // set to appropriate enemy on combat_enter
+        'target': 'enemy' // set to appropriate enemy on combatEnter
       }
     ]
   },

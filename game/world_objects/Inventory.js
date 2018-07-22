@@ -30,13 +30,13 @@ class Inventory {
     if (isNaN(parseInt)) { return this.inv[id] } else { return this.inv[parseInt(id)] }
   }
 
-  pay (target_inv, amt, alertMsg) {
+  pay (targetInv, amt, alertMsg) {
     if (this.gold < amt) {
       openAlert(alertMsg)
       return false
     } else {
       this.gold -= amt
-      target_inv.gold += amt
+      targetInv.gold += amt
       return true
     }
   }
@@ -48,23 +48,23 @@ class Inventory {
     } else { return false }
   }
 
-  transfer_item (target_inv, sourceID, keepOrig = false) {
+  transferItem (targetInv, sourceID, keepOrig = false) {
     // Given index of element in this inv, transfer to target
 
     if (sourceID === 'gold') {
-      target_inv.gold += this.gold
+      targetInv.gold += this.gold
       this.gold = 0
     } else if (sourceID === 'torches') {
-      target_inv.torches += this.torches
+      targetInv.torches += this.torches
       this.torches = 0
 
       // Set to capacity if too large
-      if (target_inv.torches > target_inv.torchCapacity) {
-        target_inv.torches = target_inv.torchCapacity
+      if (targetInv.torches > targetInv.torchCapacity) {
+        targetInv.torches = targetInv.torchCapacity
       }
     } else {
       // First check capacity of target!
-      if (target_inv.size() >= target_inv.capacity) {
+      if (targetInv.size() >= targetInv.capacity) {
         openAlert('No space in inventory!')
         return false
       }
@@ -75,12 +75,12 @@ class Inventory {
       } else {
         if (!keepOrig) { var item = this.remove(parseInt(sourceID)) } else { var item = this.get(sourceID) }
       }
-      target_inv.add(item)
+      targetInv.add(item)
     }
     return true
   }
 
-  transfer_for_gold (target_inv, sourceID, cost, sellFrac = 1, keepOrig = false) {
+  transferForGold (targetInv, sourceID, cost, sellFrac = 1, keepOrig = false) {
     // A func that transfers this -> target in exchange
     // for @cost from target. If target doesnt have money -> ret. false
 
@@ -91,13 +91,13 @@ class Inventory {
     }
 
     // try to pay
-    if (target_inv.pay(this, cost, 'It costs too much!')) {
+    if (targetInv.pay(this, cost, 'It costs too much!')) {
       // try to transfer
-      if (this.transfer_item(target_inv, sourceID, keepOrig)) {
+      if (this.transferItem(targetInv, sourceID, keepOrig)) {
         return true
       }
       // if no space, return false, refund
-      this.pay(target_inv, cost)
+      this.pay(targetInv, cost)
       return false
     }
   }
@@ -107,8 +107,8 @@ class Inventory {
     // TODO: maybe make fancier than random? switch-case?
 
     // First push random items until some fraction of capacity
-    var num_items = Math.floor(Math.random() * (this.capacity - minItems + 1)) + minItems
-    for (var i = 0; i < num_items; i++) {
+    var numItems = Math.floor(Math.random() * (this.capacity - minItems + 1)) + minItems
+    for (var i = 0; i < numItems; i++) {
       this.add(itemList[Math.floor(itemList.length * Math.random())])
     }
 
@@ -124,7 +124,7 @@ class Inventory {
     }
   }
 
-  generateHTML (mod_ids, mod_cbs) {
+  generateHTML (modIds, modCbs) {
     // A function to generate an HTML series of elements with
     // appropriate buttons and click functions
 
@@ -140,9 +140,9 @@ class Inventory {
     var itemInfos = [] // the hover infos
 
     // some shortcuts for legibility
-    var unqID = mod_ids['uniqueID']
-    var itemBoxID = unqID + '_invItemBox'
-    var cbBtnID = unqID + '_cbBtn'
+    var unqID = modIds['uniqueID']
+    var itemBoxID = unqID + 'InvItemBox'
+    var cbBtnID = unqID + 'CbBtn'
 
     for (var i = 0; i < items.length; i++) {
       // First store all of the item infos for the hover module
@@ -151,25 +151,25 @@ class Inventory {
       // build the html to print to the textBox
       invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 items[i].name +
-                "<div id='" + cbBtnID + i + "' class='interact'> " + mod_cbs['actiontxt'](items[i]) + ' </div>'
+                "<div id='" + cbBtnID + i + "' class='interact'> " + modCbs['actiontxt'](items[i]) + ' </div>'
 
       // If given a drop cb, display the drop button with that function!
-      if (typeof mod_cbs['dropcb'] !== 'undefined') {
+      if (typeof modCbs['dropcb'] !== 'undefined') {
         invhtml += "<div id='" + unqID + '_DROP' + i + "' class='interact smallDropBtn'>x</div></div>"
       } else { invhtml += '</div>' }
     }
 
     // handle gold and torches seperately
-    if (this.gold > 0 && typeof mod_cbs['goldcb'] !== 'undefined') {
+    if (this.gold > 0 && typeof modCbs['goldcb'] !== 'undefined') {
       invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 'Gold: ' + this.gold +
-                "<div id='" + unqID + "_GOLDBtn' class='interact'> " + mod_cbs['actiontxt']('gold') + ' </div></div>'
+                "<div id='" + unqID + "_GOLDBtn' class='interact'> " + modCbs['actiontxt']('gold') + ' </div></div>'
       i++
     }
-    if (this.torches > 0 && typeof mod_cbs['torchcb'] !== 'undefined') {
+    if (this.torches > 0 && typeof modCbs['torchcb'] !== 'undefined') {
       invhtml += "<div class='" + itemBoxID + "' id='" + itemBoxID + i + "'>" +
                 'Torches: ' + this.torches +
-                "<div id='" + unqID + "_TORCHESBtn' class='interact'> " + mod_cbs['actiontxt']('torches') + ' </div></div>'
+                "<div id='" + unqID + "_TORCHESBtn' class='interact'> " + modCbs['actiontxt']('torches') + ' </div></div>'
     }
 
     // Mouse Listeners--------------------------------------------
@@ -179,53 +179,53 @@ class Inventory {
       // Deal with the non-gold/torch items first
       for (var i = 0; i < items.length; i++) {
         // Set the hover info to print item info
-        var item_to_print = (' ' + itemInfos[i]).slice(1)
+        var itemToPrint = (' ' + itemInfos[i]).slice(1)
         var thisItemBoxID = '#' + itemBoxID + i
-        $(thisItemBoxID).attr('item_to_print', item_to_print)
+        $(thisItemBoxID).attr('itemToPrint', itemToPrint)
         $(thisItemBoxID).mouseenter(function () {
-          $(mod_ids['hoverID']).html($(this).attr('item_to_print'))
-          $(mod_ids['hoverID']).show()
+          $(modIds['hoverID']).html($(this).attr('itemToPrint'))
+          $(modIds['hoverID']).show()
         })
         $(thisItemBoxID).mouseleave(function () {
-          $(mod_ids['hoverID']).hide()
+          $(modIds['hoverID']).hide()
         })
 
         // handle the action buttons
         var thisCbBtnID = '#' + cbBtnID + i
         var thisDropID = '#' + unqID + '_DROP' + i
-        if (self.idx_by_type) { // equipInv is idx by type
-          $(thisCbBtnID).attr('item_id', items[i].type)
-          $(thisDropID).attr('item_id', items[i].type)
+        if (self.idxByType) { // equipInv is idx by type
+          $(thisCbBtnID).attr('itemId', items[i].type)
+          $(thisDropID).attr('itemId', items[i].type)
         } else {
-          $(thisCbBtnID).attr('item_id', i)
-          $(thisDropID).attr('item_id', i)
+          $(thisCbBtnID).attr('itemId', i)
+          $(thisDropID).attr('itemId', i)
         }
 
         $(thisCbBtnID).click(
           function () {
             // action on this item
-            mod_cbs['actioncb']($(this).attr('item_id'))
+            modCbs['actioncb']($(this).attr('itemId'))
             // hide hover
-            $(mod_ids['hoverID']).hide()
+            $(modIds['hoverID']).hide()
             // redisplay the inventory
             refreshOpenMods()
           })
 
         // handle the drop buttons
         $(thisDropID).click(function () {
-          mod_cbs['dropcb']($(this).attr('item_id'))
-          $(mod_ids['hoverID']).hide()
+          modCbs['dropcb']($(this).attr('itemId'))
+          $(modIds['hoverID']).hide()
           refreshOpenMods()
         })
       }
 
       // Handle gold + torches seperately
       $('#' + unqID + '_GOLDBtn').click(function () {
-        mod_cbs['goldcb']()
+        modCbs['goldcb']()
         refreshOpenMods()
       })
       $('#' + unqID + '_TORCHESBtn').click(function () {
-        mod_cbs['torchcb']()
+        modCbs['torchcb']()
         refreshOpenMods()
       })
     }
@@ -238,7 +238,7 @@ class EquippedInventory extends Inventory {
   // An inventory that consists of items equipped.
   // Must have multiple capacities and enforce them
   // Key feature: a linked "carried" inventory that feeds this inv
-  constructor (owner, carr_inv) {
+  constructor (owner, carrInv) {
     // The inventory itself, if we ever use for more than hero,
     // may want to take the slots in in constructor
 
@@ -252,12 +252,12 @@ class EquippedInventory extends Inventory {
     // need to update owners stats in some cases
     this.owner = owner
 
-    // carry_inv is the linked inventory that feeds this
+    // carryInv is the linked inventory that feeds this
     // inv. No items should be directly transfered to this.
-    this.carry_inv = carr_inv
+    this.carryInv = carrInv
 
     // needed for the generateHTML
-    this.idx_by_type = true
+    this.idxByType = true
 
     // TODO: diff capacities for each slot?
   }
@@ -278,12 +278,12 @@ class EquippedInventory extends Inventory {
     return item
   }
 
-  equip (carr_idx) {
-    // equips the item at index @carr_idx from supporting carry_inv
+  equip (carrIdx) {
+    // equips the item at index @carrIdx from supporting carryInv
     // unequips what is there if null
 
     // remove and save item
-    var item = this.carry_inv.remove(carr_idx)
+    var item = this.carryInv.remove(carrIdx)
 
     // check appropriate slot
     var slot = item.type
@@ -308,7 +308,7 @@ class EquippedInventory extends Inventory {
   }
 
   unequip (slot) {
-    // unequips the item at slot @slot and transfers to carry_inv
+    // unequips the item at slot @slot and transfers to carryInv
 
     // remove and save item
     var item = this.inv[slot]
@@ -325,8 +325,8 @@ class EquippedInventory extends Inventory {
       this.owner.vitality = 1
     }
 
-    // add the item to the supporting carry_inv
-    this.carry_inv.add(item)
+    // add the item to the supporting carryInv
+    this.carryInv.add(item)
   }
 }
 

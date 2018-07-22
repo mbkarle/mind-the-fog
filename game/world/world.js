@@ -3,40 +3,40 @@
  * (movement, descent)
  */
 
-function update_loc_facing (key_press) {
-  switch (key_press) {
+function updateLocFacing (keyPress) {
+  switch (keyPress) {
     case 'w':
-      loc_facing = [avatarX, avatarY - 1]
-      if (dir_facing !== 'N') {
-        dir_facing = 'N'
+      locFacing = [avatarX, avatarY - 1]
+      if (dirFacing !== 'N') {
+        dirFacing = 'N'
         $('#compassascii').html(ASCII_COMPASS_N)
       }
       break
     case 's':
-      loc_facing = [avatarX, avatarY + 1]
-      if (dir_facing !== 'S') {
-        dir_facing = 'S'
+      locFacing = [avatarX, avatarY + 1]
+      if (dirFacing !== 'S') {
+        dirFacing = 'S'
         $('#compassascii').html(ASCII_COMPASS_S)
       }
       break
     case 'a':
-      loc_facing = [avatarX - 1, avatarY]
-      if (dir_facing !== 'W') {
-        dir_facing = 'W'
+      locFacing = [avatarX - 1, avatarY]
+      if (dirFacing !== 'W') {
+        dirFacing = 'W'
         $('#compassascii').html(ASCII_COMPASS_W)
       }
       break
 
     case 'd':
-      loc_facing = [avatarX + 1, avatarY]
-      if (dir_facing !== 'E') {
-        dir_facing = 'E'
+      locFacing = [avatarX + 1, avatarY]
+      if (dirFacing !== 'E') {
+        dirFacing = 'E'
         $('#compassascii').html(ASCII_COMPASS_E)
       }
       break
 
     default:
-      console.log('unknown update_loc_facing')
+      console.log('unknown updateLocFacing')
   }
 }
 
@@ -44,64 +44,64 @@ function move (e) {
   if (canMove == true) {
     var didMove = false
     var oldPos = [avatarX, avatarY]
-    var room = room_list[curr_floor][curr_room]
-    var map = room.room_map
+    var room = roomList[currFloor][currRoom]
+    var map = room.roomMap
     if (e.keyCode == '87' && avatarY > 0) { // up
-      last_key_press = 'w'
+      lastKeyPress = 'w'
       if (map[avatarY - 1][avatarX].passable) {
-        map[avatarY][avatarX].hero_present = false
+        map[avatarY][avatarX].heroPresent = false
         avatarY--
-        map[avatarY][avatarX].hero_present = true
+        map[avatarY][avatarX].heroPresent = true
         didMove = true
       }
-    } else if (e.keyCode == '83' && avatarY < room.room_height - 1) { // down
-      last_key_press = 's'
+    } else if (e.keyCode == '83' && avatarY < room.roomHeight - 1) { // down
+      lastKeyPress = 's'
       if (map[avatarY + 1][avatarX].passable) {
-        map[avatarY][avatarX].hero_present = false
+        map[avatarY][avatarX].heroPresent = false
         avatarY++
-        map[avatarY][avatarX].hero_present = true
+        map[avatarY][avatarX].heroPresent = true
         didMove = true
       }
     } else if (e.keyCode == '65' && avatarX > 0) { // left
-      last_key_press = 'a'
+      lastKeyPress = 'a'
       if (map[avatarY][avatarX - 1].passable) {
-        map[avatarY][avatarX].hero_present = false
+        map[avatarY][avatarX].heroPresent = false
         avatarX--
-        map[avatarY][avatarX].hero_present = true
+        map[avatarY][avatarX].heroPresent = true
         didMove = true
       }
-    } else if (e.keyCode == '68' && avatarX < room.room_width - 1) { // right
-      last_key_press = 'd'
+    } else if (e.keyCode == '68' && avatarX < room.roomWidth - 1) { // right
+      lastKeyPress = 'd'
       if (map[avatarY][avatarX + 1].passable) {
-        map[avatarY][avatarX].hero_present = false
+        map[avatarY][avatarX].heroPresent = false
         avatarX++
-        map[avatarY][avatarX].hero_present = true
+        map[avatarY][avatarX].heroPresent = true
         didMove = true
       }
     } else if (e.keyCode == '69') {
       // e for interact (#81 issues)
-      // do a checkLocation with the loc_facing
-      checkLocation(loc_facing[0], loc_facing[1])
+      // do a checkLocation with the locFacing
+      checkLocation(locFacing[0], locFacing[1])
     }
-    update_loc_facing(last_key_press)
+    updateLocFacing(lastKeyPress)
 
     if (didMove) {
-      doge.hero_move_update_dog(last_key_press, avatarX, avatarY, map)
+      doge.heroMoveUpdateDog(lastKeyPress, avatarX, avatarY, map)
     }
 
     // Check dist btw dog & hero and activate doginvmd if needed!
-    if (room_list[curr_floor][curr_room].room_map[loc_facing[1]][loc_facing[0]].dog_present) {
+    if (roomList[currFloor][currRoom].roomMap[locFacing[1]][locFacing[0]].dogPresent) {
       doginvmd.activateMod()
     } else { doginvmd.deactivateMod() }
 
     if (didMove) {
       var newPos = [avatarX, avatarY]
-      room.updateRoomHTML(oldPos, newPos, torchlight, fog_radius)
+      room.updateRoomHTML(oldPos, newPos, torchlight, fogRadius)
     }
 
     // chance to enter combat
     if (Math.random() < room.fightChance && !room.roomCleared && didMove) {
-      enter_combat(room)
+      enterCombat(room)
     }
 
     // heal from moving
@@ -127,10 +127,10 @@ function move (e) {
 
       // Show ascii
       $('#torchascii').html(TORCHES[4])
-      var torch_to_show = 4
-      var torch_decay = setInterval(function () {
-        torch_to_show--
-        $('#torchascii').html(TORCHES[torch_to_show])
+      var torchToShow = 4
+      var torchDecay = setInterval(function () {
+        torchToShow--
+        $('#torchascii').html(TORCHES[torchToShow])
       }, 10000 / 4)
 
       // Refresh mods
@@ -139,20 +139,20 @@ function move (e) {
       // Rebuild room
       torchlight = true
       var pos = [avatarX, avatarY]
-      room_list[curr_floor][curr_room].updateRoomHTML(pos, pos, torchlight, fog_radius)
+      roomList[currFloor][currRoom].updateRoomHTML(pos, pos, torchlight, fogRadius)
 
       // Set timeout for torch burnout
       setTimeout(function () {
         torchlight = false
-        // if(!room_list[curr_floor][curr_room].roomCleared){
-        var room = room_list[curr_floor][curr_room]
-        if (!room.fog_free_room) {
-          room.addFogWhenTorchBurnsOut(avatarX, avatarY, fog_radius)
+        // if(!roomList[currFloor][currRoom].roomCleared){
+        var room = roomList[currFloor][currRoom]
+        if (!room.fogFreeRoom) {
+          room.addFogWhenTorchBurnsOut(avatarX, avatarY, fogRadius)
           var newPos = [avatarX, avatarY]
-          room.updateRoomHTML(newPos, newPos, torchlight, fog_radius)
+          room.updateRoomHTML(newPos, newPos, torchlight, fogRadius)
         }
         $('#torchascii').html(TORCHES[0])
-        clearInterval(torch_decay)
+        clearInterval(torchDecay)
         console.log('Your torch fades to nothing.'
         )
       }, 10000)
@@ -170,9 +170,9 @@ function move (e) {
     splmd.toggleMod()
     refreshOpenMods()
   }
-  /* if(fog_radius == 1 && fogDeath == -1){
+  /* if(fogRadius == 1 && fogDeath == -1){
       fogDeath = setInterval(function(){
-         if(fog_radius == 1 && hero.vitality > 0){
+         if(fogRadius == 1 && hero.vitality > 0){
              Damage({strength: 5}, hero);
          }
          else if(hero.vitality <= 0){
@@ -190,8 +190,8 @@ function move (e) {
 
 function checkLocation (avX, avY) {
   // If whatever you try to interact with is interactive, call its interact function
-  if (room_list[curr_floor][curr_room].room_map[avY][avX].is_interactive) {
-    room_list[curr_floor][curr_room].room_map[avY][avX].hero_interact()
+  if (roomList[currFloor][currRoom].roomMap[avY][avX].isInteractive) {
+    roomList[currFloor][currRoom].roomMap[avY][avX].heroInteract()
   }
 }
 
@@ -199,12 +199,12 @@ function refillChests () {
   // rebuilds floors so that chests can be filled with newly introduced materials
   // used after interaction w certain npcs
   console.log('Old room 1: ')
-  console.log(room_list[1][0])
-  for (var i = 1; i < room_list.length; i++) {
-    room_list[i] = room_list[i][0].origin_floor.build_floor()
+  console.log(roomList[1][0])
+  for (var i = 1; i < roomList.length; i++) {
+    roomList[i] = roomList[i][0].originFloor.buildFloor()
   }
   console.log('new room 1: ')
-  console.log(room_list[1][0])
+  console.log(roomList[1][0])
 }
 
 function refreshOpenMods () {

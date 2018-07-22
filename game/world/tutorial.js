@@ -4,15 +4,15 @@
 
 function tutorialStart () { // TODO: add fight simulation; make more interactive
   // remove hero from wherever he is
-  room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = false
+  roomList[currFloor][currRoom].roomMap[avatarY][avatarX].heroPresent = false
 
   // spawn in tutorial room
-  curr_room = 2
+  currRoom = 2
   avatarX = 21
   avatarY = 10
   canMove = false
-  room_list[curr_floor][curr_room].room_map[avatarY][avatarX].hero_present = true
-  room_list[curr_floor][curr_room].buildRoomHTML(avatarX, avatarY, torchlight, fog_radius)
+  roomList[currFloor][currRoom].roomMap[avatarY][avatarX].heroPresent = true
+  roomList[currFloor][currRoom].buildRoomHTML(avatarX, avatarY, torchlight, fogRadius)
 
   // fade in as if from a dream
   $('#GUI-panel').fadeOut(1).fadeIn(4000)

@@ -4,29 +4,29 @@
  */
 
 // key listeners on top of the move listener!
-function dev_keys (e) {
+function devKeys (e) {
   // Add dev keys here!
-  var room = room_list[curr_floor][curr_room]
-  var map = room.room_map
+  var room = roomList[currFloor][currRoom]
+  var map = room.roomMap
   if (e.keyCode == '66') {
     console.log('Dev tools activated')
     console.log("So...., you're either a developer, or a cheater, or just lazy...")
     hero.inv.add(ITEMS_LOADED['MasterSword']) // give absurd weapons
-    hero.equip_inv.equip(hero.inv.size() - 1)
+    hero.equipInv.equip(hero.inv.size() - 1)
     hero.vitality = 100000 // set absurd health stats
     hero.maxVitality = 100000
     refreshOpenMods()
 
     clearAllFog(map)
     room.clearAllFogTimeouts()
-    room.buildRoomHTML(avatarX, avatarY, torchlight, fog_radius)
+    room.buildRoomHTML(avatarX, avatarY, torchlight, fogRadius)
   } else if (e.keyCode == '189') {
     // '-' removes monsters!
     // for debugging only
     openAlert('****removing monsters from the game!****')
-    for (var i = 0; i < room_list.length; i++) {
-      for (var j = 0; j < room_list[i].length; j++) {
-        room_list[i][j].fightChance = 0
+    for (var i = 0; i < roomList.length; i++) {
+      for (var j = 0; j < roomList[i].length; j++) {
+        roomList[i][j].fightChance = 0
       }
     }
   } else if (e.keyCode == '187') {
@@ -35,7 +35,7 @@ function dev_keys (e) {
     openAlert('****clearing room!****')
     room.roomCleared = true
     var newPos = [avatarX, avatarY]
-    room.updateRoomHTML(newPos, newPos, torchlight, fog_radius)
+    room.updateRoomHTML(newPos, newPos, torchlight, fogRadius)
   }
 }
 
@@ -44,7 +44,7 @@ function unlockAllNPCS () {
   for (var i = 0; i < NPCKeys.length; i++) {
     NPCS[NPCKeys[i]]['active'] = true
   }
-  start_game()
+  startGame()
   hero.inv.gold += 10000
 }
 
@@ -63,26 +63,26 @@ function randGenInvValues () {
 }
 
 // function to debug the dog (call in console)
-function where_is_doge () {
-  var doge_locs = []
-  for (var i = 0; i < room_list.length; i++) {
-    for (var j = 0; j < room_list[0].length; j++) {
-      for (var r = 0; r < room_list[i][j].room_map.length; r++) {
-        for (var c = 0; c < room_list[i][j].room_map[0].length; c++) {
-          if (room_list[i][j].room_map[r][c].dog_present) {
-            doge_locs.push([i, j, room_list[i][j].room_map[r][c]])
+function whereIsDoge () {
+  var dogeLocs = []
+  for (var i = 0; i < roomList.length; i++) {
+    for (var j = 0; j < roomList[0].length; j++) {
+      for (var r = 0; r < roomList[i][j].roomMap.length; r++) {
+        for (var c = 0; c < roomList[i][j].roomMap[0].length; c++) {
+          if (roomList[i][j].roomMap[r][c].dogPresent) {
+            dogeLocs.push([i, j, roomList[i][j].roomMap[r][c]])
           }
         }
       }
     }
   }
-  return doge_locs
+  return dogeLocs
 }
 
 function populateFirstRoom () {
   // func to populate the training room w Locs for dev
   // purposes
-  map = room_list[0][1].room_map
+  map = roomList[0][1].roomMap
   map[2][2] = new Fountain(2, 2)
   map[2][3] = new Altar(2, 3)
   map[2][4] = new Statue(2, 4)
@@ -163,5 +163,5 @@ function textModJSONTestWFinFunc (tm) {
 }
 
 function testCombat () {
-  enter_combat(room_list[curr_floor][curr_room])
+  enterCombat(roomList[currFloor][currRoom])
 }

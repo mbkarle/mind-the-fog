@@ -7,7 +7,7 @@ class InventoryModule {
     this.torchVis = '#torchcount'
     this.charInfoID = '#characterInfo'
     this.invID = '#inventory'
-    this.hoverID = '#inv_hoverInfo'
+    this.hoverID = '#invHoverInfo'
   }
 
   openMod () { this.open = true; $(this.modID).show(100) }
@@ -23,7 +23,7 @@ class InventoryModule {
 
     // First get the inventory in question
     var inv = hero.inv
-    var eqinv = hero.equip_inv
+    var eqinv = hero.equipInv
 
     // Status part -------------------------------------------------------
     // Update health sliders --------------------------
@@ -75,33 +75,33 @@ class InventoryModule {
       }
     }
 
-    // Set mod_id and mod_cb's for the Inv HTML
-    var eqmod_ids = {
-      'hoverID': '#inv_hoverInfo',
+    // Set modId and modCb's for the Inv HTML
+    var eqmodIds = {
+      'hoverID': '#invHoverInfo',
       'uniqueID': 'eqinv'
     }
 
-    var eqmod_cbs = {
+    var eqmodCbs = {
       'actioncb': (id) => eqinv.unequip(id),
       'actiontxt': () => 'Unequip',
       'dropcb': (id) => eqinv.remove(id)
     }
 
     // Display the inner html
-    var eqinvHTMLObj = eqinv.generateHTML(eqmod_ids, eqmod_cbs)
+    var eqinvHTMLObj = eqinv.generateHTML(eqmodIds, eqmodCbs)
     inventoryMessage += eqinvHTMLObj['innerhtml']
 
     // The carried section -----------------------------------------------
     inventoryMessage += "<hr style='width: 80%'> Carried: <br><small>(" +
             hero.inv.size() + '/' + hero.inv.capacity + ')<br></small><br>'
 
-    // Set mod_id and mod_cb's for the Inv HTML
-    var carmod_ids = {
+    // Set modId and modCb's for the Inv HTML
+    var carmodIds = {
       'hoverID': this.hoverID,
       'uniqueID': 'carinv'
     }
 
-    var carmod_cbs = {
+    var carmodCbs = {
       'actioncb': function (id) {
         var item = inv.get(id)
         if (item.constructorName === 'Consumable') {
@@ -118,7 +118,7 @@ class InventoryModule {
     }
 
     // Display the inner html
-    var invHTMLObj = inv.generateHTML(carmod_ids, carmod_cbs)
+    var invHTMLObj = inv.generateHTML(carmodIds, carmodCbs)
     inventoryMessage += invHTMLObj['innerhtml']
 
     $(this.invID).html(inventoryMessage)

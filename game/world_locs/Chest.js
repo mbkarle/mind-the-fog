@@ -14,7 +14,7 @@ class Chest extends Location {
     this.inv = new Inventory(itemList, this.size, 1, maxGold, maxTorches)
   }
 
-  hero_interact () {
+  heroInteract () {
     if (!this.emptied) {
       var self = this
       var txtmodmsg = {'msgs': [

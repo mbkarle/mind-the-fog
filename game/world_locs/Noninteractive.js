@@ -10,12 +10,12 @@ class Tile extends Location {
   constructor (rowID, colID) {
     super(rowID, colID, 'Tile', 'tile', '.', '', true, true)// style preference? '·' instead??
   }
-  hero_interact () {
+  heroInteract () {
     // You can interact with a tile if the dog is present!
     // Note that this should be the only way to interact with the dog--dog should
     // only move on tiles
-    if (this.dog_present) {
-      doge.hero_interact(this)
+    if (this.dogPresent) {
+      doge.heroInteract(this)
     }
   }
 }

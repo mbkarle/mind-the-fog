@@ -98,16 +98,16 @@ class exoticItem extends Item {
 class Shields extends Item {
   constructor (name, type, strength, dexterity, vitality, healthBoost, weight, recovery, toList, objid, items) {
     super(name, type, strength, dexterity, vitality, toList, objid, items)
-    this.shield_ready = true
+    this.shieldReady = true
     this.healthBoost = healthBoost
     this.weight = weight
     this.recovery = recovery
     this.constructorName = 'Shields'
   }
-  shieldReady () {
-    this.shield_ready = true
+  readyShield () {
+    this.shieldReady = true
     clearTimeout(shieldReadyup)
-    return this.shield_ready
+    return this.shieldReady
   }
 }
 

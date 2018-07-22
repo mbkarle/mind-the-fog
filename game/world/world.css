@@ -209,7 +209,7 @@ display: none;
 background-color: white;
 }
 
-.txtmd_invItemBox, .vdr_invItemBox {
+.txtmdInvItemBox, .vdrInvItemBox {
     border-style: solid;
     border-color: #a6a6a6;
     height: 25px;
@@ -217,8 +217,8 @@ background-color: white;
     margin-bottom: 5px;
 }
 
-.carinv_invItemBox, .eqinv_invItemBox,
-.doginv_invItemBox, .heroToDogInv_invItemBox{
+.carinvInvItemBox, .eqinvInvItemBox,
+.doginvInvItemBox, .heroToDogInvInvItemBox{
     height: 13px;
     width: 180px;
     position: relative;
@@ -246,14 +246,14 @@ background-color: white;
     padding-bottom: 5px;
 }
 
-.inv_hr{
+.invHr{
     position: absolute;
     width: 100%;
     left:0;
     bottom: 15px;
 
 }
-#torch_hr{
+#torchHr{
     position: absolute;
     width: 100%;
     left:0;
@@ -297,8 +297,8 @@ background-color: white;
     height: 300px;
 }
 
-#inv_hoverInfo, #hoverCompare,
-#doginv_hoverInfo {
+#invHoverInfo, #hoverCompare,
+#doginvHoverInfo {
     padding: 10px 20px 10px 20px;
     position: absolute;
     border-color: #a6a6a6;
