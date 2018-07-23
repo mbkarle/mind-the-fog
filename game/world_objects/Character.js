@@ -28,7 +28,8 @@ class Hero extends Character {
     super(name, strength, dexterity, vitality, objid)
     this.xp = 1000
     this.levelCheck = function () {
-      return this.level = Math.floor(this.xp / 1000)
+      this.level = Math.floor(this.xp / 1000)
+      return this.level
     }
     this.constructorName = 'Hero'
     this.spells = []

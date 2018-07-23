@@ -9,7 +9,7 @@ class Floor {
     this.safeRoomTypes = ['MidNorm', 'HorizHallNorm', 'VertHallNorm', 'SmallNorm', 'Exit']
     this.buildFloor = function () {
       if (this.custom === null) {
-        for (var i = 0; i < this.numRooms; i++) {
+        for (let i = 0; i < this.numRooms; i++) {
           var type
           var maxLocs
 
@@ -41,7 +41,7 @@ class Floor {
           roomList[this.floorNum][i].originFloor = this
         }
       } else {
-        for (var i = 0; i < this.custom.length; i++) {
+        for (let i = 0; i < this.custom.length; i++) {
           roomList[this.floorNum][i] = this.custom[i]
           buildDoors(this, roomList, i, numRooms)
           centerMap(roomList[this.floorNum][i].roomMap, roomList[this.floorNum][i].yoff, roomList[this.floorNum][i].xoff)

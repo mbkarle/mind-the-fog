@@ -16,7 +16,7 @@ class Item {
     }
 
     if (toList) {
-      for (var i = 0; i < items.length; i++) {
+      for (let i = 0; i < items.length; i++) {
         if (typeof items[i] === 'number') {
           listMeta[items[i]].push(this)
         } else { items[i].push(this) }
@@ -26,7 +26,7 @@ class Item {
 
   genHoverInfoHTML () {
     var innerhtml = this.name + '<br>'
-    for (var attribute in this) {
+    for (let attribute in this) {
       if (typeof this[attribute] === 'number' && attribute !== 'value') {
         if (this[attribute] >= 0) {
           innerhtml += attribute + ': +' + this[attribute] + '<br>'
@@ -39,17 +39,17 @@ class Item {
   }
 }
 
-class effectItem extends Item {
+class EffectItem extends Item {
   constructor (name, type, strength, dexterity, vitality, buffArray, buffChance, debuffArray, debuffChance, toList, objid, items, listMeta, value) {
     super(name, type, strength, dexterity, vitality, toList, objid, items, listMeta, value)
     this.buffArray = buffArray
     this.buffChance = buffChance // pass array to match buffArray
     this.debuffArray = debuffArray
     this.debuffChance = debuffChance
-    this.constructorName = 'effectItem'
+    this.constructorName = 'EffectItem'
 
     this.buffUp = function (target) {
-      for (var i = 0; i < this.buffArray.length; i++) {
+      for (let i = 0; i < this.buffArray.length; i++) {
         if (Math.random() <= this.buffChance[i]) {
           console.log('applying ' + this.buffArray[i].name)
           this.buffArray[i].applyBuff(target)
@@ -57,7 +57,7 @@ class effectItem extends Item {
       }
     }
     this.debuffUp = function (target) {
-      for (var i = 0; i < this.debuffArray.length; i++) {
+      for (let i = 0; i < this.debuffArray.length; i++) {
         if (Math.random() <= this.debuffChance[i]) {
           console.log('applying ' + this.debuffArray[i].name)
           this.debuffArray[i].applyDebuff(target)
@@ -70,10 +70,10 @@ class effectItem extends Item {
     var innerhtml = super.genHoverInfoHTML()
 
     // add buffs/debuffs
-    for (var j = 0; j < this.buffArray.length; j++) {
+    for (let j = 0; j < this.buffArray.length; j++) {
       innerhtml += 'buffs: ' + this.buffArray[j].name + '<br>'
     }
-    for (var k = 0; k < this.debuffArray.length; k++) {
+    for (let k = 0; k < this.debuffArray.length; k++) {
       innerhtml += 'debuffs: ' + this.debuffArray[k].name + '<br>'
     }
 
@@ -81,10 +81,10 @@ class effectItem extends Item {
   }
 }
 
-class exoticItem extends Item {
+class ExoticItem extends Item {
   constructor (name, type, strength, dexterity, vitality, value, protoLists, listMeta) {
     super(name, type, strength, dexterity, vitality)
-    this.constructorName = 'exoticItem'
+    this.constructorName = 'ExoticItem'
     this.unlocked = false
     this.value = value
     this.protoLists = protoLists
@@ -116,7 +116,7 @@ class Consumable extends Item {
     super(name, 'consumable')
     this.name = name
     this.objid = objid
-    for (var i = 0; i < CONSUMABLES[name]['characteristics'].length; i++) {
+    for (let i = 0; i < CONSUMABLES[name]['characteristics'].length; i++) {
       this[CONSUMABLES[name]['characteristics'][i]] = CONSUMABLES[name]['changes'][i]
     }
     this.buffArray = CONSUMABLES[name]['buffs']
@@ -133,10 +133,10 @@ class Consumable extends Item {
     var innerhtml = super.genHoverInfoHTML()
 
     // add buffs/debuffs
-    for (var j = 0; j < this.buffArray.length; j++) {
+    for (let j = 0; j < this.buffArray.length; j++) {
       innerhtml += 'buffs: ' + this.buffArray[j].buff.name + '<br>'
     }
-    for (var k = 0; k < this.debuffArray.length; k++) {
+    for (let k = 0; k < this.debuffArray.length; k++) {
       innerhtml += 'debuffs: ' + this.debuffArray[k].debuff.name + '<br>'
     }
 
@@ -144,18 +144,18 @@ class Consumable extends Item {
   }
 
   useConsumable () {
-    for (var i = 0; i < CONSUMABLES[this.name]['characteristics'].length; i++) {
+    for (let i = 0; i < CONSUMABLES[this.name]['characteristics'].length; i++) {
       hero[CONSUMABLES[this.name]['characteristics'][i]] += CONSUMABLES[this.name]['changes'][i]
     }
     if (hero.vitality > hero.maxVitality) {
       hero.vitality = hero.maxVitality
     }
-    for (var i = 0; i < CONSUMABLES[this.name]['buffs'].length; i++) {
+    for (let i = 0; i < CONSUMABLES[this.name]['buffs'].length; i++) {
       if (Math.random() < CONSUMABLES[this.name]['buffs'][i]['chance']) {
         CONSUMABLES[this.name]['buffs'][i]['buff'].applyBuff(hero)
       }
     }
-    for (var i = 0; i < CONSUMABLES[this.name]['debuffs'].length; i++) {
+    for (let i = 0; i < CONSUMABLES[this.name]['debuffs'].length; i++) {
       if (Math.random() < CONSUMABLES[this.name]['debuffs'][i]['chance']) {
         CONSUMABLES[this.name]['debuffs'][i]['debuff'].applyDebuff(hero)
       }
@@ -165,9 +165,9 @@ class Consumable extends Item {
 }
 
 // Load in consumables into NPCS
-for (var consumable in CONSUMABLES) {
+for (let consumable in CONSUMABLES) {
   var newConsumable = new Consumable(consumable, 'lul')
-  var id = newConsumable.name
+  let id = newConsumable.name
   NPCS['alchemist']['merchandise'][id] = newConsumable
 }
 
@@ -188,7 +188,7 @@ class ShieldUpgrade {
 
   genHoverInfoHTML () {
     var innerhtml = this.name + '<br>'
-    for (var attribute in this) {
+    for (let attribute in this) {
       if (typeof this[attribute] === 'number' && attribute !== 'value' && attribute !== 'tier') {
         innerhtml += attribute + ': ' + this[attribute] + '<br>'
       }
@@ -202,7 +202,7 @@ class ShieldUpgrade {
   equipShield () {
     hero.shieldUpgradeName = this.name // set hero's shield upg
     // set stats to be this shield
-    for (var attribute in SHIELDS[this.name]) {
+    for (let attribute in SHIELDS[this.name]) {
       if (attribute !== 'value') {
         heroShield[attribute] = SHIELDS[this.name][attribute]
       }
@@ -211,7 +211,7 @@ class ShieldUpgrade {
 
   unequipShield () {
     hero.shieldUpgradeName = 'wood' // reset hero's shield upg
-    for (var attribute in SHIELDS['wood']) {
+    for (let attribute in SHIELDS['wood']) {
       if (attribute !== 'value') {
         heroShield[attribute] = SHIELDS['wood'][attribute]
       }
@@ -225,10 +225,10 @@ class ShieldUpgrade {
 }
 
 // Load in shields into NPCS
-for (var shield in SHIELDS) {
+for (let shield in SHIELDS) {
   if (shield !== 'wood') {
     var newShield = new ShieldUpgrade(shield)
-    var id = newShield.name
+    let id = newShield.name
     NPCS['shieldMaker']['merchandise'][id] = newShield
   }
 }
@@ -251,7 +251,7 @@ class DogUpgrade {
   genHoverInfoHTML () {
     var html = 'Description: <br> ' + this.desc
     if (this.prereqs.length > 0) { html += '<br><br>Prerequisites:<br>' }
-    for (var i = 0; i < this.prereqs.length; i++) {
+    for (let i = 0; i < this.prereqs.length; i++) {
       html += this.prereqs[i] + '<br>'
     }
     return html
@@ -259,7 +259,7 @@ class DogUpgrade {
 
   purchasable () {
     // Returns if able to purchase in terms of prereqs
-    for (var i = 0; i < this.prereqs.length; i++) {
+    for (let i = 0; i < this.prereqs.length; i++) {
       // Look up in the merch json
       if (!this.catalog[this.prereqs[i]].purchased) {
         return false
@@ -270,8 +270,8 @@ class DogUpgrade {
 }
 
 // Load in shields into NPCS
-for (var dogup in DOGUPGRADES) {
+for (let dogup in DOGUPGRADES) {
   var newDogUP = new DogUpgrade(dogup)
-  var id = newDogUP.name
+  let id = newDogUP.name
   NPCS['dogTrainer']['merchandise'][id] = newDogUP
 }

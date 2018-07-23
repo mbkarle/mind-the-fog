@@ -73,7 +73,7 @@ class Trapdoor extends Location {
       // TODO: shouldnt have to check this... just dont build trapdoors on last floornew map!
       if (currFloor < numFloors - 1) {
         if (currFloor > 0) {
-          for (var i = 0; i < roomList[currFloor][currRoom].enemyList.length; i++) { // scale recurring enemies
+          for (let i = 0; i < roomList[currFloor][currRoom].enemyList.length; i++) { // scale recurring enemies
             // make enemies stronger and revive them
             roomList[currFloor][currRoom].enemyList[i].maxVitality += 5
             roomList[currFloor][currRoom].enemyList[i].vitality = roomList[currFloor][currRoom].enemyList[i].maxVitality

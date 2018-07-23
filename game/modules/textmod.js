@@ -92,6 +92,7 @@ class TextModule {
     var msgs = []
 
     // iterate through convo, add appropriate list to msgs
+    // NOTE: not a let i! bc we use [i] right after!
     for (var i = 0; i < convo.length - 1; i++) {
       msgs.push(['trans', convo[i]])
     }
@@ -210,17 +211,18 @@ class TextModule {
 
     // go through all messages, build nested function
     // easiest to do by recursively calling this function
+    var args
     if (msgs.length === 1) {
       // base case! no recursive cb
       // execute the function in arg0 using type map with all else as args
-      var args = [...msgs[0].splice(1), speaker]
+      args = [...msgs[0].splice(1), speaker]
       this.parseCompleted = true // set to true so user knows full parse completed
     } else {
       // Assume cb is to the next tm display func
       var newJson = {'speaker': speaker, 'msgs': msgs.splice(1)} // create a new json 4 recursion
       var self = this
       var cb = function () { self.parseTxtMdJSON(newJson) } // create cb
-      var args = [...msgs[0].splice(1), cb, speaker]
+      args = [...msgs[0].splice(1), cb, speaker]
     }
 
     // switch case over the type of function.
@@ -318,12 +320,11 @@ class TextModule {
 
   setTextBox (text, speaker) {
     // Custom helper for text box to handle speaker/lack of
+    var spkrtext
     if (typeof speaker === 'undefined') {
-      var spkrtext = ''
-    }
-    // Else build html
-    else {
-      var spkrtext = `<div style="font-size:12px;position:absolute;top:0;left:10px;">${speaker}</div>`
+      spkrtext = ''
+    } else { // Else build html
+      spkrtext = `<div style="font-size:12px;position:absolute;top:0;left:10px;">${speaker}</div>`
     }
     if (typeof text === 'function') {
       text = text() // execute function, needs to return the text to display in mod

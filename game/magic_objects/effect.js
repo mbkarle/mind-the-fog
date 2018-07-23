@@ -19,14 +19,14 @@ class Effect {
     if (target.constructorName === 'Boss') {
       objid = 'EnemyEffects'
     }
-    for (var i = 0; i < target.effects.length; i++) {
+    for (let i = 0; i < target.effects.length; i++) {
       effectBoxes += "<div id='effect" + i + target.objid + "' class='effect' style='left: " + 20 * i + "px'>" + target.effects[i].symbol + '</div>'
     }
     $('#' + objid).html(effectBoxes)
     if (target.effects.length > 0) {
       $('#' + objid).show()
     }
-    for (var i = 0; i < target.effects.length; i++) {
+    for (let i = 0; i < target.effects.length; i++) {
       effectInfos.push(target.effects[i].name)
       var effectID = '#effect' + i + target.objid
       var effectToPrint = (' ' + effectInfos[i]).slice(1)
@@ -54,14 +54,14 @@ class Buff extends Effect {
       if (!this.active) {
         this.active = true
         this.target.effects.push(this)
-        for (var i = 0; i < this.attributes.length; i++) {
+        for (let i = 0; i < this.attributes.length; i++) {
           this.target[attributes[i]] += this.quantity[i]
         }
         refreshOpenMods()
         this.displayEffects(this.target)
         window.setTimeout(function () {
           self.active = false
-          for (var i = 0; i < self.attributes.length; i++) {
+          for (let i = 0; i < self.attributes.length; i++) {
             console.log(self.target[self.attributes[i]] + '-' + self.quantity[i])
             self.target[attributes[i]] -= self.quantity[i]
             if (character.vitality <= 0) {
@@ -88,7 +88,7 @@ class Debuff extends Effect {
       this.target = character
       if (!this.active) {
         this.active = true
-        for (var i = 0; i < this.attributes.length; i++) {
+        for (let i = 0; i < this.attributes.length; i++) {
           this.cachedStats.push(this.target[attributes[i]])
           this.target[attributes[i]] -= this.quantity[i]
 
@@ -104,7 +104,7 @@ class Debuff extends Effect {
         this.displayEffects(this.target)
         window.setTimeout(function () {
           self.active = false
-          for (var i = 0; i < self.attributes.length; i++) {
+          for (let i = 0; i < self.attributes.length; i++) {
             console.log(self.target[self.attributes[i]] + '+' + self.quantity[i])
             self.target[attributes[i]] = self.cachedStats[i]
           }
@@ -142,7 +142,7 @@ class Exhaustion extends Debuff {
   }
 }
 
-class damageDebuff extends Debuff {
+class DamageDebuff extends Debuff {
   constructor (name, target, duration, interval, damage, symbol) {
     super(name, target, duration, null, null, symbol)
     this.interval = interval
@@ -187,14 +187,14 @@ class damageDebuff extends Debuff {
 var adrenaline = new Buff('adrenaline', null, 5000, ['strength', 'dexterity'], [1, 1], 'a')
 var indestructible = new Buff('indestructibility', null, 10000, ['vitality', 'maxVitality'], [20, 20], 'i')
 var supStrength = new Buff('super strength', null, 10000, ['strength', 'dexterity'], [4, 1], 'ss')
-var fire = new damageDebuff('fire', null, 16000, 4000, 3, 'f')
+var fire = new DamageDebuff('fire', null, 16000, 4000, 3, 'f')
 var divine = new Buff('divinity', null, 8000, ['strength', 'dexterity', 'vitality', 'maxVitality'], [5, 5, 50, 50], 'd')
 var ice = new Debuff('frozen', null, 10000, ['dexterity'], [2], 'fr')
 var exhaust = new Exhaustion('magic exhaust', null, 15000, 'e')
-var asphyxiation = new damageDebuff('asphyxiation', null, 12000, 4000, 2, 'as')
+var asphyxiation = new DamageDebuff('asphyxiation', null, 12000, 4000, 2, 'as')
 var blocked = new Debuff('blocked', null, 10000, ['strength'], [200], 'b')
 var suppressed = new Debuff('suppressed', null, 8000, ['strength'], [200], 's')
-var dominated = new damageDebuff('dominated', null, 8000, 2000, 3, 'd')
+var dominated = new DamageDebuff('dominated', null, 8000, 2000, 3, 'd')
 var sponge = new Buff('sponge', null, 10000, ['vitality', 'maxVitality'], [100, 100], 'sp')
 var slow = new Debuff('slow', null, 10000, ['dexterity'], [1], 'sl')
 var supSpeed = new Buff('super speed', null, 10000, ['dexterity'], [4], 'sd')

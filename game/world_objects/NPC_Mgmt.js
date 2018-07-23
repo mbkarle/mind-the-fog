@@ -3,7 +3,7 @@ var inactiveNPCs = []
 
 function getNPCs () {
   var NPCSKeys = Object.keys(NPCS)
-  for (var i = 0; i < NPCSKeys.length; i++) {
+  for (let i = 0; i < NPCSKeys.length; i++) {
     if (NPCS[NPCSKeys[i]]['active']) {
       activeNPCs.push(NPCS[NPCSKeys[i]])
       var inactiveSplice = inactiveNPCs.indexOf(NPCS[NPCSKeys[i]])

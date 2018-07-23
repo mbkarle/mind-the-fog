@@ -8,7 +8,7 @@ function devKeys (e) {
   // Add dev keys here!
   var room = roomList[currFloor][currRoom]
   var map = room.roomMap
-  if (e.keyCode === '66') {
+  if (e.keyCode === 66) {
     console.log('Dev tools activated')
     console.log("So...., you're either a developer, or a cheater, or just lazy...")
     hero.inv.add(ITEMS_LOADED['MasterSword']) // give absurd weapons
@@ -20,16 +20,16 @@ function devKeys (e) {
     clearAllFog(map)
     room.clearAllFogTimeouts()
     room.buildRoomHTML(avatarX, avatarY, torchlight, fogRadius)
-  } else if (e.keyCode === '189') {
+  } else if (e.keyCode === 189) {
     // '-' removes monsters!
     // for debugging only
     openAlert('****removing monsters from the game!****')
-    for (var i = 0; i < roomList.length; i++) {
-      for (var j = 0; j < roomList[i].length; j++) {
+    for (let i = 0; i < roomList.length; i++) {
+      for (let j = 0; j < roomList[i].length; j++) {
         roomList[i][j].fightChance = 0
       }
     }
-  } else if (e.keyCode === '187') {
+  } else if (e.keyCode === 187) {
     // '=' clears room!
     // for debugging only
     openAlert('****clearing room!****')
@@ -41,7 +41,7 @@ function devKeys (e) {
 
 function unlockAllNPCS () {
   NPCKeys = Object.keys(NPCS)
-  for (var i = 0; i < NPCKeys.length; i++) {
+  for (let i = 0; i < NPCKeys.length; i++) {
     NPCS[NPCKeys[i]]['active'] = true
   }
   startGame()
@@ -51,13 +51,13 @@ function unlockAllNPCS () {
 // a temporary replacement to check functionality while we decide
 // on the hard values of items
 function randGenInvValues () {
-  for (var i = 0; i < itemList1.length; i++) {
+  for (let i = 0; i < itemList1.length; i++) {
     itemList1[i].value = Math.floor(Math.random() * 300)
   }
-  for (var i = 0; i < itemList2.length; i++) {
+  for (let i = 0; i < itemList2.length; i++) {
     itemList2[i].value = Math.floor(Math.random() * 300)
   }
-  for (var i = 0; i < itemList3.length; i++) {
+  for (let i = 0; i < itemList3.length; i++) {
     itemList3[i].value = Math.floor(Math.random() * 300)
   }
 }
@@ -65,10 +65,10 @@ function randGenInvValues () {
 // function to debug the dog (call in console)
 function whereIsDoge () {
   var dogeLocs = []
-  for (var i = 0; i < roomList.length; i++) {
-    for (var j = 0; j < roomList[0].length; j++) {
-      for (var r = 0; r < roomList[i][j].roomMap.length; r++) {
-        for (var c = 0; c < roomList[i][j].roomMap[0].length; c++) {
+  for (let i = 0; i < roomList.length; i++) {
+    for (let j = 0; j < roomList[0].length; j++) {
+      for (let r = 0; r < roomList[i][j].roomMap.length; r++) {
+        for (let c = 0; c < roomList[i][j].roomMap[0].length; c++) {
           if (roomList[i][j].roomMap[r][c].dogPresent) {
             dogeLocs.push([i, j, roomList[i][j].roomMap[r][c]])
           }

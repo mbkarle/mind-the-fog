@@ -200,7 +200,7 @@ function refillChests () {
   // used after interaction w certain npcs
   console.log('Old room 1: ')
   console.log(roomList[1][0])
-  for (var i = 1; i < roomList.length; i++) {
+  for (let i = 1; i < roomList.length; i++) {
     roomList[i] = roomList[i][0].originFloor.buildFloor()
   }
   console.log('new room 1: ')

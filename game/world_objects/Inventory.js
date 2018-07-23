@@ -108,7 +108,7 @@ class Inventory {
 
     // First push random items until some fraction of capacity
     var numItems = Math.floor(Math.random() * (this.capacity - minItems + 1)) + minItems
-    for (var i = 0; i < numItems; i++) {
+    for (let i = 0; i < numItems; i++) {
       this.add(itemList[Math.floor(itemList.length * Math.random())])
     }
 
@@ -144,6 +144,7 @@ class Inventory {
     var itemBoxID = unqID + 'InvItemBox'
     var cbBtnID = unqID + 'CbBtn'
 
+    // NOTE: not a let i bc i is used below!!
     for (var i = 0; i < items.length; i++) {
       // First store all of the item infos for the hover module
       itemInfos.push(items[i].genHoverInfoHTML())
@@ -177,7 +178,7 @@ class Inventory {
     var self = this
     var clickFunc = function () {
       // Deal with the non-gold/torch items first
-      for (var i = 0; i < items.length; i++) {
+      for (let i = 0; i < items.length; i++) {
         // Set the hover info to print item info
         var itemToPrint = (' ' + itemInfos[i]).slice(1)
         var thisItemBoxID = '#' + itemBoxID + i

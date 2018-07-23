@@ -8,7 +8,7 @@ function setupCombat (hero, enemy) {
   canMove = false
 
   // reset all effects
-  for (var i = 0; i < effectList.length; i++) {
+  for (let i = 0; i < effectList.length; i++) {
     effectList[i].active = false
   }
 
@@ -19,16 +19,16 @@ function setupCombat (hero, enemy) {
   enemy.regenInv()
 
   // set spell targets:
-  for (var i = 0; i < hero.spells.length; i++) {
+  for (let i = 0; i < hero.spells.length; i++) {
     hero.spells[i].target = enemy
-    for (var n = 0; n < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'].length; n++) {
+    for (let n = 0; n < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'].length; n++) {
       if (ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target === 'enemy') {
         ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target = enemy
       } else if (ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target === 'hero') {
         ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target = hero
       }
     }
-    for (var m = 0; m < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'].length; m++) {
+    for (let m = 0; m < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'].length; m++) {
       if (ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target === 'enemy') {
         ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target = enemy
       } else if (ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target === 'hero') {
@@ -85,21 +85,21 @@ function fightEnemy (hero, enemy) {
 
       // Handle effect item buffs ----------------
       var weapon = hero.equipInv.inv.weapon
-      if (weapon !== null && weapon.constructorName === 'effectItem') {
+      if (weapon !== null && weapon.constructorName === 'EffectItem') {
         console.log('buffing up')
         weapon.buffUp(hero)
         weapon.debuffUp(enemy)
       }
       var armor = hero.equipInv.inv.armor
       if (armor !== null) {
-        if (armor.constructorName === 'effectItem') {
+        if (armor.constructorName === 'EffectItem') {
           armor.buffUp(hero)
           armor.debuffUp(enemy)
         }
       }
       var headgear = hero.equipInv.inv.headgear
       if (headgear !== null) {
-        if (headgear.constructorName === 'effectItem') {
+        if (headgear.constructorName === 'EffectItem') {
           headgear.buffUp(hero)
           headgear.debuffUp(enemy)
         }
@@ -172,9 +172,7 @@ function exitCombat (room, customCombat) {
   if (room.numEnemies > 0 || customCombat === true) {
     $('#worldMap').show()
     txtmd.revertTxtMd()
-  }
-  // Room cleared!
-  else {
+  } else { // Room cleared!
     console.log('room cleared!')
 
     // Print cleared message
@@ -193,14 +191,14 @@ function exitCombat (room, customCombat) {
   }
 
   // Handle the spells @mbkarle is responsible here down
-  for (var i = 0; i < hero.spells.length; i++) {
+  for (let i = 0; i < hero.spells.length; i++) {
     hero.spells[i].target = enemy
-    for (var n = 0; n < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'].length; n++) {
+    for (let n = 0; n < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'].length; n++) {
       if (ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target.constructorName === 'Enemy' || ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target.constructorName === 'Boss') {
         ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['buffs'][n].target = 'enemy'
       }
     }
-    for (var m = 0; m < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'].length; m++) {
+    for (let m = 0; m < ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'].length; m++) {
       if (ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Enemy' || ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target.constructorName === 'Boss') {
         ACTIVE_SPELL_EFFECTS[hero.spells[i].name]['debuffs'][m].target = 'enemy'
       }
@@ -241,13 +239,14 @@ function Damage (source, target) {
 
     // Handle mob drops
     var exitFunc = function () { exitCombat(room, customCombat) }
+    var txtmodmsg
     if (target.inv.size() > 0) {
-      var txtmodmsg = {'msgs': [
+      txtmodmsg = {'msgs': [
         ['trans', "You've defeated the beast!"],
         ['finfunc', 'a treasure from the fight is left behind', 'Examine',
           function () { txtmd.showInventory(target.inv, exitFunc) } ]] }
     } else {
-      var txtmodmsg = {'msgs': [['finfunc', "You've defeated the beast!", 'X', exitFunc]]}
+      txtmodmsg = {'msgs': [['finfunc', "You've defeated the beast!", 'X', exitFunc]]}
     }
 
     // print messages

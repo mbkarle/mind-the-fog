@@ -28,14 +28,15 @@ class VendorModule {
     $(this.exitBtnID).show()
     $(this.exitBtnID).off().click(() => this.revertVendorMd())
 
+    var header, frac, tabTxt
     if (this.buying) {
-      var header = "For Purchase: <br> You've got " + buyerInv.gold + ' gold <br>'
-      var frac = buyFrac
-      var tabTxt = 'Sell'
+      header = "For Purchase: <br> You've got " + buyerInv.gold + ' gold <br>'
+      frac = buyFrac
+      tabTxt = 'Sell'
     } else {
-      var header = "What would you like to sell? <br> I'm willing to spend " + buyerInv.gold + ' gold <br>'
-      var frac = sellFrac
-      var tabTxt = 'Buy'
+      header = "What would you like to sell? <br> I'm willing to spend " + buyerInv.gold + ' gold <br>'
+      frac = sellFrac
+      tabTxt = 'Buy'
     }
 
     // setup the modIds and cb's for displaying the inv

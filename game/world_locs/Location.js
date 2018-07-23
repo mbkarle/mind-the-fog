@@ -12,7 +12,6 @@ class Location {
     this.colID = colID // col index in worldMap
     this.fog = true // whether or not fog is present
     this.passable = passable
-    this.fogTimeout
     this.htmlID = '#' + String(this.rowID) + 'x' + String(this.colID)
 
     this.computeCoordsWithOffset = function (yoff, xoff) {

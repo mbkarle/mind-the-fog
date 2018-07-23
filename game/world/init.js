@@ -3,16 +3,6 @@
  * including global variables called throughout
  */
 
-Array.prototype.move = function (oldIndex, newIndex) {
-  if (newIndex >= this.length) {
-    var k = newIndex - this.length
-    while ((k--) + 1) {
-      this.push(undefined)
-    }
-  }
-  this.splice(newIndex, 0, this.splice(oldIndex, 1)[0])
-  return this
-}
 // ------------------------------------------------------
 //          Some magical game variables...
 // ------------------------------------------------------
@@ -80,24 +70,24 @@ var itemList3 = []
 var mobDrops = []
 var mobDrops2 = []
 var itemList4 = []
-var itemListMeta = new Array(mobDrops, itemList1, itemList2, itemList3, itemList4)
+var itemListMeta = [mobDrops, itemList1, itemList2, itemList3, itemList4]
 var heroShield = new Shields('the shield', 'shield', null, null, 30, 1, 3, 4, false, 'defendText', [itemList1])
 
-for (var attr in ELEMITEMS) {
+for (let attr in ELEMITEMS) {
   e = ELEMITEMS[attr]
-  var temp = new effectItem(e['name'], e['type'], e['strength'], e['dexterity'], e['vitality'], e['buffArray'], e['buffChance'], e['debuffArray'], e['debuffChance'], e['toList'], e['objid'], e['items'], itemListMeta, e['value'])
+  var temp = new EffectItem(e['name'], e['type'], e['strength'], e['dexterity'], e['vitality'], e['buffArray'], e['buffChance'], e['debuffArray'], e['debuffChance'], e['toList'], e['objid'], e['items'], itemListMeta, e['value'])
 
   ITEMS_LOADED[attr] = temp
 }
-for (var attr in ITEMS) {
+for (let attr in ITEMS) {
   e = ITEMS[attr]
   var temp = new Item(e['name'], e['type'], e['strength'], e['dexterity'], e['vitality'], e['toList'], e['objid'], e['items'], itemListMeta, e['value'])
 
   ITEMS_LOADED[attr] = temp
 }
-for (var attr in EXOTICS) {
+for (let attr in EXOTICS) {
   e = EXOTICS[attr]
-  var temp = new exoticItem(e['name'], e['type'], e['strength'], e['dexterity'], e['vitality'], e['value'], e['protoLists'], itemListMeta)
+  var temp = new ExoticItem(e['name'], e['type'], e['strength'], e['dexterity'], e['vitality'], e['value'], e['protoLists'], itemListMeta)
 
   ITEMS_LOADED[attr] = temp
 }
@@ -284,7 +274,7 @@ function startGame () {
   mindDom = new ActiveSpell('mind domination', 'mindDomS', hero, null, null, 20000, 3)
   forcefieldSpell = new ActiveSpell('forcefield', 'forcefieldS', hero, null, null, 8000, 2)
 
-  for (var i = 0; i < Object.keys(SPELLTREE).length; i++) {
+  for (let i = 0; i < Object.keys(SPELLTREE).length; i++) {
     SPELLTREE[Object.keys(SPELLTREE)[i]]['learned'] = false
   }
 
@@ -317,7 +307,7 @@ function startGame () {
   roomList = []
 
   // have an array of rooms per floor
-  for (var i = 0; i < numFloors; i++) {
+  for (let i = 0; i < numFloors; i++) {
     roomList.push([])
   }
 
@@ -359,7 +349,7 @@ function startGame () {
     pitActive = false
   }
   getNPCs()
-  for (var i = 0; i < activeNPCs.length; i++) {
+  for (let i = 0; i < activeNPCs.length; i++) {
     addNPC(activeNPCs[i]['charID'], roomList[0][activeNPCs[i]['roomIdx']].roomMap, activeNPCs[i]['coords'][0], activeNPCs[i]['coords'][1])
     roomList[0][activeNPCs[i]['roomIdx']].roomMap[activeNPCs[i]['coords'][0]][activeNPCs[i]['coords'][1]].computeCoordsWithOffset(roomList[0][activeNPCs[i]['roomIdx']].yoff, roomList[0][activeNPCs[i]['roomIdx']].xoff)
     clearAllFog(roomList[0][1].roomMap)

@@ -61,7 +61,7 @@ class InventoryModule {
     var torchtext = ''
     if (inv.torches > 0) {
       torchtext = 't'
-      for (var i = 0; i < inv.torches - 1; i++) {
+      for (let i = 0; i < inv.torches - 1; i++) {
         torchtext += '    t'
       }
     }
@@ -69,7 +69,7 @@ class InventoryModule {
 
     // The equipped section ------------------------------------------------
     var inventoryMessage = 'Equipped: <br><br>'
-    for (var attribute in eqinv.inv) {
+    for (let attribute in eqinv.inv) {
       if (eqinv.inv[attribute] !== null) {
         inventoryMessage += attribute + ': ' + eqinv.inv[attribute].name + '<br><br>'
       }

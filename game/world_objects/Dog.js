@@ -150,7 +150,7 @@ class Dog {
     }
 
     var locToReturn
-    for (var i = 0; i < possLocs.length; i++) {
+    for (let i = 0; i < possLocs.length; i++) {
       locToReturn = possLocs[i]
       if (map[locToReturn[1]][locToReturn[0]].objid === 'tile') {
         return locToReturn
@@ -214,7 +214,7 @@ function aStarSearch (startLoc, endLoc, map) {
     closedSet.add(current)
 
     // For each neighbor
-    for (var i = 0; i < neighs.length; i++) {
+    for (let i = 0; i < neighs.length; i++) {
       var neigh = neighs[i]
       if (closedSet.has(neigh)) { // don't add to openSet if already explored
         continue

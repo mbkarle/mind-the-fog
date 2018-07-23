@@ -16,7 +16,7 @@ var NPCS = {
         var item = sellerInv.get(id)
         if (!item.prototyped) {
           item.prototyped = true
-          for (var i = 0; i < CONSUMABLES[item.name]['itemlists'].length; i++) {
+          for (let i = 0; i < CONSUMABLES[item.name]['itemlists'].length; i++) {
             itemListMeta[CONSUMABLES[item.name]['itemlists'][i]].push(item)
           }
           refillChests()
@@ -98,7 +98,7 @@ var NPCS = {
       if (!item.unlocked) {
         if (buyerInv.pay(sellerInv, Math.floor(frac * item.value), "You can't afford this item!")) {
           // Add item to all of its protoLists so it will be findable
-          for (var i = 0; i < item.protoLists.length; i++) {
+          for (let i = 0; i < item.protoLists.length; i++) {
             item.listMeta[item.protoLists[i]].push(item)
           }
           // unlock + refill chests for finding on this run

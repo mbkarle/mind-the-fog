@@ -12,10 +12,17 @@ class SpellTreeModule {
     if (this.open) { this.hideMod() } else { this.openMod() }
   }
 
+  isLearnable (spellName) {
+    var learnable = (hero.levelCheck() >= SPELLTREE[spellName]['level'] &&
+                    ((SPELLTREE[spellName]['karma'] >= 0 && hero.karma >= SPELLTREE[spellName]['level'] - 3) ||
+                    (SPELLTREE[spellName]['karma'] <= 0 && hero.karma <= SPELLTREE[spellName]['level'] * -1 + 3)))
+    return learnable
+  }
+
   refreshMod () {
     var thisModule = this
     $(this.modID).html('')
-    for (var spell in Object.getOwnPropertyNames(SPELLTREE)) {
+    for (let spell in Object.getOwnPropertyNames(SPELLTREE)) {
       if (typeof Object.getOwnPropertyNames(SPELLTREE)[spell] !== 'function') {
         var spellBox
         var thisSpell = Object.getOwnPropertyNames(SPELLTREE)[spell]
@@ -30,13 +37,7 @@ class SpellTreeModule {
           left = 35 + '%'
         }
         var toDisplay
-        function isLearnable (spellName) {
-          var learnable = (hero.levelCheck() >= SPELLTREE[spellName]['level'] &&
-                ((SPELLTREE[spellName]['karma'] >= 0 && hero.karma >= SPELLTREE[spellName]['level'] - 3) ||
-                (SPELLTREE[spellName]['karma'] <= 0 && hero.karma <= SPELLTREE[spellName]['level'] * -1 + 3)))
-          return learnable
-        }
-        if (!isLearnable(Object.getOwnPropertyNames(SPELLTREE)[spell])) {
+        if (!this.isLearnable(Object.getOwnPropertyNames(SPELLTREE)[spell])) {
           toDisplay = '?'
         } else {
           toDisplay = Object.getOwnPropertyNames(SPELLTREE)[spell]
@@ -58,7 +59,7 @@ class SpellTreeModule {
           $('#closeWindow').click(function () {
             refreshOpenMods()
           })
-          if (!SPELLTREE[$(this).attr('thisSpell')]['learned'] && isLearnable($(this).attr('thisSpell'))) {
+          if (!SPELLTREE[$(this).attr('thisSpell')]['learned'] && this.isLearnable($(this).attr('thisSpell'))) {
             $(learnID).show()
             $(learnID).click(function () {
               SPELLTREE[$(this).attr('thisSpell')]['learned'] = true

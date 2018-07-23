@@ -26,12 +26,12 @@ class ActiveSpell extends Spell {
           self.ready = true
         }, this.spellCooldown)
         Damage({strength: this.damage}, this.target)
-        for (var i = 0; i < this.effectJSON['buffs'].length; i++) {
+        for (let i = 0; i < this.effectJSON['buffs'].length; i++) {
           if (Math.random() <= this.effectJSON['buffs'][i].chance) {
             this.effectJSON['buffs'][i]['buff'].applyBuff(this.effectJSON['buffs'][i]['target'])
           }
         }
-        for (var n = 0; n < this.effectJSON['debuffs'].length; n++) {
+        for (let n = 0; n < this.effectJSON['debuffs'].length; n++) {
           if (Math.random() <= this.effectJSON['debuffs'][n].chance) {
             console.log(this.effectJSON['debuffs'][n]['target'])
             this.effectJSON['debuffs'][n]['debuff'].applyDebuff(this.effectJSON['debuffs'][n]['target'])
@@ -40,7 +40,7 @@ class ActiveSpell extends Spell {
         exhaust.target = hero
         exhaust.duration = this.exhaustCooldown
         hero.exhaustStatus += this.exhaustAdd
-        for (var i = 0; i < this.exhaustAdd; i++) {
+        for (let i = 0; i < this.exhaustAdd; i++) {
           var duration = 4000 + 4000 * i
           window.setTimeout(function () {
             if (hero.exhaustStatus > 0) {
@@ -92,13 +92,12 @@ class Upgrade {
   constructor (name, addedFunction) {
     this.name = name
     this.addedFunction = addedFunction
-    this.cachedFunction
     var self = this
     this.upgrade = function () {
-      for (var target in SPELL_UPGRADES[this.name]) {
-        for (var i = 0; i < hero.spells.length; i++) {
+      for (let target in SPELL_UPGRADES[this.name]) {
+        for (let i = 0; i < hero.spells.length; i++) {
           if (target === hero.spells[i].name) {
-            for (var n = 0; n < SPELL_UPGRADES[this.name][target]['characteristics'].length; n++) {
+            for (let n = 0; n < SPELL_UPGRADES[this.name][target]['characteristics'].length; n++) {
               hero.spells[i][SPELL_UPGRADES[this.name][target]['characteristics'][n]] += SPELL_UPGRADES[this.name][target]['changes'][n]
             }
             if (typeof SPELL_UPGRADES[this.name][target]['effectAdd'] !== 'undefined') {
@@ -106,7 +105,7 @@ class Upgrade {
               ACTIVE_SPELL_EFFECTS[hero.spells[i].name][SPELL_UPGRADES[this.name][target]['effectAdd']['type']].push(SPELL_UPGRADES[this.name][target]['effectAdd']['effect'])
             }
           } else if (target === 'hero') {
-            for (var n = 0; n < SPELL_UPGRADES[this.name][target]['characteristics'].length; n++) {
+            for (let n = 0; n < SPELL_UPGRADES[this.name][target]['characteristics'].length; n++) {
               hero[SPELL_UPGRADES[this.name][target]['characteristics'][n]] += SPELL_UPGRADES[this.name][target]['changes'][n]
             }
           }

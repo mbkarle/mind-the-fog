@@ -43,8 +43,8 @@ class Room {
     // This is a function that should NEVER be called, but is useful for debugging
     var map = this.roomMap
     var count = 0
-    for (var i = 0; i < this.roomHeight; i++) {
-      for (var j = 0; j < this.roomWidth; j++) {
+    for (let i = 0; i < this.roomHeight; i++) {
+      for (let j = 0; j < this.roomWidth; j++) {
         if (map[i][j].heroPresent) {
           count++
         }
@@ -143,8 +143,8 @@ class Room {
   }
 
   clearAllFogTimeouts () {
-    for (var i = 0; i < this.roomMap.length; i++) {
-      for (var j = 0; j < this.roomMap[0].length; j++) {
+    for (let i = 0; i < this.roomMap.length; i++) {
+      for (let j = 0; j < this.roomMap[0].length; j++) {
         clearInterval(this.roomMap[i][j].fogTimeout)
       }
     }
@@ -155,8 +155,8 @@ class Room {
 
     // add fog to whole map (in case room has been seen before)
     if (!this.fogFreeRoom) {
-      for (var i = 0; i < this.roomMap.length; i++) {
-        for (var j = 0; j < this.roomMap[0].length; j++) {
+      for (let i = 0; i < this.roomMap.length; i++) {
+        for (let j = 0; j < this.roomMap[0].length; j++) {
           this.roomMap[i][j].fog = true
         }
       }
@@ -169,13 +169,13 @@ class Room {
 
     // Remove the fog around the hero
     var neigh = this.getNeighborLocations([avatarX, avatarY], torchlight, heroSight)
-    for (var i = 0; i < neigh.length; i++) {
+    for (let i = 0; i < neigh.length; i++) {
       neigh[i].fog = false
     }
 
     // Build the worldContents HTML string
-    for (var i = 0; i < this.roomMap.length; i++) {
-      for (var j = 0; j < this.roomMap[0].length; j++) {
+    for (let i = 0; i < this.roomMap.length; i++) {
+      for (let j = 0; j < this.roomMap[0].length; j++) {
         var symbol = this.roomMap[i][j].getSymbol() // accounts for fog, dog, hero
         worldContents += "<div id='" + this.roomMap[i][j].htmlID.substring(1) + "' style='top:" + this.roomMap[i][j].yCoord + 'px; left:' + this.roomMap[i][j].xCoord + "px; position: absolute;'>" + symbol + '</div>'
       }
@@ -197,14 +197,14 @@ class Room {
 
       var coordsToUpdate = []
       var haystack = JSON.stringify(noTorchCoords)
-      for (var i = 0; i < torchCoords.length; i++) {
+      for (let i = 0; i < torchCoords.length; i++) {
         var coord = torchCoords[i]
         if (haystack.indexOf(JSON.stringify(coord)) === -1) {
           coordsToUpdate.push(coord)
         }
       }
 
-      for (var i = 0; i < coordsToUpdate.length; i++) {
+      for (let i = 0; i < coordsToUpdate.length; i++) {
         var cx = coordsToUpdate[i][0]
         var cy = coordsToUpdate[i][1]
         this.roomMap[cy][cx].addFogBackAfterTimeout(this.tier)
@@ -218,14 +218,14 @@ class Room {
 
     var coordsToUpdate = []
     var haystack = JSON.stringify(newRadCoords)
-    for (var i = 0; i < oldRadCoords.length; i++) {
+    for (let i = 0; i < oldRadCoords.length; i++) {
       var coord = oldRadCoords[i]
       if (haystack.indexOf(JSON.stringify(coord)) === -1) {
         coordsToUpdate.push(coord)
       }
     }
 
-    for (var i = 0; i < coordsToUpdate.length; i++) {
+    for (let i = 0; i < coordsToUpdate.length; i++) {
       var cx = coordsToUpdate[i][0]
       var cy = coordsToUpdate[i][1]
       this.roomMap[cy][cx].addFogBackAfterTimeout(this.tier)
@@ -250,14 +250,14 @@ class Room {
         heroSight = this.darkness
       }
       var heroVisibleLocs = this.getNeighborLocations(newPos, torchlight, heroSight)
-      for (var i = 0; i < heroVisibleLocs.length; i++) {
+      for (let i = 0; i < heroVisibleLocs.length; i++) {
         heroVisibleLocs[i].removeFogBecauseHeroPresent()
       }
 
       // outOfDateCoords are coords no longer visible to the player that need
       // their fog regenerated.
       var outOfDateCoords = this.getOutOfDateCoords(oldPos, newPos, torchlight, heroSight)
-      for (var i = 0; i < outOfDateCoords.length; i++) {
+      for (let i = 0; i < outOfDateCoords.length; i++) {
         var cx = outOfDateCoords[i][0]
         var cy = outOfDateCoords[i][1]
         this.roomMap[cy][cx].addFogBackAfterTimeout(this.tier)
@@ -269,7 +269,7 @@ class Room {
   getNeighborLocations (position, torchlight, fogRad) {
     var neigh = []
     var validCoords = this.getValidCoords(position[0], position[1], torchlight, fogRad)
-    for (var i = 0; i < validCoords.length; i++) {
+    for (let i = 0; i < validCoords.length; i++) {
       var cx = validCoords[i][0]
       var cy = validCoords[i][1]
       neigh.push(this.roomMap[cy][cx])
@@ -300,7 +300,7 @@ class Room {
     var outOfDateCoords = []
 
     var haystack = JSON.stringify(validCoordsNewPos)
-    for (var i = 0; i < validCoordsOldPos.length; i++) {
+    for (let i = 0; i < validCoordsOldPos.length; i++) {
       var coord = validCoordsOldPos[i]
       if (haystack.indexOf(JSON.stringify(coord)) === -1) {
         outOfDateCoords.push(coord)
@@ -318,8 +318,8 @@ class Room {
       fogRad += 3
     }
 
-    for (var y = avY - fogRad; y <= avY + fogRad; y++) {
-      for (var x = avX - fogRad; x <= avX + fogRad; x++) {
+    for (let y = avY - fogRad; y <= avY + fogRad; y++) {
+      for (let x = avX - fogRad; x <= avX + fogRad; x++) {
         var distFromHero = Math.sqrt((x - avX) ** 2 + (y - avY) ** 2)
         if (distFromHero < fogRad) {
           possCoords.push([x, y])
@@ -328,7 +328,7 @@ class Room {
     }
 
     var realCoords = []
-    for (var i = 0; i < possCoords.length; i++) {
+    for (let i = 0; i < possCoords.length; i++) {
       if (this.isValidCoord(possCoords[i][0], possCoords[i][1])) {
         realCoords.push(possCoords[i])
       }
@@ -351,7 +351,7 @@ function makeNormalRoom (height, width, map, locations, itemList, tier, floor, n
 
   var locs = rollLocations(locations.length, height, width) // locs of locations
 
-  for (var i = 0; i < locations.length; i++) {
+  for (let i = 0; i < locations.length; i++) {
     switch (locations[i]) {
       case 'chest':
         map[locs[i][0]][locs[i][1]] = new Chest(locs[i][0], locs[i][1], itemList)
@@ -386,11 +386,10 @@ function makeNormalRoom (height, width, map, locations, itemList, tier, floor, n
           thisNPC = NPCS['shieldMaker']
         } else if (floor === 3 && !NPCS['alchemist']['active']) {
           thisNPC = NPCS['alchemist']
-        }
-        // floor 5 dog trainer
-        // floor 7 rare item blacksmith
-        // chance encounter npc "Winston"
-        else {
+        } else {
+          // floor 5 dog trainer
+          // floor 7 rare item blacksmith
+          // chance encounter npc "Winston"
           locations.splice(locations.length - 1, 1)
           npcDiscoverable = false
         }
@@ -419,8 +418,8 @@ class FightRoom extends Room {
 }
 
 function clearAllFog (roomMap) {
-  for (var i = 0; i < roomMap.length; i++) {
-    for (var j = 0; j < roomMap[0].length; j++) {
+  for (let i = 0; i < roomMap.length; i++) {
+    for (let j = 0; j < roomMap[0].length; j++) {
       roomMap[i][j].fog = false
     }
   }
@@ -429,9 +428,9 @@ function clearAllFog (roomMap) {
 function buildRoomOfSize (height, width) {
   var map = new Array(height)
 
-  for (var i = 0; i < height; i++) {
+  for (let i = 0; i < height; i++) {
     map[i] = new Array(width)
-    for (var j = 0; j < width; j++) {
+    for (let j = 0; j < width; j++) {
       // populate it with Tile locations
       // boundaries should be walls... aesthetic thing
       if (i === 0 || j === 0 || i === height - 1 || j === width - 1) {
@@ -450,7 +449,7 @@ function rollLocations (numLocs, height, width) {
   var wPoss = Array.from({length: width - 4}, (x, i) => i + 2)
 
   var locs = [] // array of [y,x] coords
-  for (var n = 0; n < numLocs; n++) {
+  for (let n = 0; n < numLocs; n++) {
     // Pick random x & y from poss (w/out replacement)
     var x = wPoss.splice(Math.random() * wPoss.length, 1)
     var y = hPoss.splice(Math.random() * hPoss.length, 1)
@@ -479,9 +478,7 @@ function tierToItems (tier) {
     return itemList4
   }
 }
-function tierToXp (tier) {
-  return 75 + tier * 25
-}
+
 function tierToXp (tier) {
   return 75 + tier * 25
 }
@@ -507,17 +504,18 @@ function tierToEnemies (tier) {
 function tierToLocations (tier, maxLocs) {
   // TODO: more locations!!! this code sets the framework for full randomization but it's meaningless with such small possAddedLocs lists
   var possAddedLocs
+  var locationList
   var addedLocs = []
   if (typeof maxLocs === 'undefined') {
-    var locationList = ['chest', 'trapdoor', 'chest']
+    locationList = ['chest', 'trapdoor', 'chest']
   } else if (maxLocs === 1) {
-    var locationList = ['trapdoor']
+    locationList = ['trapdoor']
   } else if (maxLocs === 2 || maxLocs === 3) {
-    var locationList = ['chest']
+    locationList = ['chest']
   }
 
   if (tier === 1) {
-    possAddedLocs = ['chest', 'statue', 'fountain', 'merchant', 'trapdoor' ]
+    possAddedLocs = ['chest', 'statue', 'fountain', 'merchant', 'trapdoor']
   } else if (tier === 2) {
     possAddedLocs = ['chest', 'cave', 'fountain', 'altar', 'merchant', 'trapdoor']
   } else if (tier === 3) {
@@ -528,20 +526,21 @@ function tierToLocations (tier, maxLocs) {
   // if(Math.random() < .2 - activeNPCs.length/50 && !pitActive){
   //     possAddedLocs.push('pit');
   // }
+  var numAddedLocs
   if (typeof maxLocs === 'undefined') {
-    var numAddedLocs = Math.ceil(Math.random() * 3)
+    numAddedLocs = Math.ceil(Math.random() * 3)
   } else {
-    var numAddedLocs = Math.ceil(Math.random() * maxLocs)
+    numAddedLocs = Math.ceil(Math.random() * maxLocs)
   }
   if (tier > 0) {
-    for (var i = 0; i < numAddedLocs; i++) {
+    for (let i = 0; i < numAddedLocs; i++) {
       locToAdd = Math.floor(Math.random() * possAddedLocs.length)
       addedLocs.push(possAddedLocs[locToAdd])
       // if(possAddedLocs[locToAdd] === 'pit'){
       //   pitActive = true;
       //   console.log("pit is present");
       // }
-      for (var j = 0; j < i; j++) { // no repeats in addedLocs !
+      for (let j = 0; j < i; j++) { // no repeats in addedLocs !
         if (addedLocs[i] === addedLocs[j]) {
           addedLocs.splice(i, 1)
           i--
@@ -549,7 +548,7 @@ function tierToLocations (tier, maxLocs) {
       }
     }
     //    if(addedLocs.length === numAddedLocs){
-    for (var n = 0; n < addedLocs.length; n++) {
+    for (let n = 0; n < addedLocs.length; n++) {
       locationList.push(addedLocs[n])
     }
     // return locationList;
@@ -568,8 +567,8 @@ function tierToBoss (tier) {
 }
 
 function centerMap (map, yoff, xoff) {
-  for (var i = 0; i < map.length; i++) {
-    for (var j = 0; j < map[0].length; j++) {
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map[0].length; j++) {
       map[i][j].computeCoordsWithOffset(yoff, xoff)
     }
   }
